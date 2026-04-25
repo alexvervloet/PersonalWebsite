@@ -84,6 +84,7 @@ export function Page() {
 
       {/* ─── HERO ─── */}
       <section
+        id="hero"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -232,6 +233,7 @@ export function Page() {
 
       {/* ─── ABOUT ─── */}
       <section
+        id="about"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -452,6 +454,7 @@ export function Page() {
 
       {/* ─── SKILLS ─── */}
       <section
+        id="skills"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -505,6 +508,7 @@ export function Page() {
 
       {/* ─── PROJECTS ─── */}
       <section
+        id="projects"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -544,6 +548,7 @@ export function Page() {
 
       {/* ─── EARLIER + LANGUAGES ─── */}
       <section
+        id="background"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -652,6 +657,7 @@ export function Page() {
 
       {/* ─── CONTACT ─── */}
       <section
+        id="contact"
         style={{
           position: 'relative',
           zIndex: 2,
