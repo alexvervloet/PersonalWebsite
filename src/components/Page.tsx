@@ -135,7 +135,7 @@ export function Page() {
           >
             {booted && (
               <Typewriter
-                text="Senior Frontend Engineer · 7 years · 2M users shipped."
+                text="Senior Frontend Engineer · 8 years · 2M users shipped."
                 speed={22}
                 onDone={() => setIntroDone(true)}
               />
@@ -349,7 +349,7 @@ export function Page() {
         <SectionHead
           num="02"
           label="experience"
-          title="Seven years. One long streak."
+          title="Eight years. One long streak."
         />
         <div style={{ marginTop: 40 }}>
           {DATA.experience.map((job, i) => (
