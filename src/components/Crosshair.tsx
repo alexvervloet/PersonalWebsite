@@ -22,16 +22,10 @@ export function Crosshair({ containerRef }: Props) {
       const x = e.clientX - r.left;
       const y = e.clientY - r.top;
       wrap.style.opacity = '1';
-      if (hLineRef.current) hLineRef.current.style.top = `${y}px`;
-      if (vLineRef.current) vLineRef.current.style.left = `${x}px`;
-      if (ringRef.current) {
-        ringRef.current.style.top = `${y - 9}px`;
-        ringRef.current.style.left = `${x - 9}px`;
-      }
-      if (dotRef.current) {
-        dotRef.current.style.top = `${y - 1}px`;
-        dotRef.current.style.left = `${x - 1}px`;
-      }
+      hLineRef.current!.style.transform = `translateY(${y}px)`;
+      vLineRef.current!.style.transform = `translateX(${x}px)`;
+      ringRef.current!.style.transform = `translate(${x - 9}px, ${y - 9}px)`;
+      dotRef.current!.style.transform = `translate(${x - 1}px, ${y - 1}px)`;
     };
     const onLeave = () => { wrap.style.opacity = '0'; };
 
@@ -46,21 +40,21 @@ export function Crosshair({ containerRef }: Props) {
   return (
     <div ref={wrapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 50, opacity: 0 }}>
       <div ref={hLineRef} style={{
-        position: 'absolute', top: -9999, left: 0, right: 0, height: 1,
-        background: P.accentDim, opacity: 0.4,
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+        background: P.accentDim, opacity: 0.4, willChange: 'transform',
       }} />
       <div ref={vLineRef} style={{
-        position: 'absolute', left: -9999, top: 0, bottom: 0, width: 1,
-        background: P.accentDim, opacity: 0.4,
+        position: 'absolute', top: 0, left: 0, bottom: 0, width: 1,
+        background: P.accentDim, opacity: 0.4, willChange: 'transform',
       }} />
       <div ref={ringRef} style={{
-        position: 'absolute', top: -9999, left: -9999,
+        position: 'absolute', top: 0, left: 0,
         width: 18, height: 18, border: `1px solid ${P.accent}`,
-        borderRadius: '50%',
+        borderRadius: '50%', willChange: 'transform',
       }} />
       <div ref={dotRef} style={{
-        position: 'absolute', top: -9999, left: -9999,
-        width: 2, height: 2, background: P.accent,
+        position: 'absolute', top: 0, left: 0,
+        width: 2, height: 2, background: P.accent, willChange: 'transform',
       }} />
     </div>
   );
