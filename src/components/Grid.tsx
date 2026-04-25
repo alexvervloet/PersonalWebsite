@@ -13,6 +13,7 @@ const INFLUENCE = 140;
 export function Grid({ containerRef, width, height }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
+  const dirtyRef = useRef(true);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -30,13 +31,21 @@ export function Grid({ containerRef, width, height }: Props) {
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
       mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+      dirtyRef.current = true;
     };
-    const onLeave = () => { mouseRef.current = { x: -9999, y: -9999 }; };
+    const onLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 };
+      dirtyRef.current = true;
+    };
     el.addEventListener('mousemove', onMove);
     el.addEventListener('mouseleave', onLeave);
 
     let raf: number;
     const render = () => {
+      raf = requestAnimationFrame(render);
+      if (!dirtyRef.current) return;
+      dirtyRef.current = false;
+
       ctx.clearRect(0, 0, width, height);
       const { x: mx, y: my } = mouseRef.current;
       for (let x = SPACING; x < width; x += SPACING) {
@@ -57,7 +66,6 @@ export function Grid({ containerRef, width, height }: Props) {
           ctx.fill();
         }
       }
-      raf = requestAnimationFrame(render);
     };
     render();
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, RefObject } from 'react';
+import { useEffect, useRef, RefObject } from 'react';
 import { P } from '../palette';
 
 interface Props {
@@ -6,16 +6,35 @@ interface Props {
 }
 
 export function Crosshair({ containerRef }: Props) {
-  const [pos, setPos] = useState({ x: -100, y: -100, active: false });
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const hLineRef = useRef<HTMLDivElement>(null);
+  const vLineRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    const wrap = wrapRef.current;
+    if (!el || !wrap) return;
+
     const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
-      setPos({ x: e.clientX - r.left, y: e.clientY - r.top, active: true });
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      wrap.style.opacity = '1';
+      if (hLineRef.current) hLineRef.current.style.top = `${y}px`;
+      if (vLineRef.current) vLineRef.current.style.left = `${x}px`;
+      if (ringRef.current) {
+        ringRef.current.style.top = `${y - 9}px`;
+        ringRef.current.style.left = `${x - 9}px`;
+      }
+      if (dotRef.current) {
+        dotRef.current.style.top = `${y - 1}px`;
+        dotRef.current.style.left = `${x - 1}px`;
+      }
     };
-    const onLeave = () => setPos((p) => ({ ...p, active: false }));
+    const onLeave = () => { wrap.style.opacity = '0'; };
+
     el.addEventListener('mousemove', onMove);
     el.addEventListener('mouseleave', onLeave);
     return () => {
@@ -24,24 +43,23 @@ export function Crosshair({ containerRef }: Props) {
     };
   }, [containerRef]);
 
-  if (!pos.active) return null;
   return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 50, opacity: 0.6 }}>
-      <div style={{
-        position: 'absolute', top: pos.y, left: 0, right: 0, height: 1,
+    <div ref={wrapRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 50, opacity: 0 }}>
+      <div ref={hLineRef} style={{
+        position: 'absolute', top: -9999, left: 0, right: 0, height: 1,
         background: P.accentDim, opacity: 0.4,
       }} />
-      <div style={{
-        position: 'absolute', left: pos.x, top: 0, bottom: 0, width: 1,
+      <div ref={vLineRef} style={{
+        position: 'absolute', left: -9999, top: 0, bottom: 0, width: 1,
         background: P.accentDim, opacity: 0.4,
       }} />
-      <div style={{
-        position: 'absolute', top: pos.y - 9, left: pos.x - 9,
+      <div ref={ringRef} style={{
+        position: 'absolute', top: -9999, left: -9999,
         width: 18, height: 18, border: `1px solid ${P.accent}`,
         borderRadius: '50%',
       }} />
-      <div style={{
-        position: 'absolute', top: pos.y - 1, left: pos.x - 1,
+      <div ref={dotRef} style={{
+        position: 'absolute', top: -9999, left: -9999,
         width: 2, height: 2, background: P.accent,
       }} />
     </div>

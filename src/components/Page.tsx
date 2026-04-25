@@ -202,7 +202,7 @@ export function Page() {
               [
                 ['7y', 'shipping prod'],
                 ['2M', 'users reached'],
-                ['$Ms', 'payments processed'],
+                ['$10M', 'payments processed'],
                 ['500%', 'csat lift @ influenxio'],
               ] as const
             ).map(([big, small], i) => (
