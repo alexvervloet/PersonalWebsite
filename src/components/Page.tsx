@@ -8,9 +8,6 @@ import { Typewriter } from './Typewriter'
 import { SectionHead } from './SectionHead'
 import { Portrait } from './Portrait'
 
-const GRID_WIDTH = 1240
-const GRID_HEIGHT = 3600
-
 export function Page() {
   const [booted, setBooted] = useState(false)
   const [introDone, setIntroDone] = useState(false)
@@ -29,11 +26,7 @@ export function Page() {
         overflow: 'hidden',
       }}
     >
-      <Grid
-        containerRef={containerRef}
-        width={GRID_WIDTH}
-        height={GRID_HEIGHT}
-      />
+      <Grid />
       <div className="av-scanlines" />
       <div className="av-noise" />
 
