@@ -4,7 +4,7 @@ export const DATA = {
   location: 'Taichung, Taiwan',
   tz: 'UTC+8',
   status: 'Open to remote roles',
-  github: 'Ailuue',
+  github: 'alexvervloet',
   emailEncoded: 'alex.vervloet [at] gmail [dot] com',
   linkedin: 'alexander-vervloet',
   skills: [
@@ -88,13 +88,13 @@ export const DATA = {
   projects: [
     {
       name: 'hanzi.repeat',
-      url: 'https://github.com/Ailuue/hanzi.repeat',
+      url: 'https://github.com/alexvervloet/hanzi.repeat',
       desc: 'Spaced-repetition Mandarin trainer. Built from the learning side of my brain, not the commercial side — tuned to how I actually pick up characters living in Taiwan.',
       tags: ['React', 'SRS', 'Personal'],
     },
     {
       name: 'how-i-work',
-      url: 'https://github.com/Ailuue/how-i-work',
+      url: 'https://github.com/alexvervloet/how-i-work',
       desc: 'A living document of how I approach engineering, communication, and collaboration. The short version of what a year of working with me feels like.',
       tags: ['README', 'Process'],
     },
