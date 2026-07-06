@@ -22,6 +22,17 @@ const DATA = {
   linkedin: "alexander-vervloet",
   skills: [
     {
+      group: "ai",
+      items: [
+        "LLM apps · RAG · agents",
+        "Evals · LLM-as-judge",
+        "Prompt engineering · guardrails",
+        "Python · FastAPI",
+        "OpenAI · Anthropic · local models",
+        "Vector search · MCP"
+      ]
+    },
+    {
       group: "core",
       items: [
         "JavaScript / TypeScript",
@@ -47,18 +58,22 @@ const DATA = {
         "Product-minded thinking",
         "Explaining complexity simply"
       ]
-    },
-    {
-      group: "workflow",
-      items: [
-        "Agile · Scrum · Jira",
-        "Independent execution",
-        "Remote-native (since 2017)",
-        "Async-first"
-      ]
     }
   ],
   experience: [
+    {
+      co: "Independent",
+      parent: void 0,
+      role: "AI Engineer",
+      period: "2025 — Present",
+      place: "Remote",
+      bullets: [
+        "Building AI-engineering systems from scratch (no frameworks) to understand the primitives, not just the libraries — RAG pipelines, tool-using agents, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.",
+        "Shipped a codebase-Q&A capstone (askrepo) across eight eval-gated stages, from the first API call to a hardened, cached production app that answers questions about its own source with (path:line) citations.",
+        "Publishing the work as an open, teachable series spanning RAG, agents, evals, guardrails, MCP, multimodal, fine-tuning, and local models."
+      ],
+      meta: "Every claim is backed by runnable code and measured results — including an 8B local model that edged GPT-4o-mini on answer correctness for $0."
+    },
     {
       co: "VeVe",
       parent: "Orbis Blockchain Technologies",
@@ -99,6 +114,12 @@ const DATA = {
     }
   ],
   projects: [
+    {
+      name: "deep-dive-capstone",
+      url: "https://github.com/alexvervloet/deep-dive-capstone",
+      desc: "askrepo — a codebase Q&A tool that answers in plain English with (path:line) citations, built from scratch across eight eval-gated stages (RAG → agents → hardening → production). Its default corpus is the AI-engineering series I built it alongside, so the course answers questions about its own source.",
+      tags: ["RAG", "Agents", "Evals", "Python"]
+    },
     {
       name: "hanzi.repeat",
       url: "https://github.com/alexvervloet/hanzi.repeat",
@@ -653,7 +674,7 @@ function Page() {
                     children: booted && /* @__PURE__ */ jsx(
                       Typewriter,
                       {
-                        text: "Senior Frontend Engineer · 8 years · 2M users shipped.",
+                        text: "Full-Stack Engineer → AI Engineer · 8 years · 2M users shipped.",
                         speed: 22,
                         onDone: () => setIntroDone(true)
                       }
@@ -673,7 +694,7 @@ function Page() {
                       opacity: introDone ? 1 : 0,
                       transition: "opacity 0.6s"
                     },
-                    children: "I build production React and React Native apps — and translate between the people who write code and the people who decide what to build. The second part is the job I enjoy most, and the part that doesn't get automated away."
+                    children: "For eight years I shipped production React and React Native to millions of users. Now I build AI systems from scratch — RAG, agents, evals, guardrails — to understand them at the primitive level, not the framework level. The throughline is the same: I translate between how a system actually works and what a team is trying to build."
                   }
                 ),
                 /* @__PURE__ */ jsxs("div", { style: {
@@ -924,7 +945,7 @@ function Page() {
                 gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
                 gap: isMobile ? 32 : 56
               }, children: [
-                /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("p", { className: "sans", style: { fontSize: isMobile ? 16 : 18, lineHeight: 1.55, color: P.ink, margin: 0, maxWidth: 480 }, children: "I'm open to remote senior frontend and fullstack roles with teams who value communication as much as code. I'm also open to PM or TPM positions, as I have a wealth of experience focusing on product and working with them directly. UTC+8, flexible overlap with US and EU." }) }),
+                /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("p", { className: "sans", style: { fontSize: isMobile ? 16 : 18, lineHeight: 1.55, color: P.ink, margin: 0, maxWidth: 480 }, children: "I'm open to remote roles in AI/ML and full-stack engineering with teams who value communication as much as code. I'm also open to PM or TPM positions, as I have a wealth of experience focusing on product and working with them directly. UTC+8, flexible overlap with US and EU." }) }),
                 /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("dl", { className: "kv sans", style: { color: P.ink, fontSize: 15 }, children: [
                   /* @__PURE__ */ jsx("dt", { children: "Email" }),
                   /* @__PURE__ */ jsx("dd", { style: { fontFamily: "IBM Plex Mono, monospace", color: P.accent, wordBreak: "break-word" }, children: DATA.emailEncoded }),
