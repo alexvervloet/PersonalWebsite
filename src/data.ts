@@ -1,6 +1,6 @@
 export const DATA = {
   name: 'Alexander Vervloet',
-  role: 'Senior Frontend Engineer',
+  role: 'AI Engineer',
   location: 'Taichung, Taiwan',
   tz: 'UTC+8',
   status: 'Open to remote roles',
@@ -8,6 +8,17 @@ export const DATA = {
   emailEncoded: 'alex.vervloet [at] gmail [dot] com',
   linkedin: 'alexander-vervloet',
   skills: [
+    {
+      group: 'ai',
+      items: [
+        'LLM apps · RAG · agents',
+        'Evals · LLM-as-judge',
+        'Prompt engineering · guardrails',
+        'Python · FastAPI',
+        'OpenAI · Anthropic · local models',
+        'Vector search · MCP',
+      ],
+    },
     {
       group: 'core',
       items: [
@@ -35,17 +46,21 @@ export const DATA = {
         'Explaining complexity simply',
       ],
     },
-    {
-      group: 'workflow',
-      items: [
-        'Agile · Scrum · Jira',
-        'Independent execution',
-        'Remote-native (since 2017)',
-        'Async-first',
-      ],
-    },
   ],
   experience: [
+    {
+      co: 'Independent',
+      parent: undefined,
+      role: 'AI Engineer',
+      period: '2025 — Present',
+      place: 'Remote',
+      bullets: [
+        'Building AI-engineering systems from scratch (no frameworks) to understand the primitives, not just the libraries — RAG pipelines, tool-using agents, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.',
+        'Shipped a codebase-Q&A capstone (askrepo) across eight eval-gated stages, from the first API call to a hardened, cached production app that answers questions about its own source with (path:line) citations.',
+        'Publishing the work as an open, teachable series spanning RAG, agents, evals, guardrails, MCP, multimodal, fine-tuning, and local models.',
+      ],
+      meta: 'Every claim is backed by runnable code and measured results — including an 8B local model that edged GPT-4o-mini on answer correctness for $0.',
+    },
     {
       co: 'VeVe',
       parent: 'Orbis Blockchain Technologies',
@@ -86,6 +101,12 @@ export const DATA = {
     },
   ],
   projects: [
+    {
+      name: 'deep-dive-capstone',
+      url: 'https://github.com/alexvervloet/deep-dive-capstone',
+      desc: 'askrepo — a codebase Q&A tool that answers in plain English with (path:line) citations, built from scratch across eight eval-gated stages (RAG → agents → hardening → production). Its default corpus is the AI-engineering series I built it alongside, so the course answers questions about its own source.',
+      tags: ['RAG', 'Agents', 'Evals', 'Python'],
+    },
     {
       name: 'hanzi.repeat',
       url: 'https://github.com/alexvervloet/hanzi.repeat',

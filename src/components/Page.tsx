@@ -130,7 +130,7 @@ export function Page() {
           >
             {booted && (
               <Typewriter
-                text="Senior Frontend Engineer · 8 years · 2M users shipped."
+                text="Full-Stack Engineer → AI Engineer · 8 years · 2M users shipped."
                 speed={22}
                 onDone={() => setIntroDone(true)}
               />
@@ -148,10 +148,12 @@ export function Page() {
               transition: 'opacity 0.6s',
             }}
           >
-            I build production React and React Native apps — and translate
-            between the people who write code and the people who decide what to
-            build. The second part is the job I enjoy most, and the part that
-            doesn&apos;t get automated away.
+            For eight years I shipped production React and React Native to
+            millions of users. Now I build AI systems from scratch — RAG,
+            agents, evals, guardrails — to understand them at the primitive
+            level, not the framework level. The throughline is the same: I
+            translate between how a system actually works and what a team is
+            trying to build.
           </p>
           <div style={{
             marginTop: 40, display: 'flex', gap: 12, flexWrap: 'wrap',
@@ -405,11 +407,11 @@ export function Page() {
         }}>
           <div>
             <p className="sans" style={{ fontSize: isMobile ? 16 : 18, lineHeight: 1.55, color: P.ink, margin: 0, maxWidth: 480 }}>
-              I&apos;m open to remote senior frontend and fullstack roles with
-              teams who value communication as much as code. I&apos;m also open
-              to PM or TPM positions, as I have a wealth of experience focusing
-              on product and working with them directly. UTC+8, flexible overlap
-              with US and EU.
+              I&apos;m open to remote roles in AI/ML and full-stack engineering
+              with teams who value communication as much as code. I&apos;m also
+              open to PM or TPM positions, as I have a wealth of experience
+              focusing on product and working with them directly. UTC+8,
+              flexible overlap with US and EU.
             </p>
           </div>
           <div>
