@@ -121,6 +121,12 @@ const DATA = {
       tags: ["RAG", "Agents", "Evals", "Python"]
     },
     {
+      name: "good-news-briefing",
+      url: "https://github.com/alexvervloet/good-news-briefing",
+      desc: "A self-hosted pipeline that runs entirely on my own GPU: a local LLM (LM Studio) scores RSS stories against a tunable editorial rubric, collapses duplicate coverage with local embeddings, and writes a warm, grouped briefing — emailed nightly by cron. Eval-gated, including an agentic optimism scorer, with a running LEARNINGS log of measured model-behavior fixes: ordering the JSON schema so the model reasons before it scores, hard rubric caps that beat soft nudges, and opaque link markers that stop the model hallucinating dead URLs.",
+      tags: ["Local LLM", "Prompt Engineering", "Evals", "Python"]
+    },
+    {
       name: "hanzi.repeat",
       url: "https://github.com/alexvervloet/hanzi.repeat",
       desc: "Spaced-repetition Mandarin trainer. Built from the learning side of my brain, not the commercial side — tuned to how I actually pick up characters living in Taiwan.",
