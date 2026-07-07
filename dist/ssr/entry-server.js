@@ -69,7 +69,7 @@ const DATA = {
       place: "Remote",
       bullets: [
         "Building AI-engineering systems from scratch (no frameworks) to understand the primitives, not just the libraries — RAG pipelines, tool-using agents, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.",
-        "Shipped a codebase-Q&A capstone (askrepo) across eight eval-gated stages, from the first API call to a hardened, cached production app that answers questions about its own source with (path:line) citations.",
+        "Shipped three distinct flagship projects that span building, running, and orchestrating LLM systems: askrepo, a codebase-Q&A app answering with (path:line) citations across eight eval-gated stages; a self-hosted local-LLM news pipeline with its own eval suite and guardrails; and a harness that stress-tests the spec-driven-development workflow with gated phases and deterministic traceability checks.",
         "Publishing the work as an open, teachable series spanning RAG, agents, evals, guardrails, MCP, multimodal, fine-tuning, and local models."
       ],
       meta: "Every claim is backed by runnable code and measured results — including an 8B local model that edged GPT-4o-mini on answer correctness for $0."
