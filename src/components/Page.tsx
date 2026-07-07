@@ -337,6 +337,42 @@ export function Page() {
         </div>
       </section>
 
+      {/* ─── WRITING ─── */}
+      <section id="writing" style={{ position: 'relative', zIndex: 2, padding: sp, borderTop: `1px solid ${P.line}` }}>
+        <SectionHead num="05" label="writing" title="Building in the open." />
+        <div style={{
+          marginTop: 40, display: 'flex', flexDirection: 'column',
+          gap: 1, background: P.line, border: `1px solid ${P.line}`,
+        }}>
+          {DATA.writing.map((post, i) => (
+            <a
+              key={i}
+              href={post.href}
+              style={{
+                display: 'block', background: P.bg,
+                padding: isMobile ? '22px 20px' : '28px 30px', textDecoration: 'none',
+              }}
+            >
+              <div style={{
+                color: P.mute, fontSize: 10, letterSpacing: '0.22em',
+                textTransform: 'uppercase', marginBottom: 12,
+              }}>{post.meta}</div>
+              <div className="sans" style={{
+                color: P.ink, fontSize: 20, fontWeight: 500, lineHeight: 1.3,
+                letterSpacing: '-0.01em', marginBottom: 12,
+              }}>{post.title}</div>
+              <div className="sans" style={{
+                color: P.dim, fontSize: 15, lineHeight: 1.65, maxWidth: 660,
+              }}>{post.standfirst}</div>
+              <div style={{
+                color: P.accent, fontSize: 12, letterSpacing: '0.12em',
+                textTransform: 'uppercase', marginTop: 16,
+              }}>Read →</div>
+            </a>
+          ))}
+        </div>
+      </section>
+
       {/* ─── EARLIER + LANGUAGES ─── */}
       <section
         id="background"
@@ -349,7 +385,7 @@ export function Page() {
         }}
       >
         <div>
-          <SectionHead num="05" label="before code" title="Three years in a classroom." />
+          <SectionHead num="06" label="before code" title="Three years in a classroom." />
           <p className="sans" style={{ marginTop: 40, fontSize: 16, lineHeight: 1.7, color: P.dim, maxWidth: 560 }}>
             Before moving into full-time engineering I taught English and core
             subjects at schools in Taiwan — including one of the country&apos;s
@@ -399,7 +435,7 @@ export function Page() {
           background: `linear-gradient(180deg, ${P.bg} 0%, ${P.bgAlt} 100%)`,
         }}
       >
-        <SectionHead num="06" label="contact" title="Start a conversation." />
+        <SectionHead num="07" label="contact" title="Start a conversation." />
         <div style={{
           marginTop: 40, display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',

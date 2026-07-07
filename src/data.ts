@@ -132,4 +132,13 @@ export const DATA = {
       tags: ['README', 'Process'],
     },
   ],
+  writing: [
+    {
+      title: 'I Was an AI Skeptic. Then I Realized It Was the Same Problem I Had as a Teacher.',
+      href: '/writing/i-was-an-ai-skeptic/',
+      standfirst:
+        'I lost my job of six years, then my mother had a stroke, and AI was gutting my industry. So I stopped mocking it, learned it, and found the same problem I used to face in a classroom.',
+      meta: 'Essay · 2026',
+    },
+  ],
 } as const
