@@ -123,8 +123,14 @@ const DATA = {
     {
       name: "good-news-briefing",
       url: "https://github.com/alexvervloet/good-news-briefing",
-      desc: "A self-hosted pipeline that runs entirely on my own GPU: a local LLM (LM Studio) scores RSS stories against a tunable editorial rubric, collapses duplicate coverage with local embeddings, and writes a warm, grouped briefing — emailed nightly by cron. Eval-gated, including an agentic optimism scorer, with a running LEARNINGS log of measured model-behavior fixes: ordering the JSON schema so the model reasons before it scores, hard rubric caps that beat soft nudges, and opaque link markers that stop the model hallucinating dead URLs.",
+      desc: "A self-hosted pipeline that runs entirely on my own GPU: a local LLM (LM Studio) scores RSS stories against a tunable editorial rubric, collapses duplicate coverage with local embeddings, and writes a warm, grouped briefing — emailed nightly by cron. Eval-gated, including a reference-graded optimism scorer, with a running LEARNINGS log of measured model-behavior fixes: ordering the JSON schema so the model reasons before it scores, hard rubric caps that beat soft nudges, and opaque link markers that stop the model hallucinating dead URLs.",
       tags: ["Local LLM", "Prompt Engineering", "Evals", "Python"]
+    },
+    {
+      name: "spec-harness",
+      url: "https://github.com/alexvervloet/spec-harness",
+      desc: "An instrumented lab for the specify → plan → tasks → analyze workflow companies are racing to adopt. A binding constitution gates every phase — a plan halts, citing the exact article, the moment a requirement needs the network — while a deterministic FR→plan→task traceability checker catches coverage gaps mechanically. The real deliverable is a friction journal that shows where the ceremony earns its keep and where it is overkill. Built on Claude Code phase commands and an adversarial validator subagent, backed by a typed TypeScript toolchain (12 tests).",
+      tags: ["Spec-Driven Dev", "Claude Code", "AI Agents", "TypeScript"]
     },
     {
       name: "hanzi.repeat",
