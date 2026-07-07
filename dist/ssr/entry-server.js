@@ -144,6 +144,14 @@ const DATA = {
       desc: "A living document of how I approach engineering, communication, and collaboration. The short version of what a year of working with me feels like.",
       tags: ["README", "Process"]
     }
+  ],
+  writing: [
+    {
+      title: "I Was an AI Skeptic. Then I Realized It Was the Same Problem I Had as a Teacher.",
+      href: "/writing/i-was-an-ai-skeptic/",
+      standfirst: "I lost my job of six years, then my mother had a stroke, and AI was gutting my industry. So I stopped mocking it, learned it, and found the same problem I used to face in a classroom.",
+      meta: "Essay · 2026"
+    }
   ]
 };
 const SPACING = 28;
@@ -890,6 +898,59 @@ function Page() {
             }
           ) })
         ] }),
+        /* @__PURE__ */ jsxs("section", { id: "writing", style: { position: "relative", zIndex: 2, padding: sp, borderTop: `1px solid ${P.line}` }, children: [
+          /* @__PURE__ */ jsx(SectionHead, { num: "05", label: "writing", title: "Building in the open." }),
+          /* @__PURE__ */ jsx("div", { style: {
+            marginTop: 40,
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            background: P.line,
+            border: `1px solid ${P.line}`
+          }, children: DATA.writing.map((post, i) => /* @__PURE__ */ jsxs(
+            "a",
+            {
+              href: post.href,
+              style: {
+                display: "block",
+                background: P.bg,
+                padding: isMobile ? "22px 20px" : "28px 30px",
+                textDecoration: "none"
+              },
+              children: [
+                /* @__PURE__ */ jsx("div", { style: {
+                  color: P.mute,
+                  fontSize: 10,
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  marginBottom: 12
+                }, children: post.meta }),
+                /* @__PURE__ */ jsx("div", { className: "sans", style: {
+                  color: P.ink,
+                  fontSize: 20,
+                  fontWeight: 500,
+                  lineHeight: 1.3,
+                  letterSpacing: "-0.01em",
+                  marginBottom: 12
+                }, children: post.title }),
+                /* @__PURE__ */ jsx("div", { className: "sans", style: {
+                  color: P.dim,
+                  fontSize: 15,
+                  lineHeight: 1.65,
+                  maxWidth: 660
+                }, children: post.standfirst }),
+                /* @__PURE__ */ jsx("div", { style: {
+                  color: P.accent,
+                  fontSize: 12,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  marginTop: 16
+                }, children: "Read →" })
+              ]
+            },
+            i
+          )) })
+        ] }),
         /* @__PURE__ */ jsxs(
           "section",
           {
@@ -905,7 +966,7 @@ function Page() {
             },
             children: [
               /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx(SectionHead, { num: "05", label: "before code", title: "Three years in a classroom." }),
+                /* @__PURE__ */ jsx(SectionHead, { num: "06", label: "before code", title: "Three years in a classroom." }),
                 /* @__PURE__ */ jsx("p", { className: "sans", style: { marginTop: 40, fontSize: 16, lineHeight: 1.7, color: P.dim, maxWidth: 560 }, children: "Before moving into full-time engineering I taught English and core subjects at schools in Taiwan — including one of the country's top-ranked high schools. Math, science, social studies. Often in Mandarin. Gamification and question-driven methods." }),
                 /* @__PURE__ */ jsx("p", { className: "sans", style: { fontSize: 16, lineHeight: 1.7, color: P.dim, maxWidth: 560 }, children: "I also tutored privately — students from age 6 to working professionals, on everything from English to beginner Python and Raspberry Pi hardware." }),
                 /* @__PURE__ */ jsxs("p", { className: "sans", style: { fontSize: 16, lineHeight: 1.7, color: P.ink, maxWidth: 560, marginTop: 24 }, children: [
@@ -950,7 +1011,7 @@ function Page() {
               background: `linear-gradient(180deg, ${P.bg} 0%, ${P.bgAlt} 100%)`
             },
             children: [
-              /* @__PURE__ */ jsx(SectionHead, { num: "06", label: "contact", title: "Start a conversation." }),
+              /* @__PURE__ */ jsx(SectionHead, { num: "07", label: "contact", title: "Start a conversation." }),
               /* @__PURE__ */ jsxs("div", { style: {
                 marginTop: 40,
                 display: "grid",
