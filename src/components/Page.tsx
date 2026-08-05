@@ -592,6 +592,103 @@ export function Page() {
         </div>
       </section>
 
+      {/* ─── SERIES ─── */}
+      <section
+        id="series"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          padding: sp,
+          borderTop: `1px solid ${P.line}`,
+        }}
+      >
+        <SectionHead num="05" label="teaching" title="The series I wrote to learn it." />
+        <a
+          href={DATA.series.href}
+          style={{
+            display: 'block',
+            marginTop: 40,
+            background: P.bgAlt,
+            border: `1px solid ${P.line}`,
+            padding: isMobile ? '24px 20px' : '32px 34px',
+            textDecoration: 'none',
+          }}
+        >
+          <div
+            style={{
+              color: P.mute,
+              fontSize: 10,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              marginBottom: 12,
+            }}
+          >
+            {DATA.series.meta}
+          </div>
+          <div
+            className="sans"
+            style={{
+              color: P.ink,
+              fontSize: isMobile ? 22 : 26,
+              fontWeight: 500,
+              lineHeight: 1.25,
+              letterSpacing: '-0.015em',
+              marginBottom: 14,
+            }}
+          >
+            {DATA.series.title}
+          </div>
+          <div
+            className="sans"
+            style={{
+              color: P.dim,
+              fontSize: 15,
+              lineHeight: 1.65,
+              maxWidth: 680,
+            }}
+          >
+            {DATA.series.standfirst}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 8,
+              marginTop: 22,
+            }}
+          >
+            {DATA.series.core.map((name, i) => (
+              <span
+                key={i}
+                style={{
+                  fontSize: 11,
+                  letterSpacing: '0.08em',
+                  color: P.dim,
+                  border: `1px solid ${P.line}`,
+                  padding: '5px 10px',
+                }}
+              >
+                <span style={{ color: P.mute, marginRight: 7 }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                {name}
+              </span>
+            ))}
+          </div>
+          <div
+            style={{
+              color: P.accent,
+              fontSize: 12,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginTop: 22,
+            }}
+          >
+            Read the series →
+          </div>
+        </a>
+      </section>
+
       {/* ─── WRITING ─── */}
       <section
         id="writing"
@@ -602,7 +699,7 @@ export function Page() {
           borderTop: `1px solid ${P.line}`,
         }}
       >
-        <SectionHead num="05" label="writing" title="Building in the open." />
+        <SectionHead num="06" label="writing" title="Building in the open." />
         <div
           style={{
             marginTop: 40,
@@ -690,7 +787,7 @@ export function Page() {
       >
         <div>
           <SectionHead
-            num="06"
+            num="07"
             label="before code"
             title="Three years in a classroom."
           />
@@ -795,7 +892,7 @@ export function Page() {
           background: `linear-gradient(180deg, ${P.bg} 0%, ${P.bgAlt} 100%)`,
         }}
       >
-        <SectionHead num="07" label="contact" title="Start a conversation." />
+        <SectionHead num="08" label="contact" title="Start a conversation." />
         <div
           style={{
             marginTop: 40,
