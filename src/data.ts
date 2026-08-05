@@ -132,6 +132,23 @@ export const DATA = {
       tags: ['README', 'Process'],
     },
   ],
+  series: {
+    href: '/dives/',
+    title: 'AI Engineering: Deep Dives',
+    standfirst:
+      'A hands-on series on building with LLMs, written from scratch and readable here in full. Eight core dives that build on each other, nine bonus dives, a capstone, and the reference docs that tie them together. Every concept is a small runnable script; every claim is backed by something you can run.',
+    meta: 'Series - 18 deep dives - 2025 to 2026',
+    core: [
+      'OpenAI API',
+      'Claude API',
+      'Prompt Engineering',
+      'RAG',
+      'Evals',
+      'Agents',
+      'Prompt Injection & Guardrails',
+      'Production',
+    ],
+  },
   writing: [
     {
       title: 'I Was an AI Skeptic. Then I Realized It Was the Same Problem I Had as a Teacher.',
