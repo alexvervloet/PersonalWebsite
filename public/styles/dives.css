@@ -176,7 +176,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* ── Article ── */
 
 .dd-main { min-width: 0; padding: 44px 56px 96px; }
-.dd-article { max-width: 74ch; }
+
+/* The docs quote long URLs and dotted paths inline. Without this they push the
+ * article wider than the screen on a phone. */
+.dd-article { max-width: 74ch; overflow-wrap: break-word; }
 
 .dd-eyebrow {
   font-family: var(--mono);
