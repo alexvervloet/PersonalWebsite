@@ -4,9 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run build:dives && vite",
     "sync:dives": "node scripts/sync-dives.mjs",
-    "build": "tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist/ssr && node scripts/prerender.mjs",
+    "build:dives": "node scripts/build-dives.mjs",
+    "build": "npm run build:dives && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist/ssr && node scripts/prerender.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
