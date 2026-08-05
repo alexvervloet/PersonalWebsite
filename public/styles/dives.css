@@ -115,6 +115,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dd-rail-left { border-right: 1px solid var(--line); }
 .dd-rail-right { border-left: 1px solid var(--line); }
 
+/* The left rail carries about thirty links. On a phone that would push the
+ * article a full screen down, so the rail moves below the article there (see
+ * the narrow breakpoint) and the top bar carries navigation instead. */
+
 .dd-rail-head {
   font-family: var(--mono);
   font-size: 10px;
@@ -216,6 +220,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   color: var(--dim);
   margin: 28px 0 10px;
 }
+
+/* The source markdown often puts a rule directly above a section heading. The
+ * heading already draws one, so drop the duplicate. */
+.dd-article hr + h2 { border-top: 0; margin-top: 0; padding-top: 0; }
 
 .dd-article p { margin: 0 0 18px; }
 .dd-article ul, .dd-article ol { margin: 0 0 18px; padding-left: 24px; }
@@ -410,14 +418,15 @@ h3:hover > .dd-anchor { opacity: 1; }
 @media (max-width: 860px) {
   body { font-size: 16px; }
   .dd-shell { grid-template-columns: minmax(0, 1fr); }
+  .dd-main { order: 1; padding: 32px 20px 56px; }
   .dd-rail-left {
+    order: 2;
     position: static;
     max-height: none;
     border-right: 0;
-    border-bottom: 1px solid var(--line);
-    padding: 20px 20px 24px;
+    border-top: 1px solid var(--line);
+    padding: 28px 20px 56px;
   }
-  .dd-main { padding: 32px 20px 72px; }
   .dd-article h1 { font-size: 27px; }
   .dd-article h2 { font-size: 19px; margin-top: 44px; }
   .dd-anchor { display: none; }
