@@ -52,6 +52,16 @@ function main() {
     }
   }
 
+  // The series README is not a page of its own (the index replaces it), but the
+  // index takes its opening lines from here so the two cannot drift.
+  const seriesReadme = path.join(src, 'README.md')
+  if (fs.existsSync(seriesReadme)) {
+    copy(seriesReadme, path.join(contentDir, 'series-readme.md'))
+    copied++
+  } else {
+    missing.push('README.md')
+  }
+
   for (const ref of REFERENCE) {
     const from = path.join(src, ref.file)
     if (!fs.existsSync(from)) {
