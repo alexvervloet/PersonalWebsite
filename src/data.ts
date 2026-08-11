@@ -56,7 +56,7 @@ export const DATA = {
       place: 'Remote',
       bullets: [
         'Building AI-engineering systems from scratch (no frameworks) to understand the primitives, not just the libraries — RAG pipelines, tool-using agents, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.',
-        'Shipped three distinct flagship projects that span building, running, and orchestrating LLM systems: askrepo, a codebase-Q&A app answering with (path:line) citations across eight eval-gated stages; a self-hosted local-LLM news pipeline with its own eval suite and guardrails; and a harness that stress-tests the spec-driven-development workflow with gated phases and deterministic traceability checks.',
+        'Shipped four distinct flagship projects that span building, running, and orchestrating LLM systems: askrepo, a codebase-Q&A app answering with (path:line) citations across eight eval-gated stages; a self-hosted local-LLM news pipeline with its own eval suite and guardrails; a harness that stress-tests the spec-driven-development workflow with gated phases and deterministic traceability checks; and Knowledge Desk, a deployed multi-tenant assistant whose permission boundary is enforced three independent times.',
         'Publishing the work as an open, teachable series spanning RAG, agents, evals, guardrails, MCP, multimodal, fine-tuning, and local models.',
       ],
       meta: 'Every claim is backed by runnable code and measured results — including an 8B local model that edged GPT-4o-mini on answer correctness for $0.',
@@ -101,6 +101,12 @@ export const DATA = {
     },
   ],
   projects: [
+    {
+      name: 'knowledge-desk',
+      url: 'https://github.com/alexvervloet/knowledge-desk',
+      desc: 'A multi-tenant knowledge assistant where a question can only ever reach the documents the asker is allowed to see — enforced three independent times, so no single missed filter leaks data: an org_id stamp on every query, an ACL filter inside the ranking SQL so forbidden rows are never scored, and Postgres row-level security denying by default underneath. Live at knowledge-desk.fly.dev, where two seeded tenants ask the same question and get different answers, and the tenant with no matching documents gets a refusal rather than the model\'s general knowledge. The retrieval core is 126 of its 3,169 lines; the other 96% is the operational layer — async ingestion, per-tenant and platform spend ceilings, audit, and evals that gate merges.',
+      tags: ['Multi-tenant', 'RAG', 'Postgres RLS', 'Live demo'],
+    },
     {
       name: 'deep-dive-capstone',
       url: 'https://github.com/alexvervloet/deep-dive-capstone',
