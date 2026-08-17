@@ -160,6 +160,14 @@ export const DIVES = [
     after: 'everything (you need the primitives first)',
     idea: 'Volume 2: rebuild each from-scratch primitive with the tool professionals actually reach for, and measure both on the same eval.',
   },
+  {
+    slug: 'ai-data-engineering',
+    dir: 'ai-data-engineering-deep-dive',
+    title: 'AI Data Engineering',
+    track: 'bonus',
+    after: 'RAG (4), before Production (8)',
+    idea: 'A retrieval index is a disposable, derived view of source truth: version documents, carry permissions into every chunk, make deletes stick, and prove the corpus can be rebuilt.',
+  },
 
   // ── Capstone ──
   {
