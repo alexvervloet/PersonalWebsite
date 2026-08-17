@@ -4,16 +4,16 @@ A hands-on playground for learning the **Model Context Protocol** from the groun
 up: the open standard for handing an LLM *tools, data, and prompts* from a
 separate process. You'll build MCP servers, write a client that talks to them,
 and finally let a model drive those tools over the protocol, understanding every
-moving part: the three primitives (tools, resources, prompts), the JSON-RPC
-handshake, stdio vs. HTTP transports, wiring a server into Claude Desktop / Claude
-Code, and the security model. No framework magic beyond the official `mcp` SDK
-itself, just enough code to see how it works.
+moving part: the three primitives (tools, resources, prompts), self-describing
+JSON-RPC requests, stdio vs. HTTP transports, MRTR, cacheable discovery, wiring
+a server into a real host, and the security model. It targets MCP `2026-07-28`
+and the official Python SDK v2.
 
 The thing that makes this repo click: **most of it runs offline and free.** A
 server and a client talk to each other with **no model involved**, so Sections
 2–7 (your first server, the client, resources, prompts, a multi-tool server) need
-no API key at all. You only need a provider once you put an LLM "host" in the loop
-(Section 8 onward).
+no API key at all. You only need a provider for Section 8 and the capstone, where
+an LLM host chooses tools.
 
 This repo is **standalone**: it teaches everything it needs on its own. It goes far
 deeper than the "Bonus: MCP" section of the
@@ -55,7 +55,7 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 # 2. Install dependencies (the official MCP SDK + a provider SDK)
 pip install -r requirements.txt
 
-# 3. Copy the env file: Sections 2-7 need no key; the host (§8+) does
+# 3. Copy the env file: offline sections need no key; §8 + capstone do
 cp .env.example .env
 #    (Real provider instead of the mock? Its key goes in your OS keychain,
 #     not .env: see ../SECRETS.md, then run scripts as `secrun python ...`.)
@@ -70,8 +70,8 @@ its key are required **only** for the LLM-in-the-loop sections (8 + the capstone
 | `PROVIDER` | Used for | Key needed |
 |------------|----------|------------|
 | *(none)* | Sections 2-7: server to client with **no model**. Fully offline. | none |
-| `openai` (default) | The host loop (§8+): OpenAI chat + function calling. | `OPENAI_API_KEY` |
-| `claude` | The host loop (§8+): Claude messages + tool use. | `ANTHROPIC_API_KEY` |
+| `openai` (default) | The host loop (§8 + capstone): OpenAI chat + function calling. | `OPENAI_API_KEY` |
+| `claude` | The host loop (§8 + capstone): Claude messages + tool use. | `ANTHROPIC_API_KEY` |
 
 > **MCP-first means free-first.** The protocol is the subject, and the protocol
 > doesn't need a model. You can learn the entire mechanism (servers, the three
@@ -101,6 +101,11 @@ They talk over **JSON-RPC 2.0** (plain JSON request/response) across a **transpo
 service). And a server exposes exactly **three primitives**, which the rest of the
 repo walks through one at a time:
 
+MCP `2026-07-28` has **no initialize handshake and no protocol session**. Each
+request carries the protocol version, client identity, and capabilities it needs;
+`server/discover` is optional. See [PROTOCOL_2026.md](PROTOCOL_2026.md) for the
+production migration and compatibility notes.
+
 | Primitive | What it is | Who's in control |
 |-----------|-----------|------------------|
 | **Tool** | A function the model can *call* to act | **Model**-controlled |
@@ -118,9 +123,9 @@ python examples/02_first_server_and_client.py
 Section 2 showed the JSON messages; here you send real ones, using the official
 SDK's client API with **no wrapper**, so you see the actual ceremony exactly as the
 SDK docs describe it. The server ([servers/calculator.py](servers/calculator.py))
-is a dozen lines: a `FastMCP` instance with one `@mcp.tool()` function. The client
-spawns it as a subprocess over stdio, runs the `initialize` handshake, then
-`list_tools()` and `call_tool(...)`. This is the only example that uses the raw API
+is a dozen lines: a `MCPServer` instance with one `@mcp.tool()` function. The client
+spawns it as a subprocess over stdio; the high-level `Client` selects modern MCP
+automatically, then runs `list_tools()` and `call_tool(...)`. This is the only example that uses the raw API
 directly. After this we use a small `MCPClient` wrapper so the *protocol* stays in
 focus, not the async boilerplate.
 
@@ -225,6 +230,44 @@ underneath. Rule of thumb: **stdio** for local tools that ship with the host (a
 subprocess on your machine); **streamable HTTP** for a shared service multiple
 hosts connect to over the network.
 
+### Self-contained, routable requests
+
+Run the example and inspect its raw HTTP call. Modern MCP requires
+`MCP-Protocol-Version`, `Mcp-Method`, and, for a named primitive, `Mcp-Name`.
+Gateways and rate limiters can route on those headers without parsing JSON. The
+request's `_meta` carries client identity/capabilities. The response has **no
+`Mcp-Session-Id`**: any replica can serve the next request without sticky routing
+or a shared protocol-session store.
+
+This does not ban application state. Make state explicit: a tool can mint a
+workflow/job handle and require the model to pass it back later. The handle is
+visible in the tool contract instead of hidden in transport state.
+
+`stateless_http=True` still exists in SDK v2, but only changes how the server
+supports pre-2026 legacy clients. It is not the switch for modern traffic; modern
+MCP is already self-contained.
+
+### Multi-round trips and cacheable catalogs
+
+```bash
+python examples/10_multi_round_trip.py     # typed input_required loop
+python examples/11_cacheable_catalogs.py   # ttlMs/cacheScope and a visible hit
+```
+
+Removing the session also removes the back-channel used by old server-initiated
+elicitation, sampling, and roots requests. **Multi Round-Trip Requests (MRTR)**
+replace it: the server returns `resultType: "input_required"`; the client obtains
+typed answers and retries the original call with `inputResponses` and opaque
+`requestState`. The SDK's `Resolve(...)` dependency and high-level `Client` drive
+that loop in example 10.
+
+Discovery results now carry **`ttlMs`** and **`cacheScope`**. Clients can reuse
+fresh tool/resource/prompt catalogs; `private` data stays in one authorization
+partition, while genuinely identical `public` data may be shared. Example 11
+makes the cache hit visible. The full migration matrix—including Tasks,
+extensions, authorization hardening, and deprecated features—is in
+[PROTOCOL_2026.md](PROTOCOL_2026.md).
+
 ---
 
 ## 10. Security: MCP + prompt injection
@@ -301,7 +344,7 @@ secrun python hands_on/assistant.py --yes
 Read [hands_on/assistant.py](hands_on/assistant.py): it's just the client
 (`MCPClient`), the host loop (`run_host`), and a human-approval callback wired to a
 CLI, the whole repo in one file. **Suggested exercise:** write your own small
-`FastMCP` server (one tool you'd actually use) and point the capstone at it with
+`MCPServer` (one tool you'd actually use) and point the capstone at it with
 `--server`. When the assistant calls *your* tool with no other change, MCP has
 clicked.
 
@@ -312,8 +355,10 @@ clicked.
 You've built servers, a client, and a host. The frontier is more of the same idea,
 at more scale:
 
-- **Sampling & elicitation**: newer MCP features that let a *server* ask the host's
-  model to generate text, or ask the *user* for input mid-call.
+- **Tasks and extensions**: durable, pollable work and optional capabilities
+  without expanding the protocol core.
+- **MRTR resolvers**: typed elicitation or model assistance returned as
+  `input_required`, never pushed down a hidden back-channel.
 - **OAuth & remote servers**: authenticating to hosted MCP servers you don't run.
 - **Real third-party servers**: wire the official filesystem / GitHub / Postgres
   servers into Claude Desktop and feel the "write once, use anywhere" payoff.
@@ -351,9 +396,10 @@ series), which runs offline on a mock provider.
 check_setup.py              ← run first: Python, the mcp SDK, provider, key
 README.md                   ← this guide
 EXERCISES.md                ← predict-then-run prompts, one per section
+PROTOCOL_2026.md            ← migration, deployment, auth, extensions, deprecations
 servers/                    ← MCP servers (the capability side)
   calculator.py             ← the minimal one-tool server (stdio)
-  calculator_http.py        ← the same, over streamable HTTP (Section 9)
+  calculator_http.py        ← the same, over modern streamable HTTP (Section 9)
   notes.py                  ← all THREE primitives: tools, resources, prompts
   toolbox.py                ← a realistic multi-tool server (used by the capstone)
   sneaky.py                 ← a deliberately HOSTILE server (Section 10)
@@ -374,6 +420,8 @@ examples/
   07_llm_calls_mcp_tools.py ← a model drives the tools (needs a key)
   08_http_transport.py      ← connect to a server over HTTP (offline)
   09_security.py            ← a hostile server; attacks & defenses (offline)
+  10_multi_round_trip.py    ← typed input_required / MRTR loop (offline)
+  11_cacheable_catalogs.py  ← ttlMs/cacheScope + client cache hit (offline)
 ```
 
 (`workspace/` is created by the notes/toolbox servers' `save_note` tool and is
@@ -388,9 +436,13 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | What you see | What it means / the fix |
 |--------------|-------------------------|
 | `ModuleNotFoundError: mcp` | The SDK isn't installed. `pip install -r requirements.txt` (it pulls `mcp[cli]`). |
+| `ModuleNotFoundError: mcp.server.fastmcp` | You're on the 1.x SDK, or following a 1.x tutorial. This repo targets 2.x, where the server class moved: `mcp.server.fastmcp.FastMCP` became `mcp.server.mcpserver.MCPServer`. `pip install -r requirements.txt` pins the right major version. |
+| Code calls `ClientSession.initialize()` | That is a legacy protocol path. Use the high-level `Client`; its default auto mode selects `2026-07-28` and falls back only for an old server. |
+| Tool result attributes are missing (`isError`, `inputSchema`) | 2.x renamed response fields to snake_case: `result.is_error`, `tool.input_schema`. The JSON on the wire is unchanged and still camelCase, which is why `examples/01_protocol.py` still shows `inputSchema`. |
 | A server example just hangs | A stdio server talks over stdin/stdout, so **don't** run `servers/*.py` directly expecting output; run the **example** (or the capstone), which launches the server for you. |
 | `08_http_transport.py` can't connect | The HTTP server isn't up. Start `python servers/calculator_http.py` in another terminal first (it stays running on `:8000`). |
-| `PROVIDER=... needs ... in the environment` | Only the LLM sections (8 + capstone) need a key. Sections 2–7 run with none. Load the key from your keychain with `secrun` (see [SECRETS.md](../SECRETS.md)), or stick to the offline examples. |
+| `TypeError: MCPServer.__init__() got an unexpected keyword argument 'host'` (or `port`, `stateless_http`) | Another 1.x/2.x split. Transport options go to `run()`. Note that `stateless_http` only affects legacy clients; modern MCP is session-free already. |
+| `PROVIDER=... needs ... in the environment` | Only Section 8 and the capstone need a key; the protocol, transport, MRTR, cache, and security examples are offline. Load the key from your keychain with `secrun` (see [SECRETS.md](../SECRETS.md)), or stick to the offline examples. |
 | Import errors from `host` / `client` / `servers` | Run from the repo root (`python examples/03_...py`), not from inside a subfolder; the examples add the repo root to `sys.path`. |
 | Claude Desktop doesn't see my server | Use **absolute** paths to the venv's python *and* the script in the config, then fully restart the app. `mcp dev servers/toolbox.py` helps debug locally. |
 | `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |

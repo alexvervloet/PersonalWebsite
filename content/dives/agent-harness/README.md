@@ -75,7 +75,7 @@ tool-calling "model." Pick your stack with `PROVIDER` in `.env`:
 | `PROVIDER` | What runs the model | Key needed | Cost |
 |------------|---------------------|------------|------|
 | `mock` (default) | a deterministic offline planner | **none** | **$0** |
-| `openai` | OpenAI `gpt-4o-mini` | `OPENAI_API_KEY` | tiny |
+| `openai` | OpenAI `gpt-5.4-nano` | `OPENAI_API_KEY` | tiny |
 | `claude` | Claude `claude-haiku-4-5` | `ANTHROPIC_API_KEY` | tiny |
 
 The only file that knows which you picked is
@@ -323,6 +323,85 @@ loop only when the path genuinely can't be known up front.
 
 ---
 
+## 15. Managed Agents: when you own none of it
+
+```bash
+python examples/14_managed_agents.py               # explain only, free
+secrun python examples/14_managed_agents.py --real # provisions, then cleans up
+```
+
+Sections 3 through 14 built a harness. Managed Agents is Anthropic running that
+whole layer: you do not write the loop, host the container, or persist the run.
+It is the far end of the axis this dive walks.
+
+```
+your own loop  ->  your own harness  ->  a harness you host  ->  hosted entirely
+     (§2)              (§3-14)           (Claude Agent SDK)     (Managed Agents)
+```
+
+Almost nothing in it is a new idea. It is this dive's problem list with someone
+else's answers plugged in:
+
+| This dive | Managed Agents |
+|-----------|----------------|
+| your event stream (§3) | `sessions.events.stream()` |
+| permission policies (§5) | `always_allow` / `always_ask` per tool |
+| the sandbox (§6) | the session's container, Anthropic-run |
+| subagents (§7) | a `multiagent` roster on the agent |
+| checkpoint/resume (§10) | the session, durable by construction |
+| run records (§11) | deployment runs |
+| steering (§13) | `user.message` / `user.interrupt` events |
+
+The one structural rule worth memorizing: an **Agent** is a persisted, versioned
+config (model, system, tools) and a **Session** is one run of it. Those fields
+live on the agent, never the session. Creating an agent per run is the classic
+mistake: it orphans objects, pays creation latency every time, and discards the
+versioning that is the reason agents are separate objects at all. Create once,
+store the id, reuse. That is the hosted version of not re-instantiating your
+harness inside the request handler.
+
+What you give up is real. You cannot reach into the loop the way §4's hooks let
+you, tools run in a container you do not own, and it is one vendor. Good trade
+when the alternative is maintaining §3 through §14 yourself. Bad trade when that
+layer is where your value lives, which is precisely the judgement this dive
+exists to give you.
+
+---
+
+## 16. Agent Skills: instructions that load on demand
+
+```bash
+python examples/15_skills.py               # explain + list skills, free
+secrun python examples/15_skills.py --real # actually builds a spreadsheet
+```
+
+A capable agent needs more instructions than fit comfortably in one system
+prompt, and stuffing them all in makes every request slower, dearer, and (per
+the [Context Engineering dive](https://github.com/alexvervloet/context-engineering-deep-dive))
+measurably worse. A **skill** is the instruction-set answer: a folder with a
+`SKILL.md`, whose one-line description sits in context always while the body is
+read only when the task calls for it.
+
+| Mechanism | What stays in context |
+|-----------|-----------------------|
+| system prompt | all of it, every request, forever |
+| **skill** | one line; the rest loads on demand |
+| subagent (§7) | nothing; it gets its own window |
+
+Three things must travel together or the request fails: the two betas
+(`code-execution-2025-08-25`, `skills-2025-10-02`), a `container` naming the
+skills, and the `code_execution` tool, because skills execute in the container.
+Anthropic ships `xlsx`, `pptx`, `docx` and `pdf`; you can register your own.
+
+The reason this sits in a *harness* dive rather than an API one: a skill is
+configuration your harness owns, exactly like §5's permission policy or §4's
+tool surface. Which skills to attach, and whether the model may reach for one
+unprompted, are your decisions. And since a skill can carry scripts, and those
+scripts run, a skill you did not write deserves the same suspicion as a tool you
+did not write.
+
+---
+
 ## The capstone: `agent_harness.py`
 
 Everything assembled into a harness you can drive: a real permission policy
@@ -465,6 +544,8 @@ examples/
   11_parallel_subagents.py  ← fan out to many workers concurrently, then join (offline)
   12_steering.py            ← inject / interrupt a running agent mid-run (offline)
   13_orchestration_graph.py ← routing, branching, and cycles as a graph (offline)
+  14_managed_agents.py     ← the hosted end of the axis: Anthropic runs the harness
+  15_skills.py             ← progressive-disclosure instructions (SKILL.md)
 ```
 
 (`workspace/` and `runs/` are created by the examples and are git-ignored.)

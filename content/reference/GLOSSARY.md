@@ -26,7 +26,19 @@ and output format for the whole conversation. *(API dives; Prompt Engineering)*
 **Content block**: Claude returns a *list* of typed pieces (text, tool-use,
 thinking) rather than a plain string. *(Claude API dive)*
 
-**max_tokens**: a hard cap on how many tokens the model may generate in one reply.
+**max_tokens / max_completion_tokens**: a hard cap on how many tokens the model
+may generate in one reply. The two names are the same idea on different
+providers: Anthropic still calls it `max_tokens`, while OpenAI's GPT-5 line
+rejects that name and requires `max_completion_tokens`. The rename is
+meaningful, not cosmetic: on a reasoning model the cap also covers reasoning
+tokens you never see, so a generous-looking cap can return an *empty* answer
+with a finish reason of "length". *(API dives)*
+
+**stop sequence**: a string that, if the model is about to generate it, ends the
+reply there. A text-completion era idea, and a retreating one: OpenAI's GPT-5
+line dropped `stop` entirely (Anthropic keeps `stop_sequences`). Where you would
+once chop output at a marker, you now ask for a shape with structured outputs.
+*(OpenAI dive §06)*
 
 **Stateless**: the API remembers nothing between calls. "Memory" is just you
 re-sending the growing message list each turn. *(API dives; Agents §9)*
@@ -120,6 +132,86 @@ HNSW) is what you switch to at millions of vectors. *(RAG §15)*
 
 **Contextual retrieval**: prepend a short situating sentence to each chunk *before
 embedding* so isolated chunks stay findable. *(RAG)*
+
+---
+
+## The corpus behind the retrieval
+
+*The vocabulary of keeping an index current, separated, and provable. Retrieval
+assumes this work is done; these are its terms. (AI Data Engineering dive)*
+
+**Data contract**: the rules a connector payload must satisfy, checked at runtime
+rather than described in a document: known fields only, timestamps with offsets, a
+non-empty ACL, a supported MIME type. A schema nobody enforces is a note, not a
+contract. *(AI Data Engineering §1)*
+
+**Connector**: the code that gets documents out of the system that owns them (a wiki,
+a drive, a ticket tracker) and into your pipeline, with its rate limits, pagination,
+and outages attached. *(AI Data Engineering §2)*
+
+**Snapshot and high-watermark**: a full read of source state, plus the exact position
+in the source's change history that the read corresponds to. Capturing them together
+is what lets the incremental feed start with no gap and no loss. *(§2)*
+
+**CDC (change data capture)**: consuming a source's stream of creates, updates, and
+deletes instead of re-crawling it. The idea predates AI by decades; it comes from
+database replication. *(§2, §6)*
+
+**Cursor / checkpoint**: your saved position in the change stream. The rule that
+makes crashes survivable: apply the change first, persist the cursor second. Reversed,
+a crash skips events permanently and reports nothing. *(§2, §6)*
+
+**Idempotency**: an effect that can be applied twice without changing the result.
+Since delivery is at-least-once in practice, idempotent writes plus version comparison
+are the workable substitute for exactly-once processing. *(§6)*
+
+**Source version**: the monotonic number the source assigns a document, and the only
+trustworthy way to decide whether an arriving event is news or an echo. Arrival order
+is not, because retries and partitions reorder it. *(§6)*
+
+**Tombstone**: a durable record that a document was deleted, at the version it was
+deleted at. Without one, a late retry of an older event finds nothing in the index,
+concludes the document is new, and resurrects it. *(§8)*
+
+**Backfill**: a deliberate rerun of current source state after the *code* changed
+(new parser, chunker, or embedding model) rather than the data. The one mode allowed
+to rewrite a document at its existing version, and still not allowed to lift a
+tombstone. *(§7)*
+
+**Reconciliation**: periodically comparing source truth against index state to find
+what the event stream missed: missing, stale, orphaned, or ACL-drifted documents.
+Repair needs a budget, because a half-degraded source snapshot looks exactly like a
+source that deleted everything. *(§8)*
+
+**Lineage / provenance**: the record of which source document produced which chunk,
+through which transform, at which version. What turns "why did it say that?" into a
+query rather than an afternoon. *(§9)*
+
+**Content addressing**: identifying work by the hash of its bytes so identical content
+is parsed or embedded once. An optimization on compute only: identity, ACLs, and
+lineage stay keyed to the document, or one tenant's cache becomes another's leak.
+*(§4)*
+
+**ACL propagation**: copying the source document's access control list onto every
+chunk derived from it, so retrieval can filter before it ranks. Filtering after
+ranking both leaks and silently under-returns. *(§5)*
+
+**Tenant isolation**: keeping one customer's data unreachable from another's, in the
+IDs, the query predicates, and the database itself. *(§5)*
+
+**Row-level security (RLS)**: a database policy that filters rows per session, used
+here as a second layer behind the application's own predicates. Note the trap:
+Postgres exempts a table's *owner* from its policies unless the table is declared
+`FORCE ROW LEVEL SECURITY`, so an app connecting as its migration role gets a policy
+that enforces nothing. *(AI Data Engineering, capstone)*
+
+**Data quality gate**: checks on the corpus itself (coverage, drift, empty chunks,
+ACL parity, lineage coverage) that run before answer-quality evals. A stale corpus
+scores perfectly against a stale eval set. *(§9)*
+
+**RPO / RTO**: recovery point objective, how much source and change history you can
+afford to lose; recovery time objective, how long a full rebuild actually takes. Both
+are measured by rebuilding once, not estimated. *(§10)*
 
 ---
 
@@ -345,6 +437,34 @@ turns are detected from silence, and the user can interrupt. *(Realtime Voice di
 
 **Barge-in**: the user interrupting the agent mid-response; a good voice agent stops
 speaking instantly and listens. Needs full-duplex audio + fast cancellation. *(Realtime Voice §5)*
+
+**Architecture Decision Record (ADR)**: a short document recording one structural
+decision: the context, the options, the choice, the consequences, and the conditions
+that would reverse it. Useful precisely because it names what would change your mind.
+*(Architecture, all chapters)*
+
+**Blast radius**: how much of a system a single failure takes with it. An in-process
+model that is OOM-killed takes the health check and the cached responses with it; a
+separate model tier does not. *(Architecture §4)*
+
+**Circuit breaker**: stop calling a dependency that has stopped answering, so requests
+fail fast instead of holding a worker for the full deadline. A capacity device, not a
+latency-percentile one. *(Architecture §6)*
+
+**Hold-back window**: streaming output while keeping the last N tokens unsent, so an
+output guard sees them before the user does. Buys containment with first-token latency.
+*(Architecture §5)*
+
+**Load shedding**: refusing work immediately when the queue is too deep, rather than
+accepting it and making the client wait for a deadline it will not meet.
+*(Architecture §3)*
+
+**Sticky routing**: sending every request in a session to the same worker, which makes
+in-process state work until that worker restarts. *(Architecture §2)*
+
+**Write-through indexing**: re-embedding a document when it changes, rather than
+rebuilding the index on a timer or on every request. Work scales with the edit rate
+instead of the query rate. *(Architecture §7)*
 
 **STT→LLM→TTS pipeline vs speech-to-speech**: the two voice architectures: three
 models in series (a text transcript in the middle you can log and moderate, more

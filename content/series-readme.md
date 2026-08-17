@@ -48,13 +48,36 @@ Standalone deep dives that extend the core path. Each notes where it slots in.
 |-----------|------------------|----------------|
 | [**Agent Harnesses**](agent-harness-deep-dive/) | Once you've hand-written the loop, most agent work is building *on* a harness: the layer that adds hooks, permission policies, sandboxing, subagents, and headless runs around it. | Agents (6) |
 | [**Context Engineering**](context-engineering-deep-dive/) | The model only knows what's in its context window, so manage it: conversation memory, compaction, long-term recall, and what to drop when it won't all fit. | Agents (6); pairs with RAG (4) |
+| [**AI Data Engineering**](ai-data-engineering-deep-dive/) | A retrieval index is a disposable view of source truth: ingest and version documents, preserve lineage and ACLs, propagate deletes, reconcile drift, and prove the corpus can be rebuilt. | RAG (4); before Production (8) |
 | [**Multimodal**](multimodal-deep-dive/) | A multimodal model takes more than text: images and audio. Put the right modality in the right slot, and mind the token cost. | the API dives (1–2); pairs with RAG (4) |
 | [**Realtime Voice**](realtime-voice-deep-dive/) | Conversational voice is a low-latency, full-duplex loop: stream audio both ways, handle interruption (barge-in), and choose a pipeline vs a speech-to-speech model. | Multimodal; the API dives (1–2) |
 | [**Fine-tuning**](fine-tuning-deep-dive/) | Fine-tuning changes how a model *behaves*, not what it *knows*: teach behavior by example, then *prove* it beat your baseline. | RAG (4) + Evals (5) |
 | [**MCP**](mcp-deep-dive/) | The Model Context Protocol: hand an LLM tools, data, and prompts from a separate process: write the server once, any client can use it. | Agents (6) |
 | [**Local Models**](local-models-deep-dive/) | An open-weight model on your machine speaks the same OpenAI API, so "local" is mostly an *ops* choice: privacy, cost, control. | the API dives (1–2); pairs with Fine-tuning |
 | [**Observability**](observability-deep-dive/) | A prototype is judged once; a production system is judged continuously, so watch quality as a *trend*: drift, silent regressions, and alerting that doesn't cry wolf. | Production (8); pairs with Evals (5) |
+| [**Architecture**](architecture-deep-dive/) | The seams between the components: where conversation state lives, what a queue buys, what streaming costs your guardrails, and where the tenant boundary goes. Each decision measured, not asserted. | Production (8); pairs with Observability |
 | [**Professional Tools**](professional-tools-deep-dive/) | "Volume 2": rebuild each from-scratch primitive with the tool professionals actually reach for (LiteLLM, Instructor, LlamaIndex, DeepEval, LangGraph, Llama Guard, Langfuse) and measure both on the same eval, so "should we adopt this framework?" becomes an experiment, not a taste. | Everything (you need the primitives first) |
+
+---
+
+## Building this in TypeScript?
+
+The series teaches in Python, because that is where the AI ecosystem's centre of
+gravity still is. But most software that will call a language model is already
+written, and a great deal of it is written in TypeScript.
+
+> **[TypeScript AI Deep Dive](typescript-ai-deep-dive/)**: the same ideas in
+> TypeScript, and an honest account of what actually changes. Your types stop at
+> the network boundary, so everything a model says is `unknown` until you check
+> it at runtime; every call is a promise; and one blocking handler stalls the
+> whole process in a way you cannot detect from inside it. Thirteen runnable
+> examples, twelve of which need no API key.
+
+It is a **companion, not a step in the sequence**. Nothing above depends on it,
+and it does not replace any dive: for depth on any subject it touches, the Python
+dive on that subject goes much further. Read it if your AI work ships in
+TypeScript, or if you want to know which of the differences are real and which
+are folklore.
 
 ---
 
@@ -86,14 +109,15 @@ Standalone deep dives that extend the core path. Each notes where it slots in.
  └──────────────┬───────────────┘
                 ▼
  ┌──────────────────────────────┐
- │         Production (8)        │ ──────▶ Observability  (bonus)
+ │         Production (8)        │ ──────▶ Observability · Architecture  (bonus)
  └──────────────────────────────┘  operate one app end to end
 ```
 
 The thread: **build the call (1–2) → ask well (3) → ground it (4) → measure it (5) →
 let it act (6) → harden it (7) → operate it (8).** The bonus dives branch off where
 they're most useful. **Observability** extends Production from one request to six
-weeks of them.
+weeks of them, and **Architecture** asks where all these parts belong once there
+is more than one of everything.
 
 ---
 
@@ -127,6 +151,7 @@ the eval anatomy, the injection attack catalog, the quantization calculator).
 | To run for $0 | Use |
 |---------------|-----|
 | The whole ops stack, no key | [Production](ai-in-production-deep-dive/) (mock provider) |
+| A complete document lifecycle, no key | [AI Data Engineering](ai-data-engineering-deep-dive/) (deterministic corpus and embeddings) |
 | Six weeks of monitoring, no key | [Observability](observability-deep-dive/) (synthetic traffic) |
 | Real models, no per-token bill | [Local Models](local-models-deep-dive/) (Ollama on your machine) |
 | Offline sections | the first lesson in most repos (look for "offline, no key") |
@@ -151,8 +176,11 @@ the eval anatomy, the injection attack catalog, the quantization calculator).
 - [**SAFETY.md**](SAFETY.md): the cross-cutting view: injection, moderation, PII,
   hallucination, and unsafe actions: what each is and which dive covers it.
 - [**RESPONSIBILITY.md**](RESPONSIBILITY.md): the other half of safety: honest
-  capability claims, bias & fairness, disclosure, data consent, human accountability,
-  and the question upstream of all of them: *should* this be an LLM?
+  capability claims, bias & fairness, sycophancy, disclosure, where your training data
+  came from, what a fluent system does to the person using it, energy footprint,
+  agent autonomy, the 2026 regulatory picture, and the question upstream of all of
+  them: *should* this be an LLM? Ends with the arguments the field hasn't settled,
+  left unsettled.
 - [**SECRETS.md**](SECRETS.md): where your API keys actually go (your OS keychain,
   injected per-command with `secrun`) and why not `.env`. The `.env` → keychain
   progression is itself a lesson in the AI-agent threat model.

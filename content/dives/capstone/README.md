@@ -86,6 +86,14 @@ Each step is a tag; `git checkout <tag>` shows the project as it stood then.
 | `v06-hardened` | Prompt Injection | **done** | poisoned fixtures corpus, defenses, before/after ASR, see `askrepo redteam` |
 | `v07-production` | Production | **done** | disk cache, session budget, retries, JSON traces; tests pass with no key |
 
+> **The model behind the numbers.** Every eval, comparison, and red-team figure
+> below was measured on `gpt-4o-mini`, the series default when those runs were
+> made (2026-07-03 to 2026-07-06); each run file under [`evals/`](evals/)
+> records the exact model it used, and the cost columns are that model's prices.
+> The current default is `gpt-5.4-nano` ([../MODELS.md](../MODELS.md)), which is
+> a different model at a different price, so a rerun will not reproduce these
+> numbers. Re-freeze the baseline before comparing a new run against it.
+
 ## Extensions
 
 The core (v00–v07) was a sequence; these are a set. Each is a feature branch
@@ -480,7 +488,11 @@ dive's modules (cache, cost, reliability, observability):
   timed spans, tokens, cost, cache hit/miss) that reconstructs the request
   after the fact; off by default so normal output stays clean.
 
-And the point of the whole layer: **the [26-test suite](tests/) runs entirely
-on the mock** (cache, budget, retries, guardrails, chunkers, prompt assembly,
-and the offline CLI path) in 2ms with no key, no network. `python -m unittest
-discover -s tests`. CI never needs a secret.
+And the point of the whole layer: **the [test suite](tests/) runs entirely on
+the mock** (cache, budget, retries, guardrails, chunkers, prompt assembly, and
+the offline CLI path) with no key and no network. `python -m unittest discover
+-s tests`. CI never needs a secret.
+
+v07 froze at 26 tests; the extensions took it to **71, in under a second**. Of
+those, the 8 MCP tests skip unless the MCP SDK is installed, so a clone with
+nothing but the standard library still runs 63 of them green.

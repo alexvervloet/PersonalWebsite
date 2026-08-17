@@ -3,7 +3,7 @@
 A hands-on playground for learning the OpenAI API **from zero**. You'll build a
 real CLI tool that answers questions about your code, and along the way you'll
 understand every moving part: chat completions, roles, the sampling knobs
-(temperature, top_p, max_tokens, stop), token counting, and cost.
+(temperature, top_p, max_completion_tokens, stop), token counting, and cost.
 
 This repo is meant to be *walked through*, not just read. Each section ends with
 something to run. Do the running; that's where the learning is. And once a
@@ -64,7 +64,7 @@ tiny. The shape of every call you'll ever make is right there:
 
 ```python
 response = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="gpt-5.4-nano",
     messages=[{"role": "user", "content": "In one sentence, what is an API?"}],
 )
 print(response.choices[0].message.content)
@@ -74,7 +74,7 @@ Three things to internalize:
 
 | Thing | What it is |
 |-------|-----------|
-| `model` | Which model answers. `gpt-4o-mini` is the cheap, fast default. |
+| `model` | Which model answers. `gpt-5.4-nano` is the cheap, fast default. |
 | `messages` | A **list** of messages: your half of the conversation. |
 | `response.choices[0].message.content` | The model's reply text. |
 | `response.usage` | Exactly how many tokens you were billed for. |
@@ -114,7 +114,7 @@ For code and facts, go **low**. For brainstorming, go high.
 secrun python examples/03_temperature.py
 ```
 
-### max_tokens: a hard cap on the answer's length
+### max_completion_tokens: a hard cap on the answer's length
 Caps **output** tokens (not input). The model is cut off when the budget runs
 out: possibly mid-sentence. Watch `finish_reason`: `"length"` means it was
 truncated; `"stop"` means it finished naturally.
@@ -142,7 +142,7 @@ secrun python examples/06_stop_sequences.py
 |------|-------|----------------|---------|
 | `temperature` | 0.0–2.0 | get more variety/creativity | 1.0 |
 | `top_p` | 0.0–1.0 | widen the pool of candidate words | 1.0 |
-| `max_tokens` | ≥1 | allow a longer answer | model max |
+| `max_completion_tokens` | ≥1 | allow a longer answer | model max |
 | `stop` | up to 4 strings | end at a specific marker | none |
 
 ---
@@ -384,6 +384,24 @@ backend change that can break determinism.
 secrun python examples/25_seed_determinism.py
 ```
 
+### The Responses API: OpenAI's other endpoint
+Everything above uses `chat.completions.create`. There is a second endpoint,
+`responses.create`, and you will meet it in OpenAI's own docs. It buys you two
+things Chat Completions genuinely cannot do: **server-side conversation state**
+(pass `previous_response_id` instead of re-sending the transcript) and **hosted
+tools** like `web_search` that run on OpenAI's side with no tool loop of yours.
+It is also what replaced the Assistants API, which shuts down **2026-08-26**.
+
+The catch is portability. `/v1/chat/completions` is the industry's common
+dialect: Ollama, LM Studio, vLLM, LiteLLM and most hosts implement it, which is
+exactly why [example 17](examples/17_local_serving.py) can point the same client
+at a local model by changing `base_url`. The Responses API is OpenAI's own
+shape, so building on it gives that up. Reach for it when you want the hosted
+tools or the state badly enough to accept the lock-in.
+```bash
+secrun python examples/26_responses_api.py
+```
+
 ---
 
 ## 9. The second capstone: `extract.py`
@@ -599,6 +617,7 @@ examples/
   23_moderation.py          ← the free safety classifier (flags + per-category scores)
   24_logprobs.py            ← token probabilities -> confidence & calibrated classification
   25_seed_determinism.py    ← seed pins down randomness (best-effort reproducibility)
+  26_responses_api.py       ← the other endpoint: hosted tools + server-side state
 ```
 
 ---

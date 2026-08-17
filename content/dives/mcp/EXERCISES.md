@@ -48,10 +48,10 @@ of discovering and running a tool?
 
 <details><summary>▸ Answer</summary>
 
-`session.list_tools()` (the `tools/list` request, to discover what's available) and
-`session.call_tool(name, args)` (the `tools/call` request, to run one). Everything
-before them (`stdio_client`, `ClientSession`, `initialize()`) is just setting up
-the pipe and handshake.
+`client.list_tools()` (the `tools/list` request, to discover what's available) and
+`client.call_tool(name, args)` (the `tools/call` request, to run one). The
+high-level `Client` owns the stdio transport and selects MCP `2026-07-28`; there
+is no initialize handshake on the modern path.
 </details>
 
 ---
@@ -154,6 +154,42 @@ connect to by URL, so you run the server in one terminal and the client in anoth
 Same `tools/list`/`tools/call`; different transport.
 </details>
 
+**Predict, then run.** The raw request sends three MCP HTTP headers. What are
+they for, and why should the response have no `Mcp-Session-Id`?
+
+<details><summary>▸ Answer</summary>
+
+`MCP-Protocol-Version` selects the wire contract. `Mcp-Method` and `Mcp-Name`
+let a gateway, rate limiter, or WAF route and meter the call without parsing the
+JSON body. MCP `2026-07-28` removed protocol sessions, so the server does not
+issue `Mcp-Session-Id`; every request is self-contained and may land on any
+replica. Headers remain untrusted input, so a production server verifies that
+they agree with the parsed JSON-RPC request.
+</details>
+
+**Predict, then run.** In `examples/10_multi_round_trip.py`, the tool needs a
+quantity that was not in the original call. With no server-to-client back-channel,
+how does the answer get back to the server?
+
+<details><summary>▸ Answer</summary>
+
+The server returns `resultType: "input_required"` with a typed question and
+opaque `requestState`. The client obtains the answer and retries the *original*
+tool call with `inputResponses` plus that exact state. The SDK's `Resolve(...)`
+and high-level `Client` drive these MRTR rounds automatically.
+</details>
+
+**Recall.** What is the security difference between `cacheScope: "private"`
+and `"public"` in `examples/11_cacheable_catalogs.py`?
+
+<details><summary>▸ Answer</summary>
+
+`private` entries may only be reused inside the authorization partition that
+produced them. `public` asserts the result is identical and safe to share across
+principals. A wrong public label can leak tenant-specific tools or resources, so
+the server—not the client—must classify it honestly.
+</details>
+
 ---
 
 ## Section 10: Security **(offline)**
@@ -210,7 +246,7 @@ relays the `tools/call`, and feeds the result back. The model never touches the
 tool's code.
 </details>
 
-**Stretch.** Write your own tiny `FastMCP` server with one tool you'd actually use,
+**Stretch.** Write your own tiny `MCPServer` with one tool you'd actually use,
 then run `secrun python hands_on/assistant.py --server path/to/your_server.py`. When the
 assistant calls *your* tool with no other change to the capstone, the "write once,
 use anywhere" idea has landed. Then try `save_note` and watch the approval prompt

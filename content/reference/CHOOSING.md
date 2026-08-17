@@ -80,6 +80,12 @@ bake changing facts into a model. → [RAG](rag-deep-dive/)
 you want a cheaper/faster model on a high-volume task?**
 -> **Fine-tune**, but only after a prompt and RAG fall short, and only if you can
 *measure* that it beat your baseline. → [Fine-tuning](fine-tuning-deep-dive/)
+>
+> Check *where* you can still do this before you plan around it. OpenAI is
+> winding down self-serve fine-tuning through 2026 and into January 2027, and
+> Anthropic never offered it self-serve. In practice this rung now means an
+> open-weight model you tune yourself (LoRA/PEFT, locally or on rented GPUs),
+> which raises the bar for choosing it over a better prompt.
 
 **6. Is the task open-ended and multi-step, where you can't script the path?**
 → Build an **agent** (model-driven loop). If you *can* draw the flowchart, build a
@@ -111,6 +117,7 @@ These aren't higher rungs; they're side doors for particular requirements.
 | To run any of it for real users | [**Production**](ai-in-production-deep-dive/) |
 | To know it's *still* working weeks later: drift, silent regressions, alerting | [**Observability**](observability-deep-dive/) |
 | To decide whether a framework beats what you hand-rolled: measured, not assumed | [**Professional Tools**](professional-tools-deep-dive/) |
+| To decide where the pieces go: state, queues, tiers, tenant boundaries | [**Architecture**](architecture-deep-dive/) |
 
 ---
 
@@ -118,7 +125,7 @@ These aren't higher rungs; they're side doors for particular requirements.
 
 1. **Measure, don't guess.** "It seems better" ships regressions. Put a number on
    quality and rerun it. → [Evals](evals-deep-dive/)
-2. **Start cheap.** Use the small model (`gpt-4o-mini` / `claude-haiku-4-5`) and the
+2. **Start cheap.** Use the small model (`gpt-5.4-nano` / `claude-haiku-4-5`) and the
    simplest technique; climb only when an eval forces you to. → [MODELS.md](MODELS.md)
 3. **They combine.** Real systems stack rungs: a fine-tuned model *for behavior* +
    RAG *for facts*, inside an agent, behind guardrails, measured by evals, operated

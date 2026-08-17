@@ -66,7 +66,7 @@ never a 100% guarantee). At `1.5` they'll diverge, sometimes wildly. This is the
 whole point of the knob: low for facts/code, high for variety.
 </details>
 
-**Do.** In `examples/04_max_tokens.py`, set `max_tokens` to something tiny like
+**Do.** In `examples/04_max_tokens.py`, set `max_completion_tokens` to something tiny like
 `10` and ask for a paragraph. Inspect `finish_reason`. What value do you get, and
 what does it tell you?
 
@@ -112,7 +112,7 @@ and why might code cost more than prose?
 ## Section 6: Cost **(offline)**
 
 **Predict.** A request is 2,000 input tokens and 500 output tokens. Using the
-prices in `utils/pricing.py`, will it cost more on `gpt-4o-mini` or `gpt-4o`?
+prices in `utils/pricing.py`, will it cost more on `gpt-5.4-nano` or `gpt-4o`?
 Roughly how many times more?
 
 <details><summary>▸ Answer</summary>
@@ -269,6 +269,28 @@ determinism isn't guaranteed across such changes; the `system_fingerprint` field
 the tell: if it changes between calls, the backend shifted and identical inputs can
 drift even with the same seed.
 </details>
+
+**Predict (Responses API, `26_responses_api.py`).** Step 3 asks for a news story
+from *this week* rather than something like "the capital of France." Predict what
+the `output` items list would look like for each question, and say why the example
+deliberately picks the harder one.
+
+<details><summary>▸ Answer</summary>
+
+"Capital of France" returns just `['message']`: the model knows the answer and
+decides a search is not worth it, so the hosted tool never fires and the lesson is
+invisible. The news question returns `['web_search_call', ..., 'message']`, often
+with several search calls, because the model cannot answer it from training data at
+all. The point generalizes past this example: declaring a tool does not mean the
+tool runs. The model still decides, so when you are testing whether tool wiring
+works, you have to ask something that genuinely requires the tool, or you will
+"verify" a path that never executed.
+</details>
+
+**Do (Responses API).** Rewrite step 2 to use Chat Completions instead, keeping
+the same two-turn conversation. Compare the `input_tokens` on the second turn.
+Which approach re-uploads the transcript, and at what conversation length would
+that start to matter?
 
 ---
 
