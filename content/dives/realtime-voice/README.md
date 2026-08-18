@@ -26,7 +26,10 @@ this is that scope. Its code depends on none of the others.
 
 Like its siblings, it's meant to be *walked through*. Each section ends with
 something to run, and **every section runs offline and free**.
-[EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each one.
+[EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each one, and
+[TEXTBOOK.md](TEXTBOOK.md) is the lecture behind this lab: Chapter 12 of the
+[AI Engineering Textbook](https://github.com/alexvervloet/ai-engineering-deep-dive),
+on why conversational time is a harder constraint than machine time.
 
 ---
 
@@ -58,8 +61,8 @@ pip install -r requirements.txt
 
 # 3. Copy the env file: this dive is a fully offline simulator (no key needed)
 cp .env.example .env
-#    (Wiring up a real realtime API? Its key goes in your OS keychain, not .env 
-#     see ../SECRETS.md.)
+#    (Wiring up a real realtime API? Its key goes in your OS keychain, not .env.
+#     See SECRETS.md in the series repo: https://github.com/alexvervloet/ai-engineering-deep-dive)
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
 python check_setup.py
@@ -75,8 +78,9 @@ why. Everything runs offline and deterministically.
 > of which belongs in a small, readable, offline teaching repo. So we simulate the
 > *mechanics* (frames, latency, turn-taking, barge-in) exactly and deterministically.
 > The state machine and architecture choices are real; only the transport is mocked.
-> Production uses the **OpenAI Realtime API** (speech-to-speech over WebSocket/WebRTC)
-> or a streaming STT/LLM/TTS pipeline, mapped in "From teaching code to production."
+> Production uses a speech-to-speech API over WebSocket or WebRTC (OpenAI's Realtime
+> API and Google's Gemini Live API are the two obvious ones) or a streaming
+> STT/LLM/TTS pipeline, mapped in "From teaching code to production."
 
 ---
 
@@ -105,11 +109,12 @@ python examples/02_pipeline.py
 The first way to build a voice agent is three models in series: speech-to-text →
 the LLM → text-to-speech. Each hop adds delay, and the number the user *feels* is
 **time-to-first-audio**: how long after they stop talking before they hear
-anything. For the pipeline that's STT + LLM + TTS, all stacked. The example prints
-the budget so you see where the second of dead air comes from, and why streaming
-each stage (so they overlap) is the fix. The pipeline's payoff is **control**:
-there's a text transcript in the middle you can log, moderate, and edit.
-([voice/stages.py](voice/stages.py))
+anything. That's the end-pointing wait first (nothing downstream starts until the
+VAD decides the user is done), then STT + LLM + TTS stacked on top: 1500 ms in
+this repo's budget. The example prints it line by line so you see where the dead
+air comes from, and why streaming each stage (so they overlap) is the fix. The
+pipeline's payoff is **control**: there's a text transcript in the middle you can
+log, moderate, and edit. ([voice/stages.py](voice/stages.py))
 
 ---
 
@@ -151,11 +156,14 @@ python examples/05_latency_budget.py
 ```
 
 Latency is voice's make-or-break metric: humans notice a gap past ~300–500 ms, and
-past that the agent feels sluggish or gets talked over. The example measures
-time-to-first-audio both ways on the same turn, the three-hop pipeline vs a single
-speech-to-speech model, and shows speech-to-speech is meaningfully faster to first
-sound because it collapses three hops into one. Engineer against the number your
-users *feel*, not the one on a spec sheet.
+past that the agent feels sluggish or gets talked over. The example splits
+time-to-first-audio into **end-pointing**, **processing**, and the **felt** total,
+both ways on the same turn. Speech-to-speech is 2× faster on the processing it
+controls, but only 1.5× faster overall (1000 ms vs 1500 ms), because both designs
+wait out the same silence window before either of them starts. That third column
+is the honest one: engineer against the number your users *feel*, not the one on a
+spec sheet, and remember the biggest single line in the budget is usually a
+threshold you chose, not a model you bought.
 
 ---
 
@@ -198,9 +206,11 @@ python hands_on/voice_agent.py --demo barge-in
 
 Read [hands_on/voice_agent.py](hands_on/voice_agent.py): it's just the library
 (`RealtimeSession` + `utterance` + `merge`) wired to a CLI. **Suggested exercise:**
-run `--demo barge-in` in both `--mode pipeline` and `--mode speech_to_speech` and
-watch *when* the interruption lands change; a faster architecture is already
-speaking (and gets cut off later) where the slower one is still thinking.
+run `--demo barge-in` in both `--mode pipeline` and `--mode speech_to_speech`. The
+interruption arrives at the same moment in both, but it lands in a different
+state: speech-to-speech is already telling the joke and gets cut off mid-sentence,
+while the pipeline is still thinking and never says a word. Latency doesn't just
+change how the agent feels, it changes which code path runs.
 
 ---
 
@@ -209,11 +219,17 @@ speaking (and gets cut off later) where the slower one is still thinking.
 You've built the mechanics of a realtime voice agent. The frontier is wiring them
 to real audio and hardening the conversation:
 
-- **A real transport**: the OpenAI Realtime API over WebSocket or WebRTC; send mic
-  frames, receive audio frames, handle the session events. This dive's state machine
-  is what you drive with it.
-- **A real pipeline**: streaming STT (e.g. Whisper/Deepgram), a streaming LLM, and
-  streaming TTS, with each stage overlapped so the latency stacks less.
+- **A real transport**: a speech-to-speech API over WebSocket or WebRTC (OpenAI's
+  Realtime API, Google's Gemini Live API); send mic frames, receive audio frames,
+  handle the session events. This dive's state machine is what you drive with it.
+- **A real pipeline**: a *streaming* STT model (batch Whisper is the wrong tool
+  here; reach for a realtime transcription endpoint or a vendor built for it, like
+  Deepgram or AssemblyAI), a streaming LLM, and a streaming TTS vendor, with each
+  stage overlapped so the latency stacks less.
+- **Not writing the plumbing yourself**: Pipecat and LiveKit Agents are the
+  open-source orchestrators most teams reach for. They own the transport, the VAD,
+  and the interruption handling. Read one after this dive and you'll recognise every
+  moving part, which is the point of building it from scratch first.
 - **Better turn detection**: a trained VAD / end-pointing model instead of a
   silence threshold, plus handling backchannels ("mm-hm") that *aren't* interruptions.
 - **Tools & RAG in a voice loop**: let the agent call functions or retrieve
@@ -254,8 +270,10 @@ runs offline on a mock provider.
 
 ```
 check_setup.py              ← run first: verifies Python + packages (no key needed)
-README.md                   ← this guide
+README.md                   ← this guide (the lab)
+TEXTBOOK.md                 ← Chapter 12: the lecture behind the lab
 EXERCISES.md                ← predict-then-run prompts, one per section
+LESSONS.md                  ← what this repo got wrong, and how it was caught
 voice/                      ← the from-scratch simulator (read it!)
   audio.py                  ← audio as a stream of timestamped frames (+ builders)
   stages.py                 ← the two architectures as latency-annotated stages
@@ -270,6 +288,8 @@ examples/
   04_barge_in.py            ← the user interrupts; the agent yields instantly
   05_latency_budget.py      ← time-to-first-audio: pipeline vs speech-to-speech
   06_speech_to_speech.py    ← one model; when to pick it over the pipeline
+tests/
+  test_session.py           ← locks the timelines the docs quote
 ```
 
 ---
@@ -280,10 +300,10 @@ Run `python check_setup.py` first. Then, by symptom:
 
 | What you see | What it means / the fix |
 |--------------|-------------------------|
-| `ModuleNotFoundError` (rich / dotenv) | Deps aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
+| `ModuleNotFoundError` (dotenv) | Deps aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
 | "this dive is an offline simulator" note | You set `PROVIDER` to something other than `mock`. That's fine; there's only a mock here, and the note is just letting you know. |
-| The timeline's millisecond numbers look arbitrary | They're teaching approximations (see `voice/stages.py`); the *shape* (more hops = more delay, barge-in cancels output) is the lesson, not the exact figures. |
-| Barge-in didn't fire when I expected | The interrupting turn has to start *before* the agent's response ends. Move its `start_ms` earlier, or pick a longer reply. |
+| The timeline's millisecond numbers look arbitrary | They're teaching approximations (see `voice/stages.py`); the *shape* (end-pointing first, then hops that stack, and barge-in cancelling output) is the lesson, not the exact figures. |
+| Barge-in didn't fire when I expected | The interrupting turn has to start *before* the agent's response ends. Move its `start_ms` earlier, or pick a longer reply. If it starts before the response *begins*, you get the other branch instead: the planned reply is dropped before a sound comes out. |
 | `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring at
@@ -294,7 +314,7 @@ story: the turn-taking machine, with barge-in.
 
 ## The series
 
-This is one of the standalone, hands-on deep dives into building with LLM APIs 
+This is one of the standalone, hands-on deep dives into building with LLM APIs:
 eight core, plus the bonus dives. Each stands on its own, with its own setup, examples,
 and capstone, and they share one house style: provider-agnostic where it makes
 sense, built from scratch (no frameworks), offline-first examples, and a real
@@ -313,12 +333,19 @@ capstone. Do them in any order; this sequence builds naturally:
 
 - [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive): build on the loop: hooks, permissions, sandboxing, subagents
 - [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive): manage what's in the window
+- [AI Data Engineering](https://github.com/alexvervloet/ai-data-engineering-deep-dive): the corpus behind the index: versions, lineage, ACLs, deletes
 - [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive): images & audio, not just text
 - [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive): low-latency speech-to-speech agents
 - [Fine-tuning](https://github.com/alexvervloet/fine-tuning-deep-dive): teach a model new behavior by example
 - [MCP](https://github.com/alexvervloet/mcp-deep-dive): serve tools, data & prompts over a standard protocol
 - [Local Models](https://github.com/alexvervloet/local-models-deep-dive): run open-weight models on your own machine
 - [Observability](https://github.com/alexvervloet/observability-deep-dive): watch a running app over time: drift, quality, alerting, the flywheel
+- [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
+- [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
+
+And the whole series lands in one codebase in the
+[capstone](https://github.com/alexvervloet/deep-dive-capstone): a codebase Q&A tool
+built step by step, one tag per dive.
 
 **Realtime Voice is a bonus dive.** It slots right after
 [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive), since that dive does batch
