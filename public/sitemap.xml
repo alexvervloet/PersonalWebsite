@@ -391,6 +391,30 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.alexvervloet.com/dives/genai-security/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/genai-security/textbook/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/genai-security/exercises/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/genai-security/lessons/</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.alexvervloet.com/dives/capstone/</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
