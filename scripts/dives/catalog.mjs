@@ -153,6 +153,14 @@ export const DIVES = [
     idea: 'A prototype is judged once; a production system is judged continuously. Watch quality as a trend: drift, silent regressions, and alerting that does not cry wolf.',
   },
   {
+    slug: 'architecture',
+    dir: 'architecture-deep-dive',
+    title: 'Architecture',
+    track: 'bonus',
+    after: 'Production (8), pairs with Observability',
+    idea: 'Every other dive teaches a component; this one teaches where the boundaries between them go. Where conversation state lives, what a queue buys, what streaming costs your guardrails, and where the tenant boundary goes, each decision measured rather than asserted.',
+  },
+  {
     slug: 'professional-tools',
     dir: 'professional-tools-deep-dive',
     title: 'Professional Tools',
