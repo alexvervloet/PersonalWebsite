@@ -176,6 +176,14 @@ export const DIVES = [
     after: 'RAG (4), before Production (8)',
     idea: 'A retrieval index is a disposable, derived view of source truth: version documents, carry permissions into every chunk, make deletes stick, and prove the corpus can be rebuilt.',
   },
+  {
+    slug: 'genai-security',
+    dir: 'genai-security-deep-dive',
+    title: 'GenAI Security',
+    track: 'bonus',
+    after: 'Prompt Injection (7), before Production (8)',
+    idea: 'Treat the model as an untrusted principal, not a security boundary: authorize every effect in code, verify the supply chain, isolate data and execution, bound what one request can spend, and make attacks block the release.',
+  },
 
   // ── Capstone ──
   {
