@@ -63,9 +63,12 @@ function main() {
   }
 
   for (const ref of REFERENCE) {
-    const from = path.join(src, ref.file)
+    // The source repo keeps most of these under docs/; on the site they are
+    // known by their basename, which is the slug key and the content filename.
+    const rel = ref.source ?? ref.file
+    const from = path.join(src, rel)
     if (!fs.existsSync(from)) {
-      missing.push(ref.file)
+      missing.push(rel)
       continue
     }
     copy(from, path.join(contentDir, 'reference', ref.file))

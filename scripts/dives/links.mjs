@@ -105,6 +105,15 @@ export function createRewriter(ctx) {
       return blobUrl(targetDive.dir, rest.join('/')) + frag
     }
 
+    // The series reference docs live in docs/ at the series root: a dive reaches
+    // them as ../docs/NAME.md, a series doc as docs/NAME.md. Either way the site
+    // knows them by basename.
+    if (head === 'docs' && rest.length <= 1) {
+      if (rest.length === 0 || rest[0] === 'README.md') return '/dives/' + frag
+      const ref = referencePath(rest[0])
+      if (ref) return ref + frag
+    }
+
     const isBareFile = !trimmed.includes('/')
     if (isBareFile) {
       // In a dive, a bare doc name is that dive's own doc. With `../`, or in a
