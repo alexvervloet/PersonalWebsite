@@ -18,7 +18,7 @@ pattern under "AI agents," and once you've written it by hand, the frameworks st
 being magic.
 
 Like its siblings, it's meant to be *walked through*. Each section ends with
-something to run; examples 01, 10, and 18 run **offline and free**.
+something to run; examples 01, 07, 10, and 18 run **offline and free**.
 [EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each section.
 
 ---
@@ -49,7 +49,7 @@ pip install -r requirements.txt
 # 3. Choose your provider (set PROVIDER in .env); your key loads separately
 cp .env.example .env
 #    Your API key does NOT go in .env. Store it in your OS keychain and run
-#    lessons with `secrun`: 2-minute setup in ../SECRETS.md.
+#    lessons with `secrun`: 2-minute setup in ../docs/SECRETS.md.
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
 secrun python check_setup.py       # secrun injects your key so the check can see it
@@ -69,9 +69,10 @@ that knows the difference is [agent/providers.py](agent/providers.py); the loop 
 everything above it stay identical. That's the whole point: agents are an
 architecture, not a provider feature.
 
-> **Start before spending anything.** Examples 01, 10, and 18 are completely
-> offline. They cover tool shape, protocol transport, and the execution contract
-> with no key and no cost; provider-backed examples make small, cheap calls.
+> **Start before spending anything.** Examples 01, 07, 10, and 18 are completely
+> offline. They cover tool shape, trace and replay evidence, protocol transport,
+> and the execution contract with no key and no cost; provider-backed examples
+> make small, cheap calls.
 
 ---
 
@@ -234,13 +235,17 @@ An agent makes its own decisions, so when it misbehaves you need the trace: whic
 tool, what arguments, what result, at each step.
 
 ```bash
-secrun python examples/07_observability.py
+python examples/07_observability.py          # offline
 ```
 
-You've seen the live `Tracer`; this also shows the same steps after the fact from
-`result.steps`, the structured record you'd log in production and feed to an eval
-(see the [evals repo](https://github.com/alexvervloet/evals-deep-dive)) to score whether the agent called the
-right tools in a sensible order.
+The model proposals are scripted so the evidence is stable, while the real loop
+and executor process both attempts. You see a live `Tracer`, then the same steps
+after the fact from `result.steps`: status, explicit approval state, replay state,
+and both provenance digests. The retry reuses the trusted request context, call ID,
+and payload, so the trace visibly reports `replayed=True` while the effect count
+stays at one. These are the records you'd log in production and feed to an eval
+(see the [evals repo](https://github.com/alexvervloet/evals-deep-dive)) to score
+whether the agent called the right tools in a sensible order.
 
 ---
 
@@ -544,7 +549,7 @@ examples/
   04_multiple_tools.py      ← the model routes between tools
   05_limits_and_errors.py   ← max_steps + feeding errors back
   06_human_in_the_loop.py   ← approval gate for dangerous tools
-  07_observability.py       ← tracing each step, live and after the fact
+  07_observability.py       ← offline trace of dispatch and replay evidence
   08_memory.py              ← multi-turn memory via a shared history
   09_multi_agent.py         ← an orchestrator delegating to a sub-agent
   10_mcp.py                 ← use a tool over MCP: offline client + server, no key
@@ -571,7 +576,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 
 | What you see | What it means / the fix |
 |--------------|-------------------------|
-| `PROVIDER=... needs ... in the environment` | Set `PROVIDER` in `.env`, then load the key from your keychain by running under `secrun`. See [SECRETS.md](../SECRETS.md). |
+| `PROVIDER=... needs ... in the environment` | Set `PROVIDER` in `.env`, then load the key from your keychain by running under `secrun`. See [SECRETS.md](../docs/SECRETS.md). |
 | `ModuleNotFoundError` (openai / anthropic / rich) | Dependencies aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
 | The agent answers math wrong / makes things up | It's not using its tools. Strengthen the system prompt ("use the calculator for arithmetic; don't guess product facts"). Tool *descriptions and instructions* drive tool use. |
 | "(stopped: reached the step limit...)" | The task needed more steps than `max_steps`. Raise it (`--max-steps` on the capstone), or simplify the task. |
