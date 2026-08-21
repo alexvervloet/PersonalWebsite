@@ -20,6 +20,9 @@ See also: [**HOW-LLMS-WORK.md**](HOW-LLMS-WORK.md), what an LLM actually is ·
 vocabulary · [**CAREERS.md**](CAREERS.md), what each dive is called on a job
 description · [**SAFETY.md**](SAFETY.md), the cross-cutting safety view ·
 [**RESPONSIBILITY.md**](RESPONSIBILITY.md), building it responsibly ·
+[**GOVERNANCE.md**](GOVERNANCE.md), who decides and on what record ·
+[**INCIDENTS.md**](INCIDENTS.md), playbooks for when it goes wrong ·
+[**AI-UX.md**](AI-UX.md), the interface as part of the safety system ·
 [**SECRETS.md**](SECRETS.md), where your API keys go (not `.env`).
 
 ---
@@ -55,8 +58,10 @@ Standalone deep dives that extend the core path. Each notes where it slots in.
 | [**Fine-tuning**](fine-tuning-deep-dive/) | Fine-tuning changes how a model *behaves*, not what it *knows*: teach behavior by example, then *prove* it beat your baseline. | RAG (4) + Evals (5) |
 | [**MCP**](mcp-deep-dive/) | The Model Context Protocol: hand an LLM tools, data, and prompts from a separate process: write the server once, any client can use it. | Agents (6) |
 | [**Local Models**](local-models-deep-dive/) | An open-weight model on your machine speaks the same OpenAI API, so "local" is mostly an *ops* choice: privacy, cost, control. | the API dives (1–2); pairs with Fine-tuning |
+| [**Inference Platform Engineering**](inference-platform-deep-dive/) | A self-hosted model becomes a service only when memory and queue scheduling turn finite GPUs into measured latency, throughput, reliability, and cost. | Local Models; Production; Architecture |
 | [**Observability**](observability-deep-dive/) | A prototype is judged once; a production system is judged continuously, so watch quality as a *trend*: drift, silent regressions, and alerting that doesn't cry wolf. | Production (8); pairs with Evals (5) |
 | [**Architecture**](architecture-deep-dive/) | The seams between the components: where conversation state lives, what a queue buys, what streaming costs your guardrails, and where the tenant boundary goes. Each decision measured, not asserted. | Production (8); pairs with Observability |
+| [**Testing & Delivery**](testing-and-delivery-deep-dive/) | A release is an evidence pipeline, not a push: independently defined requirements decide whether reproducible behavior, compatibility, security, rollout, and recovery evidence earns promotion. | Evals (5) + Production (8); pairs with GenAI Security |
 | [**Professional Tools**](professional-tools-deep-dive/) | "Volume 2": rebuild each from-scratch primitive with the tool professionals actually reach for (LiteLLM, Instructor, LlamaIndex, DeepEval, LangGraph, Llama Guard, Langfuse) and measure both on the same eval, so "should we adopt this framework?" becomes an experiment, not a taste. | Everything (you need the primitives first) |
 
 ---
@@ -93,7 +98,7 @@ are folklore.
         ▼               ▼                            ▼
  ┌──────────────┐  ┌─────────┐               ┌──────────────┐
  │   Prompt     │  │   RAG   │               │  Multimodal ─┼─▶ Realtime Voice  (bonus)
- │ Engineering  │  │   (4)   │               │  Local Models│  (bonus)
+ │ Engineering  │  │   (4)   │               │  Local Models├─▶ Inference Platform (bonus)
  │     (3)      │  └────┬────┘               └──────────────┘
  └──────┬───────┘       │
         │          ┌────▼────┐
@@ -115,14 +120,15 @@ are folklore.
                 ▼
  ┌──────────────────────────────┐
  │         Production (8)        │ ──────▶ Observability · Architecture  (bonus)
- └──────────────────────────────┘  operate one app end to end
+ └──────────────────────────────┘ ──────▶ Testing & Delivery             (bonus)
 ```
 
 The thread: **build the call (1–2) → ask well (3) → ground it (4) → measure it (5) →
 let it act (6) → harden it (7) → operate it (8).** The bonus dives branch off where
 they're most useful. **Observability** extends Production from one request to six
 weeks of them, and **Architecture** asks where all these parts belong once there
-is more than one of everything.
+is more than one of everything. **Testing & Delivery** turns those quality,
+security, and operational signals into reproducible promotion and rollback evidence.
 
 ---
 
@@ -158,6 +164,8 @@ the eval anatomy, the injection attack catalog, the quantization calculator).
 | The whole ops stack, no key | [Production](ai-in-production-deep-dive/) (mock provider) |
 | A complete document lifecycle, no key | [AI Data Engineering](ai-data-engineering-deep-dive/) (deterministic corpus and embeddings) |
 | The complete AI security control plane, no key | [GenAI Security](genai-security-deep-dive/) (deterministic attacks and release gate) |
+| A complete inference fleet control plane, no GPU | [Inference Platform Engineering](inference-platform-deep-dive/) (deterministic memory, scheduling, scaling, and rollout decisions) |
+| A complete release-evidence pipeline, no services | [Testing & Delivery](testing-and-delivery-deep-dive/) (deterministic tests, gates, rollout, and rollback) |
 | Six weeks of monitoring, no key | [Observability](observability-deep-dive/) (synthetic traffic) |
 | Real models, no per-token bill | [Local Models](local-models-deep-dive/) (Ollama on your machine) |
 | Offline sections | the first lesson in most repos (look for "offline, no key") |
@@ -187,6 +195,19 @@ the eval anatomy, the injection attack catalog, the quantization calculator).
   agent autonomy, the 2026 regulatory picture, and the question upstream of all of
   them: *should* this be an LLM? Ends with the arguments the field hasn't settled,
   left unsettled.
+- [**GOVERNANCE.md**](GOVERNANCE.md): the operational machinery between "we thought
+  about it" and a record someone can read: named roles, change classification, and
+  copy-pasteable templates for a system register, a pre-deployment assessment, a risk
+  register, a vendor assessment, and an appeal and redress path.
+- [**INCIDENTS.md**](INCIDENTS.md): what to do at 2am. A severity ladder, the first
+  thirty minutes, the containment levers you have to build in advance, and runbooks
+  for injection reaching a tool, PII in output, harmful output, silent quality
+  regression, cost blowout, provider outage, and corpus poisoning. Ends with comms
+  and postmortem templates.
+- [**AI-UX.md**](AI-UX.md): the interface is part of the safety system. Designing for
+  the wrong answer: disclosure, uncertainty that is actionable, citations that
+  resolve, streaming versus guardrails, the four distinct failure states, feedback
+  worth collecting, human handoff, and reversibility for systems that act.
 - [**SECRETS.md**](SECRETS.md): where your API keys actually go (your OS keychain,
   injected per-command with `secrun`) and why not `.env`. The `.env` → keychain
   progression is itself a lesson in the AI-agent threat model.

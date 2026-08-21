@@ -533,11 +533,116 @@ silence; too eager clips them, too patient feels slow. *(Realtime Voice §2)*
 **Open-weight / local model**: a model whose weights are public, run on your own
 machine; speaks the OpenAI-compatible API. *(Local Models dive)*
 
-**Quantization**: storing model weights in fewer bits (q4, q8) to shrink memory at a
-small quality cost, and what lets a model fit on a laptop. *(Local Models)*
+**Quantization**: representing weights (and sometimes activations or KV state) at lower
+precision to reduce memory and potentially change performance. Quality loss, kernel
+support, and speed depend on format, model, workload, runtime, and hardware; bit width
+alone is not a throughput result. *(Local Models; Inference Platform §22.6)*
 
 **KV cache**: memory holding the keys/values for tokens in context; grows with
 context length and can rival the weights in size. *(Local Models)*
 
 **Serving engine**: the program that loads and runs a local model (Ollama,
 llama.cpp, vLLM). *(Local Models)*
+
+**TTFT / TPOT**: time to first token measures arrival through queueing and prefill to
+the first streamed token; time per output token measures average decode spacing after
+it. They diagnose different serving phases and must not collapse into one latency
+average. *(Inference Platform §22.3)*
+
+**Continuous batching**: revisiting batch membership between decode iterations so
+finished sequences leave and newly arrived work can fill their lanes. It reduces
+request-level head-of-line blocking but still has prefill/decode fairness trade-offs.
+*(Inference Platform §22.4)*
+
+**Prefix caching**: reusing prefill KV blocks for an exact token prefix under the same
+model, tokenizer, adapter, and security scope. Visible text or a caller's cache label
+is not sufficient identity. *(Inference Platform §22.5)*
+
+**Speculative decoding**: a cheaper draft model proposes several tokens and the target
+model verifies them in parallel, preserving the target distribution under the exact
+algorithm. It helps only when acceptance repays drafting and verification overhead.
+*(Inference Platform §22.7)*
+
+**Tensor / pipeline / data / expert parallelism (TP / PP / DP / EP)**: four distinct
+ways to distribute inference: split operations inside layers, split layer ranges into
+stages, duplicate complete replicas, or distribute MoE experts. Fit, divisibility, and
+physical link topology constrain which compositions are useful. *(Inference Platform
+§22.8)*
+
+**Admission control**: deciding and reserving worst-case request work before allocation;
+when live capacity and the bounded queue are full, the platform sheds rather than
+accepting work it predicts it cannot serve. *(Inference Platform §22.9)*
+
+---
+
+## Testing & delivery
+
+**Evidence portfolio**: the set of check families a release requires, each catching a
+different failure: unit, eval, SDK contract, property, integration, load, fault. The
+required set is declared by the release owner, so the checks that happened to run
+cannot decide which checks were needed. *(Testing & Delivery §23.2)*
+
+**Vacuous gate**: a check that derives its expected answer from the same input it
+judges, so it proves only that the input equals itself. Recording a broken response
+and asserting the response matches the recording is the common shape.
+*(Testing & Delivery §23.0, §23.3)*
+
+**Fixture vs contract**: a fixture is a captured observation of real traffic; a
+contract is a maintained requirement about shape. They change for different reasons
+and belong in different files, or a bad recording silently becomes the spec.
+*(Testing & Delivery §23.3)*
+
+**Property test**: a test that states an invariant and lets a generator explore
+inputs, rather than pairing one input with one expected output. A useful run reports
+its generator, seed, first failure, and shrunk witness. *(Testing & Delivery §23.4)*
+
+**Shrinking**: reducing a randomly found failure to the smallest input that still
+fails, so the report explains the bug rather than merely proving one exists. A run
+that exhausts its shrink budget must say the witness is not proven minimal.
+*(Testing & Delivery §23.4)*
+
+**Stub / mock / fake**: a stub returns canned data, a mock asserts an interaction
+happened, and a fake implements simplified real behavior with state. A double must
+model behavior, never carry the test's expected answer. *(Testing & Delivery §23.5)*
+
+**Metamorphic test**: a test asserting a relation between two runs rather than one
+absolute output, such as shifting every timestamp and requiring the derived durations
+to survive. On floating-point values the relation holds within a stated tolerance,
+not bit for bit. *(Testing & Delivery §23.6)*
+
+**Nearest-rank percentile**: sort `n` values and take one-based rank
+`ceil(percentile * n)`. The rank is not the value, and the one-based rank is not the
+zero-based index; conflating them is the classic p95 bug. *(Testing & Delivery §23.6)*
+
+**After-commit failure**: a fault that lands once the server has made its durable
+change but before the client sees the response. The client cannot tell it from a
+failure that changed nothing, which is what makes a blind retry duplicate the effect.
+*(Testing & Delivery §23.7)*
+
+**Artifact tuple**: the deployable candidate is not a model name but the combination
+of source revision, prompt version, model and its features, index revision, schema
+and embedding dimensions, SDK contract version, and dependency lock. Testing one
+combination and shipping another is shipping something untested.
+*(Testing & Delivery §23.8)*
+
+**Lock file (`pylock.toml`)**: the PEP 751 standard record of an exact installation
+result, as opposed to `pyproject.toml`, which records acceptable resolution inputs.
+A lock makes inputs reviewable and repeatable; it does not make them safe.
+*(Testing & Delivery §23.9)*
+
+**Support promise vs support evidence**: `requires-python = ">=3.11"` is metadata. It
+becomes evidence only once CI actually runs on 3.11; a green matrix of newer runtimes
+cannot prove the lower bound. *(Testing & Delivery §23.10)*
+
+**Shadow traffic**: a copy of real requests sent to the candidate with its response
+discarded and external side effects blocked, so behavior can be compared before any
+user is exposed. *(Testing & Delivery §23.12)*
+
+**Canary**: routing a small real slice of traffic to the candidate, with allocation,
+duration, and pass thresholds chosen before anyone looks at the results.
+*(Testing & Delivery §23.12)*
+
+**Evidence lineage**: binding each passing result to the candidate that produced it
+via a subject digest, source revision, timestamp, and digest of the actual decision
+payload, so a green result cannot be transferred to a different build.
+*(Testing & Delivery §23.13)*

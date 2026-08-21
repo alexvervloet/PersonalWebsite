@@ -16,7 +16,7 @@ The textbook is that missing half, gathered and told as a story. Each chapter ta
 
 The chapters follow the same sequence as the series. The eight core chapters build on each other, each adding a layer until you are operating a real application end to end. The bonus chapters branch off where they are most useful and can be read whenever their subject comes up. If you are new, read in order. If you know what you need, jump to it; each chapter stands on its own while linking to its neighbors.
 
-If the question "what *is* a language model, really?" is still fuzzy, start with the primer in [HOW-LLMS-WORK.md](HOW-LLMS-WORK.md), which sits underneath the whole textbook. The [GLOSSARY.md](GLOSSARY.md) defines every term the chapters assume, and [MODELS.md](MODELS.md) covers the specific models and their prices.
+If the question "what *is* a language model, really?" is still fuzzy, start with the primer in [HOW-LLMS-WORK.md](HOW-LLMS-WORK.md), which sits underneath the whole textbook. The [GLOSSARY.md](GLOSSARY.md) defines every term the chapters assume, and [MODELS.md](MODELS.md) covers the specific models and their prices. Once a system is real and has users, three operational pages sit alongside the chapters: [GOVERNANCE.md](GOVERNANCE.md) for the decision record, [INCIDENTS.md](INCIDENTS.md) for the runbooks, and [AI-UX.md](AI-UX.md) for the interface around a fallible model.
 
 ---
 
@@ -54,6 +54,8 @@ Standalone chapters that extend the core path. Each notes where it slots in.
 | 19 | [The Corpus Is the Product](ai-data-engineering-deep-dive/TEXTBOOK.md) | A retrieval index is a disposable, derived view of source truth, so versions beat arrival order, permissions travel with the chunk, and deletes are facts you keep. | RAG (4); before Production (8) |
 | 20 | [The Model Is Not the Boundary](genai-security-deep-dive/TEXTBOOK.md) | Treat the model as an untrusted principal: identity, policy, provenance, isolation, budgets, release gates, and incident response live in enforceable code around it. | Prompt Injection (7); before Production (8) |
 | 21 | [The Seams Between the Parts](architecture-deep-dive/TEXTBOOK.md) | Every other chapter teaches a component; this one teaches where the boundaries between them go, and what each boundary costs when you insist on measuring it. | Production (8); pairs with Observability (16) |
+| 22 | [The Memory-and-Queue Scheduler](inference-platform-deep-dive/TEXTBOOK.md) | An inference platform turns finite accelerator memory and compute into latency, throughput, reliability, and cost outcomes by scheduling KV state and queued token work. | Local Models (15); Production (8); Architecture (21) |
+| 23 | [The Evidence a Release Owes](testing-and-delivery-deep-dive/TEXTBOOK.md) | A release is a claim, and the claim is only as good as the independent evidence behind it: no check may take its expected answer from the input it judges, and no passing result counts unless it names the candidate it tested. | Evals (5) + Production (8); pairs with GenAI Security (20) |
 
 ---
 

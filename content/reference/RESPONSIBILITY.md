@@ -16,6 +16,12 @@ This is the map. Part of the [AI Engineering Deep Dives](README.md).
 > **This page takes positions.** Where the field genuinely disagrees, it says so
 > rather than picking a side and calling it consensus. See
 > [where reasonable people disagree](#where-reasonable-people-disagree).
+>
+> **The operational half** lives in three sibling pages:
+> [GOVERNANCE.md](GOVERNANCE.md) turns these judgments into a written record with
+> named owners and assessment templates, [INCIDENTS.md](INCIDENTS.md) is the runbook
+> set for when a limit fails, and [AI-UX.md](AI-UX.md) is where the duties to the
+> person on the other side become an interface.
 
 ---
 
@@ -53,14 +59,14 @@ who *owns* it when it goes wrong.
 | **Copyright & attribution** | Outputs that reproduce training data, and generated code whose license you can't name | [RAG](rag-deep-dive/) (cite what you retrieved), review policy for generated code |
 | **Data governance** | What you may send upstream, retain, log, or train on | [Production](ai-in-production-deep-dive/) (PII touchpoints, retention), [GenAI Security](genai-security-deep-dive/) (classification ceiling, declared purpose, keyed audit fingerprints), [SAFETY.md](SAFETY.md) |
 | **Labor** | The annotation work behind the model, and the jobs the product is aimed at | not a code decision; a disclosure and staffing decision you make in the open |
-| **Footprint** | Energy and water for training and for every inference you serve | [MODELS.md](MODELS.md) + [CHOOSING.md](CHOOSING.md) (smaller model, fewer calls), [Local Models](local-models-deep-dive/), caching in [Production](ai-in-production-deep-dive/) |
+| **Footprint** | Energy and water for training and for every inference you serve | [MODELS.md](MODELS.md) + [CHOOSING.md](CHOOSING.md) (smaller model, fewer calls), [Local Models](local-models-deep-dive/), caching in [Production](ai-in-production-deep-dive/), measured utilization/headroom/capacity in [Inference Platform Engineering](inference-platform-deep-dive/) |
 
 ### 4. Who owns it
 
 | Concern | What it is | Operationalized in |
 |---------|-----------|--------------------|
-| **Accountability** | When it's wrong, a named human owns the outcome, not "the AI did it" | a process you define before launch, not after the incident |
-| **Autonomy & reversibility** | An agent that *acts* is a different problem than a model that *advises* | [Agents](agents-deep-dive/) (approval, step limits), [Agent Harnesses](agent-harness-deep-dive/) (permission policy, sandboxing), [GenAI Security](genai-security-deep-dive/) (approval bound to one exact irreversible effect) |
+| **Accountability** | When it's wrong, a named human owns the outcome, not "the AI did it" | a process you define before launch, not after the incident; [Testing & Delivery](testing-and-delivery-deep-dive/) makes the artifact side auditable, since every passing result names the candidate digest and source revision it actually tested |
+| **Autonomy & reversibility** | An agent that *acts* is a different problem than a model that *advises* | [Agents](agents-deep-dive/) (approval, step limits), [Agent Harnesses](agent-harness-deep-dive/) (permission policy, sandboxing), [GenAI Security](genai-security-deep-dive/) (approval bound to one exact irreversible effect), [Testing & Delivery](testing-and-delivery-deep-dive/) (a rollback path verified before release, and the effects that cannot be rolled back at all) |
 | **Regulatory duties** | Disclosure, record-keeping, and risk classification that now carry deadlines | [below](#the-rules-stopped-being-hypothetical); check what applies to you |
 | **Cost of being wrong** | Whether a mistake is a typo or a denied loan / wrong dosage; sets every bar above | informs your eval bar and whether to ship at all |
 

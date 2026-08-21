@@ -111,6 +111,7 @@ These aren't higher rungs; they're side doors for particular requirements.
 | Images or audio in/out (batch) | [**Multimodal**](multimodal-deep-dive/) |
 | Real-time, spoken conversation (low latency, interruption) | [**Realtime Voice**](realtime-voice-deep-dive/) |
 | Privacy, offline, or zero per-token cost | [**Local Models**](local-models-deep-dive/) |
+| To serve open weights as a fleet: KV memory, batching, parallelism, admission, GPU placement, scaling, rollouts, and capacity | [**Inference Platform Engineering**](inference-platform-deep-dive/) |
 | To share tools/data with an LLM across apps | [**MCP**](mcp-deep-dive/) |
 | To own the corpus behind the index: versions, lineage, ACLs, deletes | [**AI Data Engineering**](ai-data-engineering-deep-dive/) |
 | To know if any change actually helped | [**Evals**](evals-deep-dive/), the meta-skill for *every* rung |
@@ -120,6 +121,10 @@ These aren't higher rungs; they're side doors for particular requirements.
 | To know it's *still* working weeks later: drift, silent regressions, alerting | [**Observability**](observability-deep-dive/) |
 | To decide whether a framework beats what you hand-rolled: measured, not assumed | [**Professional Tools**](professional-tools-deep-dive/) |
 | To decide where the pieces go: state, queues, tiers, tenant boundaries | [**Architecture**](architecture-deep-dive/) |
+| To decide whether a specific build has earned promotion: contract, compatibility, supply-chain, rollout, and rollback evidence | [**Testing & Delivery**](testing-and-delivery-deep-dive/) |
+| To write down who decided, on what evidence, and what would reverse it | [**GOVERNANCE.md**](GOVERNANCE.md) |
+| To have a runbook ready before the 2am page | [**INCIDENTS.md**](INCIDENTS.md) |
+| To make a wrong answer visible, contestable, and undoable | [**AI-UX.md**](AI-UX.md) |
 
 ---
 
