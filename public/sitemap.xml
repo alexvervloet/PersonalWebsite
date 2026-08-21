@@ -421,6 +421,30 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.alexvervloet.com/dives/typescript/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/typescript/textbook/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/typescript/exercises/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.alexvervloet.com/dives/typescript/lessons/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.alexvervloet.com/dives/capstone/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
