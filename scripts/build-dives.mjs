@@ -163,7 +163,9 @@ async function main() {
             ? `Core path - ${page.dive.n} of 8`
             : page.dive.track === 'capstone'
               ? 'Capstone'
-              : 'Bonus dive'
+              : page.dive.track === 'companion'
+                ? 'Companion, outside the sequence'
+                : 'Bonus dive'
           : 'Series reference',
         here: page.label,
         repoUrl: isDive ? repoUrl(page.dive) : 'https://github.com/alexvervloet/ai-engineering-deep-dive',

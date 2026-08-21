@@ -186,6 +186,16 @@ export const DIVES = [
   },
 
   // ── Capstone ──
+  // ── A companion, deliberately outside the numbering ──
+  {
+    slug: 'typescript',
+    dir: 'typescript-ai-deep-dive',
+    title: 'AI in TypeScript',
+    track: 'companion',
+    badge: 'TS',
+    idea: 'The same ideas in TypeScript. Your types stop at the network boundary, so everything the model says is unknown until you check it at runtime.',
+  },
+
   {
     slug: 'capstone',
     dir: 'deep-dive-capstone',

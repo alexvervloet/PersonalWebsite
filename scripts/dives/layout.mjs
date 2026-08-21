@@ -78,6 +78,7 @@ function seriesNav(currentSlug) {
     group('The core path', '', DIVES.filter((d) => d.track === 'core')),
     group('Bonus dives', '', DIVES.filter((d) => d.track === 'bonus')),
     group('Capstone', '', DIVES.filter((d) => d.track === 'capstone')),
+    group('Companion', '', DIVES.filter((d) => d.track === 'companion')),
     `<p class="dd-rail-head">Reference</p>
       <ul class="dd-nav">${REFERENCE.map(
         (r) => `<li><a href="/dives/reference/${r.slug}/">${esc(r.title)}</a></li>`,
@@ -180,7 +181,7 @@ export function indexPage({ description, canonical, intro }) {
     `<div class="dd-cards">${dives
       .map(
         (d) => `<a class="dd-card" href="/dives/${d.slug}/">
-          <span class="dd-card-n">${d.n ? String(d.n).padStart(2, '0') : d.track === 'capstone' ? 'END' : 'BONUS'}</span>
+          <span class="dd-card-n">${d.badge ?? (d.n ? String(d.n).padStart(2, '0') : d.track === 'capstone' ? 'END' : 'BONUS')}</span>
           <h3>${esc(d.title)}</h3>
           <p>${esc(d.idea)}</p>
           ${d.after ? `<span class="dd-card-after">Slots in after ${esc(d.after)}</span>` : ''}
@@ -216,6 +217,11 @@ export function indexPage({ description, canonical, intro }) {
         cards(DIVES.filter((d) => d.track === 'bonus')),
       )}
       ${section('Capstone', 'everything at once', cards(DIVES.filter((d) => d.track === 'capstone')))}
+      ${section(
+        'Companion',
+        'outside the sequence, for readers whose AI work ships in TypeScript',
+        cards(DIVES.filter((d) => d.track === 'companion')),
+      )}
       ${section(
         'Reference',
         'the shared docs',
