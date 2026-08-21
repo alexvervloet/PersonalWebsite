@@ -261,6 +261,27 @@ export const REFERENCE = [
     blurb: 'Building this stuff responsibly, beyond the safety mechanics.',
   },
   {
+    slug: 'governance',
+    file: 'GOVERNANCE.md',
+    source: 'docs/GOVERNANCE.md',
+    title: 'Governance',
+    blurb: 'Who decides what ships, and the record they leave: roles, templates, and an appeal path.',
+  },
+  {
+    slug: 'incidents',
+    file: 'INCIDENTS.md',
+    source: 'docs/INCIDENTS.md',
+    title: 'Incidents',
+    blurb: 'What to do at 2am. A severity ladder, the first thirty minutes, and seven runbooks.',
+  },
+  {
+    slug: 'ai-ux',
+    file: 'AI-UX.md',
+    source: 'docs/AI-UX.md',
+    title: 'AI UX',
+    blurb: 'The interface is part of the safety system. Designing for the wrong answer.',
+  },
+  {
     slug: 'secrets',
     file: 'SECRETS.md',
     source: 'docs/SECRETS.md',
