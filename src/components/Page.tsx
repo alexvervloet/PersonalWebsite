@@ -323,7 +323,7 @@ export function Page() {
                 'Explaining complex systems in plain language.',
                 'Feedback in planning that changes the plan.',
                 'Knowing when not to ship.',
-                'Teaching — three years, in two languages.',
+                'Teaching — four years, in two languages.',
               ].map((t, i) => (
                 <li
                   key={i}
@@ -789,7 +789,7 @@ export function Page() {
           <SectionHead
             num="07"
             label="before code"
-            title="Three years in a classroom."
+            title="Four years in a classroom."
           />
           <p
             className="sans"
