@@ -3,7 +3,8 @@
 A hands-on playground for learning how **LLM agents** actually work, by building
 one from scratch. You'll write the agentic loop yourself and understand every
 moving part: tools, the loop, multi-tool routing, step limits, error recovery,
-human-in-the-loop approval, observability, memory, and multi-agent delegation. No
+human-in-the-loop approval, enforceable tool contracts, observability, memory,
+and multi-agent delegation. No
 LangChain, no SDK tool-runners, no framework magic, just enough code to see how
 an agent thinks.
 
@@ -17,8 +18,8 @@ pattern under "AI agents," and once you've written it by hand, the frameworks st
 being magic.
 
 Like its siblings, it's meant to be *walked through*. Each section ends with
-something to run; the first runs **offline and free**. [EXERCISES.md](EXERCISES.md)
-has a predict-then-run prompt for each section.
+something to run; examples 01, 10, and 18 run **offline and free**.
+[EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each section.
 
 ---
 
@@ -68,8 +69,9 @@ that knows the difference is [agent/providers.py](agent/providers.py); the loop 
 everything above it stay identical. That's the whole point: agents are an
 architecture, not a provider feature.
 
-> **Start before spending anything.** Example 01 is completely offline; it
-> shows what a tool *is* with no key and no cost. The rest make small, cheap calls.
+> **Start before spending anything.** Examples 01, 10, and 18 are completely
+> offline. They cover tool shape, protocol transport, and the execution contract
+> with no key and no cost; provider-backed examples make small, cheap calls.
 
 ---
 
@@ -89,7 +91,9 @@ read-only `search_notes` (over a tiny knowledge base, where a real agent would
 call your RAG pipeline), and `save_note`, which writes a file and is therefore
 flagged **dangerous**. The description and parameter names are the model's only
 clues for when and how to call a tool; they're prompt engineering, not
-afterthoughts.
+afterthoughts. The schema is also enforced locally before execution in Section
+7A. Describing allowed inputs to a model and accepting an untrusted request are
+two different jobs.
 
 ---
 
@@ -118,10 +122,11 @@ model stops asking. That loop is the agent.
 secrun python examples/03_agent_loop.py
 ```
 
-`run_agent` in [agent/loop.py](agent/loop.py) is about twenty lines. Watch the
-trace: given a multi-step question, the model chains calls, using each result to
-decide the next, something a single call can't do. **This is the example to
-really understand; everything after it is a small addition.**
+`run_agent` in [agent/loop.py](agent/loop.py) keeps that control flow small and
+routes every requested action through the contract boundary. Watch the trace:
+given a multi-step question, the model chains calls, using each result to decide
+the next, something a single call can't do. **This is the example to really
+understand; everything after it is a small addition.**
 
 ---
 
@@ -160,9 +165,9 @@ These two are the difference between a toy loop and one you'd run unattended.
 
 ## 7. Human-in-the-loop approval
 
-Some actions have consequences (writing files, sending email, spending money). Mark
-those tools `dangerous=True` and pass an `approve` callback; the loop asks before
-running them.
+Some actions have consequences (writing files, sending email, spending money).
+Mark those tools `dangerous=True` and pass an `approve` callback; the loop asks
+before running them. Dangerous tools fail closed when that callback is absent.
 
 ```bash
 secrun python examples/06_human_in_the_loop.py     # interactive
@@ -171,6 +176,55 @@ secrun python examples/06_human_in_the_loop.py     # interactive
 `save_note` is dangerous, so you're prompted; the calculator and search run freely.
 Deny the call and the agent adapts; a denial is just another tool result. Which
 tools are "dangerous" is your policy, declared on the tool.
+
+---
+
+## 7A. Tool contracts: validate before effects
+
+A tool call is an untrusted proposal, even when a provider generated it in strict
+mode. The model may be confused, compromised by prompt injection, or connected
+through a provider or MCP server with different schema guarantees. The local
+application therefore owns the execution decision:
+
+```text
+model proposal
+  -> reject forged identity/tenant fields
+  -> validate the complete JSON Schema
+  -> authorize trusted session roles
+  -> replay a settled result, or reject the key if the payload changed
+  -> require approval
+  -> execute with time/output limits
+  -> record a structured outcome and content digests
+```
+
+```bash
+python examples/18_tool_contracts.py          # offline
+python -m unittest discover -s tests -v       # adversarial checks
+```
+
+The example uses a refund tool with an enum, identifier pattern, numeric range,
+exact properties, billing role, trusted tenant/subject injection, approval,
+bounded replay storage, a timeout, and a UTF-8 output-byte limit. Five independent
+probes show why each control exists. Only the allowed proposal creates an effect;
+replaying its request returns the stored outcome without issuing another refund.
+
+[agent/contracts.py](agent/contracts.py) is the reusable implementation. Its
+in-process replay cache deliberately stores even errors that happened after
+dispatch: a timeout or connection failure cannot tell you whether the remote
+effect committed. A settled key is a promise about one specific payload, so a
+repeat carrying *different* arguments is denied (`idempotency_key_reuse`) rather
+than answered from the cache; otherwise the audit record for the second attempt
+would carry the first call's digest and the attempt would leave no trace. This prevents a duplicate retry in the teaching process, but a
+production write must enforce a durable idempotency key transactionally at its
+sink. The thread timeout also stops waiting rather than killing already-running
+Python code; hard cancellation needs a subprocess, worker, or remote deadline.
+
+OpenAI recommends strict function schemas and requires exact object properties
+and required fields for that mode; this repo enables it when a schema is
+compatible, then validates locally anyway. See the official
+[OpenAI function-calling guide](https://developers.openai.com/api/docs/guides/function-calling#strict-mode)
+and [JSON Schema 2020-12 validation vocabulary](https://json-schema.org/draft/2020-12/json-schema-validation).
+Strict generation is defense in depth, not authorization.
 
 ---
 
@@ -250,7 +304,7 @@ capability is: write a function, describe it, register it.
 
 ---
 
-## Going further: four more agent patterns
+## Going further: five more agent patterns
 
 The loop is the core; these are the patterns you layer on it in real systems.
 
@@ -335,6 +389,26 @@ across the world. [agent/mcp_server.py](agent/mcp_server.py) is the server (it
 serves the very same `calculator` and `search_notes` functions, now over the
 wire); [examples/10_mcp.py](examples/10_mcp.py) is the client.
 
+**A protocol moves the tool, not the trust.** Section 7A's contract applies twice
+here, once on each side of the pipe, and both directions are easy to skip:
+
+- *The client seals what it adopts.* A discovered schema was written by someone
+  else, and MCP does not require `additionalProperties: false`, so most schemas
+  in the wild leave it unset. `ToolExecutor` refuses a schema that loose, on
+  purpose: the omission should be impossible to ignore. `seal_schema()` closes a
+  copy at the point of adoption, which is where a human is actually deciding to
+  trust this server. The tradeoff is real and worth stating: sealing can reject a
+  call a sloppy server would have accepted, because it refuses to forward fields
+  nobody declared. That is the better failure.
+- *The server distrusts its clients.* The one in this repo runs every
+  `tools/call` through the same `ToolExecutor` before dispatch, so a client that
+  invents an argument gets a contract denial rather than a Python call. Your
+  server has no idea whose model is on the other end, or whether that model just
+  read a prompt-injected web page. "The client already validated" is not
+  something a server can ever know.
+
+`tests/test_mcp_contracts.py` holds both halves down.
+
 In production you'd use the official `mcp` SDK and a real transport (HTTP/SSE),
 and your provider can often skip the client entirely: the Claude API connects to
 remote MCP servers for you (its MCP connector), and the OpenAI stack has an
@@ -411,8 +485,9 @@ more capability and rigor:
   real GUI, where the provider runs the tool for you.
 - **Planning & reflection**: having the agent draft a plan, critique its own work,
   or retry failed sub-tasks, on top of the basic loop.
-- **Production hardening**: sandboxing tool execution, tighter permission
-  policies, budgets/timeouts, retries, and structured logging/tracing.
+- **Production hardening**: sandboxing execution, durable idempotency,
+  concurrency-safe replay coordination, cost budgets, retries, and centralized
+  logging/tracing beyond Section 7A's single-process boundary.
 - **Evaluating agents**: scoring trajectories (right tools, right order, no wasted
   steps), not just final answers, exactly what the [evals repo](https://github.com/alexvervloet/evals-deep-dive)
   is for.
@@ -435,7 +510,7 @@ it runs unattended:
 | The loop runs until it's done | A **cost budget** *and* step ceiling per run, so a stuck loop can't rack up a bill |
 | Section 8's observability is `print()` | A **structured trace** with a **span per step**: which tool, which args, how long, how many tokens |
 | Tool/model errors handled inline (Section 6) | **Retries + backoff** and a **circuit breaker** around every model and tool call |
-| Tools trust their arguments | **Guardrails** on tool inputs and outputs, since the agent is acting on possibly-injected text |
+| Section 7A keeps replay/audit state in one process | A **durable, transactional tool gateway** shared by every worker, with sink-enforced idempotency and hard cancellation |
 | The system prompt is a literal in the script | A **versioned prompt** promoted only past an **eval gate** on agent behavior |
 | Every step re-calls the model | A **response cache** for repeated sub-calls |
 
@@ -456,6 +531,7 @@ README.md                   ← this guide
 EXERCISES.md                ← predict-then-run prompts, one per section
 agent/                      ← the from-scratch agent library (read it!)
   tools.py                  ← what a tool is + the safe default toolbox
+  contracts.py              ← local validation, policy, execution limits, replay, audit
   providers.py              ← the ONLY provider-specific file: normalizes a turn
   loop.py                   ← run_agent (the loop) + Tracer + AgentResult
   mcp_server.py             ← a from-scratch MCP tool server (JSON-RPC over stdio)
@@ -479,6 +555,10 @@ examples/
   15_hosted_tools.py        ← a provider-hosted tool (web search): the provider runs it inside the turn
   16_tool_search_and_ptc.py ← many tools, many calls: keeping both out of context
   17_memory_tool.py        ← memory that survives the process (client-side storage)
+  18_tool_contracts.py     ← validate and authorize before effects (offline)
+tests/
+  test_tool_contracts.py   ← adversarial and counterfactual contract checks
+  test_mcp_contracts.py    ← protocol calls cross the same boundary
 ```
 
 (`workspace/` is created by the `save_note` tool and is git-ignored.)
@@ -495,7 +575,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | `ModuleNotFoundError` (openai / anthropic / rich) | Dependencies aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
 | The agent answers math wrong / makes things up | It's not using its tools. Strengthen the system prompt ("use the calculator for arithmetic; don't guess product facts"). Tool *descriptions and instructions* drive tool use. |
 | "(stopped: reached the step limit...)" | The task needed more steps than `max_steps`. Raise it (`--max-steps` on the capstone), or simplify the task. |
-| It runs a dangerous tool without asking | You passed no `approve` callback (or used `--yes`). Approval only triggers for tools marked `dangerous=True` when an `approve` callback is supplied. |
+| A dangerous tool returns `approval_required` | Pass an `approve` callback, or use `--yes` in the capstone when you intentionally want to allow it. Dangerous tools fail closed without a callback. |
 | `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
@@ -505,7 +585,7 @@ at the top, and run it directly. The loop in `agent/loop.py` is the whole story.
 
 ## The series
 
-This is one of sixteen standalone, hands-on deep dives into building with LLM APIs: eight core, plus eight bonus dives.
+This is one of the standalone, hands-on deep dives into building with LLM APIs: eight core, plus the bonus dives listed below.
 Each one stands on its own, with its own setup, examples, and capstone, and they
 all share the same house style: provider-agnostic, built from scratch (no
 frameworks), offline-first examples, and a real capstone. Do them in any order;
@@ -532,6 +612,9 @@ this sequence builds naturally:
 - [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive): low-latency speech-to-speech agents
 - [Observability](https://github.com/alexvervloet/observability-deep-dive): watch a running app over time: drift, quality, alerting, the flywheel
 - [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
+- [GenAI Security](https://github.com/alexvervloet/genai-security-deep-dive): treat the model as an untrusted principal: identity, supply chain, isolation, budgets, release gates
+- [Inference Platform Engineering](https://github.com/alexvervloet/inference-platform-deep-dive): turn finite GPU memory and a request queue into latency, throughput, and a fleet size you can defend
+- [Testing & Delivery](https://github.com/alexvervloet/testing-and-delivery-deep-dive): decide whether a build has earned promotion: evidence, gates, staged rollout, rollback
 - [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
 
 And the whole series lands in one codebase in the

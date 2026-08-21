@@ -8,7 +8,7 @@ How to use it: work the section first, then come back. **Commit to an answer
 before you run or reveal.** The prediction is where the learning happens. Answers
 are hidden behind ▸ toggles.
 
-> Examples 01 and 10 are **(offline)**: no API call, no cost. The rest make
+> Examples 01, 10, and 18 are **(offline)**: no API call, no cost. The rest make
 > small, cheap calls.
 
 ---
@@ -126,8 +126,83 @@ you deny one?
 <details><summary>▸ Answer</summary>
 
 You mark it `dangerous=True`; the loop then calls your `approve` callback before
-running it. A denial is returned to the model as a normal tool result ("permission
-denied"), so the agent acknowledges it and adapts instead of forcing the action.
+running it. With no callback it fails closed; an explicit denial is returned to
+the model as a normal tool result ("permission denied"), so the agent
+acknowledges it and adapts instead of forcing the action.
+</details>
+
+---
+
+## Section 7A: Tool contracts **(offline)**
+
+**Predict, then run.** Before running `examples/18_tool_contracts.py`, write down
+which of these proposals should cause a refund: valid billing request,
+model-supplied tenant, amount above the schema maximum, support-role request, and
+a replay of the valid request. Then run it.
+
+<details><summary>▸ Answer</summary>
+
+Only the first proposal crosses the effect boundary. The tenant attempt is
+rejected as trusted-context forgery before ordinary schema validation; the
+oversized amount fails schema validation; the support principal fails
+authorization; and the replay returns the first completed result. The final
+effect count is one.
+</details>
+
+**Recall.** Why do OpenAI strict mode and local JSON Schema validation both
+exist? Which one authorizes the caller?
+
+<details><summary>▸ Answer</summary>
+
+Strict mode constrains what the provider generates and reduces malformed calls.
+Local validation treats the resulting request as untrusted at the execution seam
+and works regardless of provider or transport. Neither authorizes the caller;
+authorization uses roles and identity from authenticated `ExecutionContext`, not
+the model's arguments.
+</details>
+
+**Counterfactual.** In `tests/test_tool_contracts.py`, change one thing at a time:
+raise `amount_cents` from 5,000 to 5,001; change the context role from `billing`
+to `support`; add `tenant_id` to the proposal; replay with a different request
+ID. Predict which decision code changes and whether the callable count changes
+before running the test.
+
+<details><summary>▸ Answer</summary>
+
+The amount becomes `schema_validation`, the role becomes `not_authorized`, and
+the tenant becomes `trusted_context_forgery`; none invokes the callable. A new
+request ID changes the replay scope, so an otherwise allowed call executes a new
+effect. These independent perturbations prove the decision did not derive its
+expected result from the proposal itself.
+</details>
+
+**Predict.** A mutating call is replayed by `(request_id, call.id, tool)`. Suppose
+the same `call.id` comes back inside the same request, but this time asking to
+refund a different order for ten times the money. Should the executor return the
+stored result, run the new one, or neither?
+
+<details><summary>▸ Answer</summary>
+
+Neither: it denies with `idempotency_key_reuse`. Returning the stored result would
+answer a question nobody asked and bury the second attempt (the audit record would
+carry the *first* call's argument digest, so the log would not even show it
+happened). Running it would defeat the point of the key. A settled key is a promise
+about one specific payload, which is why the executor compares argument digests and
+not just the key. Stripe's API behaves the same way for the same reason.
+</details>
+
+**Design.** The teaching executor records a timeout and replays it for a repeated
+mutating call. Why not automatically retry, and what must replace this cache in a
+multi-worker production service?
+
+<details><summary>▸ Answer</summary>
+
+A timeout says the caller stopped waiting, not that the effect failed; the tool
+may have committed just before the connection disappeared. An automatic retry
+could duplicate it. Production needs a durable idempotency key enforced
+transactionally by the sink (plus coordination across workers), because an
+in-process bounded cache disappears on restart and does not stop concurrent
+workers from racing.
 </details>
 
 ---
@@ -189,7 +264,7 @@ extensibility story.
 
 ---
 
-## Going further: three more agent patterns
+## Going further: four more agent patterns
 
 **Recall (`11`).** You can solve a support task with a hard-coded workflow or with
 the agent loop. When should you *not* reach for an agent?
@@ -298,6 +373,35 @@ What never changes: the *model* still never runs anything. It only ever sees the
 menu entry and emits a request. Now even your client doesn't hold the
 implementation; the server does. (For the protocol's other primitives, like resources,
 prompts, HTTP transport, and security, see the MCP deep dive.)
+</details>
+
+**Predict.** You point the client at a *different* team's MCP server. Its schema is
+valid JSON Schema and describes every field it wants, but never mentions
+`additionalProperties`. You pass the discovered tool to `run_agent`. What happens?
+
+<details><summary>▸ Answer</summary>
+
+`ToolExecutor` raises `ValueError` before a single model call, because it refuses
+any schema that has not closed the door on undeclared fields. That is deliberate:
+a schema this loose would let the model slip in an argument nobody described, and
+the repo would rather fail loudly at wiring time than silently forward it.
+`seal_schema()` is the fix, and `as_tools()` applies it to every descriptor as it
+comes off the wire. Note the cost, which is real: if that server quietly accepts a
+field it never declared, sealing rejects a call it would have honored.
+</details>
+
+**Recall.** The server in this repo runs every `tools/call` through the same
+`ToolExecutor` the agent loop uses. The client already validates. Why check twice?
+
+<details><summary>▸ Answer</summary>
+
+Because neither end can verify the other did it. The server has no idea whose model
+is on the other end of the pipe, which prompt it was given, or whether that prompt
+came off an injected web page; "my client validated" is not a fact a server can
+check. Symmetrically, the client cannot audit the server's code. Each side enforces
+the contract at its own trust boundary, which is what makes them boundaries.
+Skipping either is how an internal service ends up trusting arguments that
+originated in text a stranger wrote.
 </details>
 
 ---
