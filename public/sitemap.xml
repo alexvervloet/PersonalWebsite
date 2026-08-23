@@ -325,6 +325,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.alexvervloet.com/dives/observability/lessons/</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.alexvervloet.com/dives/architecture/</loc>
     <lastmod>2026-08-23</lastmod>
     <changefreq>monthly</changefreq>
