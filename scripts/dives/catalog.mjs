@@ -184,6 +184,30 @@ export const DIVES = [
     after: 'Prompt Injection (7), before Production (8)',
     idea: 'Treat the model as an untrusted principal, not a security boundary: authorize every effect in code, verify the supply chain, isolate data and execution, bound what one request can spend, and make attacks block the release.',
   },
+  {
+    slug: 'inference-platform',
+    dir: 'inference-platform-deep-dive',
+    title: 'Inference Platform Engineering',
+    track: 'bonus',
+    after: 'Local Models (15); Production (8); Architecture (21)',
+    idea: 'A self-hosted model becomes a service only when memory and queue scheduling turn finite GPUs into measured latency, throughput, reliability, and cost.',
+  },
+  {
+    slug: 'testing-and-delivery',
+    dir: 'testing-and-delivery-deep-dive',
+    title: 'Testing & Delivery',
+    track: 'bonus',
+    after: 'Evals (5) + Production (8); pairs with GenAI Security (20)',
+    idea: 'A release is an evidence pipeline. Requirements defined independently decide whether the reproducibility, compatibility, security, rollout, and recovery evidence is good enough to promote.',
+  },
+  {
+    slug: 'ml-foundations',
+    dir: 'ml-foundations-for-ai-engineers',
+    title: 'ML Foundations',
+    track: 'bonus',
+    after: 'the API dives (1, 2); before Fine-tuning (13), Local Models (15), and Inference Platforms (22)',
+    idea: 'A model is a chain of numeric contracts. Trace shapes, logits, loss, gradients, masked attention, sampling, calibration, quantization, and retained memory through runnable NumPy and PyTorch code.',
+  },
 
   // ── Capstone ──
   // ── A companion, deliberately outside the numbering ──
