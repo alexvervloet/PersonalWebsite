@@ -1,9 +1,9 @@
 # askrepo: the deep-dive capstone
 
-Ask questions about a codebase in plain English, get answers **with `file:line`
-citations**. This is the capstone of the AI Engineering deep-dive series: one
-project built step by step, one deep dive per tag, whose default corpus is the
-series itself, so the course answers questions about the course.
+Ask questions about a codebase in plain English and get answers with `file:line`
+citations. This is the capstone of the AI Engineering deep-dive series: one project built
+step by step, one deep dive per tag, whose default corpus is the series itself. So the
+course answers questions about the course.
 
 The roadmap (every step, what it builds, and its definition of done) lives in
 [../docs/CAPSTONE.md](../docs/CAPSTONE.md). This README tracks what *exists*, tag by tag.
@@ -12,8 +12,8 @@ The roadmap (every step, what it builds, and its definition of done) lives in
 
 ## See it work
 
-Ask the course about itself: a plain-English answer with `(path:line)` citations
-that resolve to real files, plus what was retrieved and what the call cost:
+Ask the course about itself. You get a plain-English answer with `(path:line)` citations
+that resolve to real files, plus what was retrieved and what the call cost.
 
 ![askrepo answering questions about the series: retrieval scores, a cited answer, and the real per-call cost](assets/demo.gif)
 
@@ -31,10 +31,10 @@ retrieved: realtime-voice-deep-dive/README.md:130-146 (score 0.82)
 cost: $0.000322 (1868 in / 69 out)
 ```
 
-Every answer is grounded in retrieved chunks and cites the lines it used; ask
-something outside the corpus and it declines rather than guessing. The entire
-offline path (CLI, provider plumbing, the test suite) runs with **no key and
-no network** on a built-in mock, so you can try it in one command for `$0`:
+Every answer is grounded in retrieved chunks and cites the lines it used. Ask something
+outside the corpus and it declines rather than guessing. The whole offline path, meaning the
+CLI, the provider plumbing, and the test suite, runs with no key and no network on a
+built-in mock, so you can try it in one command for `$0`.
 
 ```console
 $ python -m askrepo ask "hello"          # PROVIDER=mock, no key, no network
@@ -56,9 +56,9 @@ python check_setup.py              # verifies your environment; makes no API cal
 python -m askrepo ask "hello"      # canned answer from the mock provider
 ```
 
-For a real model, `pip install -r requirements.txt`, then `cp .env.example
-.env` and set `PROVIDER=openai` or `PROVIDER=claude`. Your API key never goes
-in `.env`, via keychain + `secrun`, per [../docs/SECRETS.md](../docs/SECRETS.md):
+For a real model, run `pip install -r requirements.txt`, then `cp .env.example .env` and
+set `PROVIDER=openai` or `PROVIDER=claude`. Your API key never goes in `.env`. It comes from
+the keychain through `secrun`, per [../docs/SECRETS.md](../docs/SECRETS.md).
 
 ```bash
 secrun python -m askrepo index ..      # embed the series (~$0.01, once)
@@ -96,9 +96,9 @@ Each step is a tag; `git checkout <tag>` shows the project as it stood then.
 
 ## Extensions
 
-The core (v00–v07) was a sequence; these are a set. Each is a feature branch
-merged to `main` with `--no-ff` and tagged `ext-*`: unordered add-ons from
-[../docs/CAPSTONE.md](../docs/CAPSTONE.md)'s branch-off table, not next steps.
+The core, v00 through v07, was a sequence. These are a set. Each one is a feature branch
+merged to `main` with `--no-ff` and tagged `ext-*`. Unordered add-ons from
+[../docs/CAPSTONE.md](../docs/CAPSTONE.md)'s branch-off table, rather than next steps.
 
 | Tag | Dive exercised | Status | What it adds |
 |-----|----------------|--------|--------------|
@@ -106,23 +106,22 @@ merged to `main` with `--no-ff` and tagged `ext-*`: unordered add-ons from
 | `ext-harness` | Agent Harnesses | **done** | permission policy + read-only sandbox + audit around agent mode's file tools; the structural fix for v06's residual |
 | `ext-context` | Context Engineering | **done** | `askrepo chat`: multi-turn grounded conversation that budgets the window across accumulating chunks and compacted turns |
 | `ext-local` | Local Models | **done** | Ollama backend for answers + embeddings; index a private repo without sending a byte out; the measured quality gap vs cloud |
+| `ext-observability` | Observability | **done** | `askrepo watch`: the noise floor under this repo's own eval numbers, the corpus drifting out from under a frozen baseline, and which published comparisons survive both |
 
 ### ext-mcp: the course as a tool server
 
-[`askrepo/mcp_server.py`](askrepo/mcp_server.py) puts the whole pipeline
-behind the protocol the MCP dive teaches: `search` returns line-numbered,
-citation-ready chunks for the *host's* model to read; `ask` returns one
-finished, cited answer. [`.mcp.json`](.mcp.json) wires it into Claude Code 
-open this repo there and ask "which dive covers barge-in?" to close the meta
-loop. One launch wrinkle worth knowing: MCP hosts spawn servers without your
-shell, so the zsh `secrun` *function* doesn't exist there 
-[`secrun.sh`](secrun.sh) is the same keychain injection as a script, and it
-must be the server *command* itself, because MCP clients hand servers a
-restricted environment rather than inheriting yours.
+[`askrepo/mcp_server.py`](askrepo/mcp_server.py) puts the whole pipeline behind the protocol
+the MCP dive teaches. `search` returns line-numbered, citation-ready chunks for the host's
+model to read. `ask` returns one finished, cited answer. [`.mcp.json`](.mcp.json) wires it
+into Claude Code, so you can open this repo there and ask "which dive covers barge-in?" to
+close the loop. One launch wrinkle is worth knowing. MCP hosts spawn servers without your
+shell, so the zsh `secrun` function does not exist there. [`secrun.sh`](secrun.sh) is the
+same keychain injection as a script, and it has to be the server command itself, because
+MCP clients hand servers a restricted environment rather than inheriting yours.
 
 Two earlier steps carry over on purpose. **v06:** an MCP answer is delivered
 into another agent's context, exactly the injection channel the red-team
-measured: so `ask` hardens the prompt and sanitizes the output
+measured, so `ask` hardens the prompt and sanitizes the output
 unconditionally, and `search` labels its blocks as untrusted data (a tripwire,
 not a wall: the host's model is out of our hands). **v07:** a server is a
 long-lived session, which is what the budget was built for; and because the
@@ -132,11 +131,11 @@ process and $0 from the next.
 
 ### ext-harness: the structural fix v06 pointed at
 
-v06's verdict was that agent mode's file tools are the attack surface (the
-injection rides in on `read_file`) and that its defenses were *advisory*: a
-system-prompt notice and an output check, both of which a task-aligned
-injection can talk the model past. [`askrepo/harness.py`](askrepo/harness.py)
-is the structural answer: rules enforced in code the model never sees:
+v06's verdict was that agent mode's file tools are where the attack lands, since the
+injection rides in on `read_file`, and that its defenses were advisory: a system-prompt
+notice and an output check, both of which a task-aligned injection can talk the model past.
+[`askrepo/harness.py`](askrepo/harness.py) is the structural answer, with rules enforced in
+code the model never sees.
 
 - **A permission policy** ([`PermissionPolicy`](askrepo/harness.py)): deny by
   default, allowing only `grep`, `read_file`, `list_dir`. A tool nobody
@@ -212,11 +211,11 @@ whole thesis: bounded window, preserved facts. Watch it with `chat
 --show-context`; runs offline on the mock (conversation + compaction, no
 retrieval).
 
-Honest scope: this is grounded Q&A *with memory*, not a general chatbot. The
-v02 contract still governs every answer: tell it "remember X" and it may reply
-`Not in this corpus.` because that's not a corpus question, even as the
-statement is kept in the thread and recalled later. The memory is
-conversational context for follow-ups, not a general assistant's compliance.
+Honest scope. This is grounded Q&A with memory rather than a general chatbot. The v02
+contract still governs every answer, so tell it "remember X" and it may reply
+`Not in this corpus.` because that is not a corpus question, even while the statement stays
+in the thread and gets recalled later. The memory is conversational context for follow-ups.
+It is not a general assistant's compliance.
 
 ### ext-local: index a private repo without sending a byte out
 
@@ -301,6 +300,122 @@ the strong answerer, so on a local RAG stack, upgrade the embedding model
 before the generator. Every citation it emitted resolved (a perfect 1.000), and
 latency was the real tax: **36.7s/question** vs cloud's 2.7s, a big thinking
 model reasoning before each answer on one consumer GPU.
+
+### ext-observability: how much does this number move on its own?
+
+Every other step here produced a number. v04 froze a baseline, v05 compared RAG
+against the agent, ext-local compared a local model against the cloud. None of
+them asked the question the Observability dive is built around: how much does
+that number move when nothing changes, and is the baseline it is measured
+against still valid?
+
+The port hit an obstacle worth stating plainly. **askrepo is a CLI, not a
+service.** The dive watches six weeks of a running system's request traffic;
+nobody runs askrepo continuously, and manufacturing synthetic traffic would only
+re-teach the simulator that dive already ships. What askrepo genuinely
+accumulates is different: eval runs, a corpus that keeps moving under a frozen
+baseline, and traces from whatever you happen to run. So
+[`askrepo/watch.py`](askrepo/watch.py) trends those. `python -m askrepo watch`
+needs no key, no network, and no model, and makes no eval call of its own.
+
+**The corpus went stale, and the baseline never noticed.**
+
+```console
+$ python -m askrepo watch
+corpus
+  baseline frozen  2026-07-03T21:30:43 (20260703-213043.run.json)
+  repos pinned     17
+  repos now        26
+  added (9)        ai-data-engineering-deep-dive, architecture-deep-dive, ...
+  moved            17 of 17 still-present repos
+  verdict          STALE. The baseline's numbers were measured on a corpus that no longer exists.
+                   Re-freeze before comparing a new run to it.
+```
+
+v04 stamped a corpus manifest into every run so the numbers would be
+reproducible against any corpus rather than only this one. That bought a second
+thing nobody planned for: the baseline's staleness became *measurable*. Nine
+repos joined the series since July and all seventeen pinned ones moved, so
+`baseline.run.json` describes a corpus that no longer exists. Nothing was
+broken. Nothing turned red. The file just quietly stopped meaning what it says,
+which is the dive's whole thesis about how quality rots.
+
+**The noise floor, measured for free.**
+
+Two of the recorded runs share a config and sit 76 seconds apart. Nothing
+changed between them, so the gap between them is pure measurement noise, and
+that is the smallest difference this repo is entitled to call a finding:
+
+| metric | noise floor |
+|---|---|
+| `hit_at_k` | 0.000 |
+| `judged_correctness` | 0.015 |
+| `citation_resolve` | 0.020 |
+| `citation_match` | 0.063 |
+
+`hit@k` has no noise at all because retrieval is deterministic; only the
+generated text wobbles. So a one-point drop in `hit@k` is real and a
+five-point drop in `citation_match` is nothing, and there is no way to know
+that from a single run of either.
+
+**Then it invalidated one of this repo's own published rows.**
+[`evals/comparison.md`](evals/comparison.md) put RAG's citation match (0.721)
+next to the agent's (0.705). That gap is 0.016 against a floor of 0.063, so the
+row is noise presented as a comparison. It gets worse: the *other* rag run of
+the same config scored 0.784, which would have made the same row read as a real
+0.079 gap. Two interchangeable runs, opposite conclusions, decided by which file
+got opened. The headline verdict survives untouched (correctness is 0.114 apart
+against a 0.015 floor), but one of its supporting rows never should have been
+read as a difference.
+
+**And the judge turned out not to be constant.** ext-local states the rule: the
+judge is measurement infrastructure, not the system under test, so it must stay
+fixed across runs you compare. Two files hold the same 35B run, one graded by
+the constant `gpt-4o-mini` (0.786) and one where the 35B model graded itself
+(0.771), and only the second is in `evals/runs/`. The watcher now treats the
+judge as part of a run's identity and drops cross-judge runs from comparisons
+rather than annotating them, because a caveat still leaves two numbers side by
+side for someone to subtract. With the right file, the 35B model lands +0.008
+from cloud, confirming the "tie within judge noise" that section claimed in
+prose.
+
+**What it does not do.** No alerting fires, and the report says so in those
+words rather than printing "all clear":
+
+```
+  alerts on the latest run
+    none. 2 run(s) of rag/gpt-4o-mini is below the 3 a trend needs,
+    so this says 'cannot tell', not 'all clear'.
+```
+
+Two comparable runs is not a trend. The detectors are built and tested
+([`tests/test_watch.py`](tests/test_watch.py)) and they stay quiet, which is the
+honest output for this much history. Building them found two bugs that would
+have made them quiet for bad reasons instead: a flat metric produced a z-score
+of 0 and went blind to a 100x cost spike, and the noise floor was measured over
+the very run being judged, so a spike widened the threshold to exactly cover
+itself. Both are in [LESSONS.md](LESSONS.md).
+
+**The trace adapter.** The dive says its record shape is deliberately the same
+one Production's `trace.summary()` emits, and v07's ops layer came from that
+dive, so the logs should have loaded straight in. Six required fields were
+missing: `prompt_version`, `model`, `provider`, `duration_ms`, `outcome`, and
+`answer_chars`. v07 timed every span but never the request, and set the provider
+deep inside `_produce`, so a cache hit and a budget block both logged a request
+with no model attached. Those got fixed in
+[`askrepo/ops.py`](askrepo/ops.py) and [`askrepo/cli.py`](askrepo/cli.py) rather
+than defaulted in the adapter, because an adapter that fills in a missing field
+is how a dashboard ends up confidently reporting a number nobody measured.
+`watch.missing_fields()` re-runs that check in one line.
+
+```bash
+ASKREPO_LOG=info python -m askrepo ask "which dive covers barge-in?" 2> run.jsonl
+python -m askrepo watch --log run.jsonl
+```
+
+`feedback`, `segment`, and the answer text stay absent on purpose. A CLI has no
+thumbs-up button, one user is not a cohort, and keeping answer text would turn
+the log into a PII sink for whatever repo you pointed askrepo at.
 
 ## What exists so far
 
@@ -468,30 +583,30 @@ What each attack showed, honestly:
 [`askrepo/ops.py`](askrepo/ops.py), adapting all four of the production
 dive's modules (cache, cost, reliability, observability):
 
-- **Cache**: a repeated question is a visible cache hit at `$0.000000`. The
+- **Cache.** A repeated question is a visible cache hit at `$0.000000`. The
   one adaptation the server-oriented dive doesn't need: the cache is
   *disk-backed*, because a CLI is one question per process: an in-memory
   cache would never hit across invocations. The key hashes everything that
   shapes the answer (model, prompt-contract version, mode, k, blend,
   question), so any change busts it rather than serving stale.
-- **Budget**: a per-session USD ceiling that refuses instead of overspending.
-  It's most honest in a real session: `run_evals.py --budget 0.002` stops
-  the run after 5 questions with `budget stop ... would be exceeded`, rather
-  than quietly finishing the bill. (A single CLI ask can't pre-judge its
-  first call without a cost estimate, so the budget is genuinely
-  session-scoped, stated plainly rather than faked with a guessed estimate.)
-- **Retries**: `with_retry` wraps the embedding call (one clean request, the
+- **Budget.** A per-session USD ceiling that refuses instead of overspending.
+  It shows its worth in a real session. `run_evals.py --budget 0.002` stops the run after
+  5 questions with `budget stop ... would be exceeded`, rather than running the bill up to
+  the end and telling you afterwards. A single CLI ask cannot pre-judge its first call
+  without a cost estimate, so the budget is genuinely session-scoped, stated plainly rather
+  than faked with a guessed estimate.
+- **Retries.** `with_retry` wraps the embedding call (one clean request, the
   ideal retry target) with exponential backoff + jitter, retrying only
   transient failures (rate limits, timeouts, 5xx) and never a 400 that's your
   own bug. The provider SDKs add their own retry layer on top.
-- **Traces**: `ASKREPO_LOG=info` emits one JSON line per request (trace_id,
+- **Traces.** `ASKREPO_LOG=info` emits one JSON line per request (trace_id,
   timed spans, tokens, cost, cache hit/miss) that reconstructs the request
   after the fact; off by default so normal output stays clean.
 
-And the point of the whole layer: **the [test suite](tests/) runs entirely on
-the mock** (cache, budget, retries, guardrails, chunkers, prompt assembly, and
-the offline CLI path) with no key and no network. `python -m unittest discover
--s tests`. CI never needs a secret.
+And here is the point of the whole layer. The [test suite](tests/) runs entirely on the
+mock, covering cache, budget, retries, guardrails, chunkers, prompt assembly, and the
+offline CLI path, with no key and no network. `python -m unittest discover -s tests`. CI
+never needs a secret.
 
 v07 froze at 26 tests; the extensions took it to **71, in under a second**. Of
 those, the 8 MCP tests skip unless the MCP SDK is installed, so a clone with

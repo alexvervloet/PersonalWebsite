@@ -1,12 +1,21 @@
 # GenAI Security: A Guided Deep Dive
 
-Prompt injection is one attack. A production generative-AI system also has data,
-models, dependencies, retrieval indexes, tools, identities, interpreters, networks,
-budgets, logs, and operators. Every one is part of its security boundary.
+Prompt injection is one attack. A production generative-AI system also has data, models,
+dependencies, retrieval indexes, tools, identities, interpreters, networks, budgets, logs,
+and operators. Every one of them is part of its security boundary.
 
 This course builds a small security control plane around a deterministic, offline AI
-application. It begins with a threat model and ends with a release review that attacks
-the same naive and hardened system and emits evidence an engineer can inspect.
+application. It starts with a threat model and ends with a release review that attacks the
+same system twice, naive and hardened, and emits evidence an engineer can inspect.
+
+> **About the attack material in this repo.** It ships deliberately vulnerable toy
+> systems, poisoned documents and datasets, SSRF targets, and a naive pipeline built to
+> lose so the hardened one has something to beat. That is the teaching method: attack the
+> same system twice and compare the evidence. All of it is offline, deterministic, and
+> aimed at code in this same repo, and every credential in it is invented. If a scanner
+> or a CodeQL run flags this repo, this is what it found. Details in
+> [SECURITY.md](https://github.com/alexvervloet/ai-engineering-deep-dive/blob/main/SECURITY.md).
+> Use these techniques on systems you own or are authorized to test.
 
 The one big idea:
 
@@ -14,15 +23,15 @@ The one big idea:
 
 Model output is untrusted input. Model intent never grants authority. Enforceable
 boundaries live in ordinary code: trusted identity, least privilege, validated sinks,
-network policy, isolation, provenance, budgets, audit records, and tested recovery.
+network policy, isolation, provenance, budgets, audit records, tested recovery.
 
 This is Chapter 20 of the AI Engineering Deep Dives. It follows
 [Prompt Injection & Guardrails](https://github.com/alexvervloet/prompt-injection-deep-dive)
 and [AI Data Engineering](https://github.com/alexvervloet/ai-data-engineering-deep-dive),
 then feeds into
 [AI in Production](https://github.com/alexvervloet/ai-in-production-deep-dive).
-Prompt injection remains the focused treatment of instruction/data confusion; this
-repository covers the larger system that must remain safe when a model is wrong or
+Prompt injection stays the focused treatment of instruction-and-data confusion. This
+repository covers the larger system that has to stay safe when a model is wrong or
 compromised.
 
 ## What you will build
@@ -30,8 +39,8 @@ compromised.
 By the end, you will be able to:
 
 - turn assets, trust boundaries, entry points, and consequences into a threat model;
-- cover the complete OWASP LLM Top 10 2025 surface without mistaking a list for your
-  system's threat model;
+- cover everything in the OWASP LLM Top 10 2025 without mistaking a list for your system's
+  threat model;
 - keep restricted data out of context, output, logs, and incident evidence;
 - verify exact models, prompts, datasets, and dependencies before deployment;
 - quarantine named poisoning signals without deleting investigative evidence;
@@ -46,18 +55,18 @@ By the end, you will be able to:
 
 ## Why it runs offline
 
-The complete course uses only Python's standard library. It makes no model call, needs
-no API key, and contacts no external service. This is deliberate: authorization,
-provenance, parsing, isolation requirements, budgets, and incident state must be
-testable independently of whichever model happens to sit inside them.
+The whole course uses only Python's standard library. It makes no model call, needs no API
+key, and contacts no external service. That is deliberate. Authorization, provenance,
+parsing, isolation requirements, budgets, and incident state all have to be testable
+independently of whichever model happens to sit inside them.
 
-The examples simulate model proposals. They do not claim that deterministic strings
-measure a production model. Replace those adapters with staging integrations while
-retaining the same invariants and failure tests.
+The examples simulate model proposals. They make no claim that deterministic strings
+measure a production model. Replace those adapters with staging integrations and keep the
+same invariants and failure tests.
 
 ## Setup
 
-Python 3.11 or newer is required.
+You need Python 3.11 or newer.
 
 ```bash
 git clone https://github.com/alexvervloet/genai-security-deep-dive.git
@@ -78,14 +87,14 @@ All lessons are ready. No credentials or external services are required.
 ```
 
 The editable install in `requirements.txt` matters more than it looks. Running
-`python examples/01_threat_model.py` puts `examples/` on Python's import path, not the
-repository root, so `import genai_security` resolves only once the package itself is
+`python examples/01_threat_model.py` puts `examples/` on Python's import path rather than
+the repository root, so `import genai_security` resolves only once the package itself is
 installed. Install first, then run the labs.
 
 ## Learning path
 
-Run the lessons in order. Each file begins with the prediction to make before running,
-the command, the invariant to inspect, and a pointer to what comes next.
+Run the lessons in order. Each file opens with the prediction to make before running, the
+command, the invariant to inspect, and a pointer to what comes next.
 
 | # | Lesson | Core boundary | Primary risk |
 |---|---|---|---|
@@ -102,15 +111,15 @@ the command, the invariant to inspect, and a pointer to what comes next.
 | 11 | Red-team gate | Attacks, utility, coverage, evaluator health | Verification |
 | 12 | Incident response | Contain before tested recovery | Operations |
 
-The `LLM01`-`LLM10` codes are the
-[OWASP Top 10 for LLM and GenAI Applications 2025](https://genai.owasp.org/llm-top-10/),
-a shared vocabulary for naming these failures in a review. Section 20.2 of the textbook
-lists all ten against the boundary each one needs, and explains why a numbered list is a
+The `LLM01` to `LLM10` codes come from the
+[OWASP Top 10 for LLM and GenAI Applications 2025](https://genai.owasp.org/llm-top-10/), a
+shared vocabulary for naming these failures in a review. Section 20.2 of the textbook lists
+all ten against the boundary each one needs, and explains why a numbered list is a
 checklist rather than a threat model.
 
-Read [TEXTBOOK.md](TEXTBOOK.md) with the labs for the complete Chapter 20 lecture.
-Use [EXERCISES.md](EXERCISES.md) to extend every invariant rather than merely observing
-the demonstration.
+Read [TEXTBOOK.md](TEXTBOOK.md) alongside the labs for the full Chapter 20 lecture. Use
+[EXERCISES.md](EXERCISES.md) to extend every invariant rather than only watching the
+demonstration.
 
 ### 1. Threat modelling
 
@@ -118,10 +127,10 @@ the demonstration.
 python examples/01_threat_model.py
 ```
 
-Observe that assigning `LLM01` does not close the risk. The first model reports an
-uncontrolled boundary and an open score-20 risk; findings clear only when a concrete
-authorization boundary and mitigation are present. In a real review, retain residual
-risk rather than treating mitigation as elimination.
+Notice that assigning `LLM01` does not close the risk. The first model reports an
+uncontrolled boundary and an open score-20 risk, and findings clear only once a concrete
+authorization boundary and mitigation exist. In a real review, keep the residual risk
+rather than treating mitigation as elimination.
 
 ### 2. Sensitive data and prompt leakage
 
@@ -129,11 +138,11 @@ risk rather than treating mitigation as elimination.
 python examples/02_sensitive_data.py
 ```
 
-The internal order status enters context, while the restricted token is excluded and
-represented only by a keyed fingerprint, because an unsalted digest of a guessable value
-is one dictionary away from the value. An ordinary email is redacted at output, and an
-exact secret canary blocks the response. Search context, output, logs, traces, and
-exceptions, not just the user-visible answer.
+The internal order status enters context. The restricted token stays out and appears only
+as a keyed fingerprint, because an unsalted digest of a guessable value is one dictionary
+away from the value itself. An ordinary email gets redacted at output, and an exact secret
+canary blocks the response. Search context, output, logs, traces, and exceptions, not only
+the user-visible answer.
 
 ### 3. Supply-chain provenance
 
@@ -142,9 +151,9 @@ python examples/03_supply_chain.py
 ```
 
 The approved prompt and model pass source, version, signature, and payload checks. A
-changed prompt produces `digest mismatch: support-prompt`. The course HMAC is a
-teaching signature; production needs protected identity-backed signing and verifiable
-provenance such as Sigstore/SLSA.
+changed prompt produces `digest mismatch: support-prompt`. The course HMAC is a teaching
+signature. Production needs protected identity-backed signing and verifiable provenance,
+such as Sigstore and SLSA.
 
 ### 4. Data and model poisoning
 
@@ -152,10 +161,10 @@ provenance such as Sigstore/SLSA.
 python examples/04_poisoning.py
 ```
 
-The gate identifies an untrusted source, blocked marker, and conflicting labels. Both
-sides of the label conflict are quarantined because the detector cannot safely guess
-truth. Extend this with near-duplicate, distribution, influence, and held-out behavior
-tests for a real corpus.
+The gate identifies an untrusted source, a blocked marker, and conflicting labels. It
+quarantines both sides of the label conflict, because the detector cannot safely guess
+which side is true. Extend this with near-duplicate, distribution, influence, and held-out
+behavior tests for a real corpus.
 
 ### 5. Improper output handling
 
@@ -164,8 +173,8 @@ python examples/05_output_handling.py
 ```
 
 Valid JSON becomes an exact typed action, SQL values stay in parameters, an unexpected
-`admin` field rejects the whole proposal, and model prose is HTML-escaped. Repeat the
-pattern for every downstream grammar; there is no universal output sanitizer.
+`admin` field rejects the whole proposal, and model prose gets HTML-escaped. Repeat the
+pattern for every downstream grammar. There is no universal output sanitizer.
 
 ### 6. Excessive agency and identity
 
@@ -173,10 +182,10 @@ pattern for every downstream grammar; there is no universal output sanitizer.
 python examples/06_agency_and_identity.py
 ```
 
-A model-supplied tenant is rejected rather than silently overwritten. An irreversible
-operation fails without approval and passes only with approval bound to subject,
-tenant, tool, and idempotency key. The effective tenant and requester come from the
-trusted session.
+A model-supplied tenant gets rejected rather than overwritten behind your back. An
+irreversible operation fails without approval and passes only with approval bound to
+subject, tenant, tool, and idempotency key. The effective tenant and requester come from
+the trusted session.
 
 ### 7. Vector, cache, and claim isolation
 
@@ -184,11 +193,10 @@ trusted session.
 python examples/07_vector_isolation.py
 ```
 
-The other tenant's semantically stronger secret never becomes a ranking candidate.
-The cache key is bound to tenant, principals, query, and corpus version. A factual
-claim then retains an approved source version, digest, and exact quote. Structural
-evidence does not by itself prove semantic entailment; keep a separate factuality
-evaluation.
+The other tenant's semantically stronger secret never becomes a ranking candidate. The
+cache key binds to tenant, principals, query, and corpus version. A factual claim then
+keeps an approved source version, digest, and exact quote. Structural evidence does not by
+itself prove semantic entailment, so keep a separate factuality evaluation.
 
 ### 8. Egress and SSRF
 
@@ -196,12 +204,12 @@ evaluation.
 python examples/08_egress_and_ssrf.py
 ```
 
-Three identical URLs with three different DNS answers. The allowlisted name passes with
-a global address and fails when the same name resolves to loopback or to the cloud
-metadata address, which no check on the URL string could catch. A plaintext metadata URL
-fails earlier, at the scheme, before any lookup. A redirect to an unapproved host fails
-too. The lesson opens no socket. A production client must connect to the exact checked
-address so a second DNS lookup cannot rebind it.
+Three identical URLs with three different DNS answers. The allowlisted name passes with a
+global address and fails when the same name resolves to loopback or to the cloud metadata
+address, which no check on the URL string could catch. A plaintext metadata URL fails
+earlier, at the scheme, before any lookup happens. A redirect to an unapproved host fails
+too. The lesson opens no socket. A production client has to connect to the exact checked
+address, so a second DNS lookup cannot rebind it.
 
 ### 9. Generated-code isolation
 
@@ -209,10 +217,10 @@ address so a second DNS lookup cannot rebind it.
 python examples/09_sandbox_boundaries.py
 ```
 
-The request is denied for network, root identity, secret environment, and a writable
-mount outside scratch. The example then lists guarantees only the real container,
-microVM, or managed runner can enforce. No generated code executes on the host, and
-the Python function is intentionally not described as a sandbox.
+The request gets denied for network, root identity, secret environment, and a writable
+mount outside scratch. The example then lists the guarantees only a real container,
+microVM, or managed runner can enforce. No generated code executes on the host, and the
+Python function is deliberately never described as a sandbox.
 
 ### 10. Unbounded consumption
 
@@ -220,9 +228,9 @@ the Python function is intentionally not described as a sandbox.
 python examples/10_resource_controls.py
 ```
 
-One reservation charges once across replay. An oversized recursive branch is rejected
-before work and leaves all counters unchanged. Real distributed agents need the same
-atomic reservation invariant in a concurrency-safe shared store.
+One reservation charges once across replay. An oversized recursive branch gets rejected
+before any work happens and leaves every counter unchanged. Real distributed agents need
+the same atomic reservation invariant in a concurrency-safe shared store.
 
 ### 11. Red-team release gates
 
@@ -230,11 +238,11 @@ atomic reservation invariant in a concurrency-safe shared store.
 python examples/11_redteam_gate.py
 ```
 
-Allow-all fails with 100% attack success. Block-all also fails because benign utility
-falls to zero. The third system passes everything and proves nothing: it answers from
-the probe list itself, which is what a suite satisfied without controls is worth. The
+Allow-all fails with 100% attack success. Block-all fails too, because benign utility falls
+to zero. The third system passes everything and proves nothing, because it answers from the
+probe list itself, which is exactly what a suite satisfied without controls is worth. The
 capstone wires the same gate to real boundaries. Missing categories and evaluation
-exceptions are also failures in the tested gate.
+exceptions count as failures in the tested gate too.
 
 ### 12. Incident response
 
@@ -242,11 +250,11 @@ exceptions are also failures in the tested gate.
 python examples/12_incident_response.py
 ```
 
-Recovery directly after detection is rejected. The exercised path preserves a digest,
-contains, records root cause and regression, passes the gate, recovers, and closes with
-an owner. Hash chaining detects changed metadata but not a deleted tail: the run shows a
-truncated log verifying cleanly until it is checked against an anchored head. Production
-still needs restricted, durable, append-only evidence storage.
+Recovery directly after detection gets rejected. The exercised path preserves a digest,
+contains, records root cause and regression, passes the gate, recovers, and closes with an
+owner. Hash chaining detects changed metadata and not a deleted tail. The run shows a
+truncated log verifying cleanly right up until you check it against an anchored head.
+Production still needs restricted, durable, append-only evidence storage.
 
 ## Hands-on capstone
 
@@ -267,11 +275,11 @@ GENAI SECURITY RELEASE REVIEW
   release ready: True
 ```
 
-The command attacks the same allow-all and hardened boundary across benign utility,
-all ten OWASP 2025 categories, SSRF, and generated-code isolation. It exits nonzero
-unless the naive implementation fails and the hardened implementation passes. It
-writes deterministic `security-report.json`, which is ignored by Git so release
-systems can archive it separately.
+The command attacks the same allow-all and hardened boundary across benign utility, all ten
+OWASP 2025 categories, SSRF, and generated-code isolation. It exits nonzero unless the
+naive implementation fails and the hardened implementation passes. It writes a
+deterministic `security-report.json`, which Git ignores so release systems can archive it
+separately.
 
 Inspect the report:
 
@@ -280,9 +288,9 @@ python -m json.tool security-report.json
 ```
 
 Each result carries a `control` field naming the boundary that decided it. Read those
-before trusting a pass: a probe can block for a reason unrelated to the risk it is named
-after, and an outcome alone cannot show you that. The naive system records no controls,
-which is the point of it.
+before trusting a pass. A probe can block for a reason unrelated to the risk it is named
+after, and an outcome on its own cannot show you that. The naive system records no
+controls, which is the point of it.
 
 Then extend it with a risk from your own threat model. A top-ten-only capstone is not a
 complete security review.
@@ -357,8 +365,8 @@ Keep the invariants from this repository and replace the adapters.
 
 ## Standards baseline
 
-This August 2026 course uses dated primary baselines so future readers can identify
-drift:
+This August 2026 course uses dated primary baselines so future readers can spot the
+drift.
 
 - [OWASP Top 10 for LLM and GenAI Applications 2025](https://genai.owasp.org/llm-top-10/)
 - [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
@@ -368,7 +376,7 @@ drift:
 - [MITRE ATLAS](https://atlas.mitre.org/)
 - [CWE-918: Server-Side Request Forgery](https://cwe.mitre.org/data/definitions/918.html)
 
-Frameworks change. Re-check current versions during a real review and record the exact
+Frameworks change. Re-check current versions during a real review, and record the exact
 version your evidence targets.
 
 ## Troubleshooting
@@ -391,8 +399,8 @@ fixed rather than waived as a pass.
 
 **A test passes only when network or credentials are available**
 
-That test does not belong in the default offline gate. Inject a deterministic adapter
-for the course, and add the live behavior as a clearly separated integration suite.
+That test does not belong in the default offline gate. Inject a deterministic adapter for
+the course, and add the live behavior as a clearly separated integration suite.
 
 ## Continue
 

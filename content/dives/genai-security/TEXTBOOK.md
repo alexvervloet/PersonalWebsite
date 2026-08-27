@@ -325,7 +325,7 @@ An adversarial string collection becomes an engineering control when every probe
 - retained result and diagnostic evidence; and
 - a threshold that blocks release.
 
-Measure attack success rate and benign pass rate together. “Block everything” is not a
+Measure attack success rate and benign pass rate together. "Block everything" is not a
 secure product. Require coverage of the risks named in the threat model. Count harness
 exceptions and missing categories as failures; otherwise a broken evaluator produces a
 comforting green dashboard.
@@ -391,28 +391,28 @@ Compliance language without executable evidence is not a boundary.
 
 ## 20.17 Common failed approaches
 
-**“The system prompt says never reveal secrets.”** Prompts are model input. Remove the
+**"The system prompt says never reveal secrets."** Prompts are model input. Remove the
 secret and enforce disclosure policy at context and output boundaries.
 
-**“The model only calls tools from a schema.”** A schema validates shape. Trusted code
+**"The model only calls tools from a schema."** A schema validates shape. Trusted code
 must authorize semantics against authenticated identity.
 
-**“We sanitize all model output.”** There is no universal sanitizer. Parse and encode
+**"We sanitize all model output."** There is no universal sanitizer. Parse and encode
 for each exact sink.
 
-**“We filter vector results after search.”** Unauthorized content has already affected
+**"We filter vector results after search."** Unauthorized content has already affected
 ranking and perhaps caches. Filter first.
 
-**“The URL host is allowlisted.”** DNS and redirects can still reach a private address.
+**"The URL host is allowlisted."** DNS and redirects can still reach a private address.
 Authorize the resolved destination at connection time.
 
-**“The Python wrapper is a sandbox.”** It is a policy helper. Isolation belongs to the
+**"The Python wrapper is a sandbox."** It is a policy helper. Isolation belongs to the
 runtime and kernel boundary.
 
-**“Our attack suite has a 100% block rate.”** Check benign utility, suite coverage, and
+**"Our attack suite has a 100% block rate."** Check benign utility, suite coverage, and
 harness errors before celebrating.
 
-**“A citation means the answer is factual.”** Prove source approval and quote presence,
+**"A citation means the answer is factual."** Prove source approval and quote presence,
 then separately evaluate entailment and decision quality.
 
 ## 20.18 Review checklist
@@ -430,7 +430,7 @@ Before release, a senior engineer should be able to answer:
 - What is the fastest tested containment action for every high-impact capability?
 - Which claims rely on unit evidence, and which require staging or production proof?
 
-If an answer is “the model should,” the boundary is probably still missing.
+If an answer is "the model should," the boundary is probably still missing.
 
 ## 20.19 From lesson to production
 
