@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part. — Alex Vervloet</title>
+    <meta name="description" content="Deskhand hand-rolls durable execution on Postgres. I took the mechanism out, put a platform underneath, and counted what was left. 204 lines went. The idempotency ledger and the consent binding stayed, and one of them got more load-bearing, not less." />
+    <meta name="author" content="Alexander Vervloet" />
+
+    <link rel="canonical" href="https://www.alexvervloet.com/writing/porting-a-durable-agent-runtime/" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part." />
+    <meta property="og:description" content="204 lines deleted, all doing one job. The idempotency ledger and the argument-hash binding on consent both stayed, and the second one got more load-bearing, not less." />
+    <meta property="og:url" content="https://www.alexvervloet.com/writing/porting-a-durable-agent-runtime/" />
+    <meta property="og:image" content="https://www.alexvervloet.com/portrait.duotone.jpeg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="I Ported a Durable Agent Runtime to Trigger.dev." />
+    <meta name="twitter:description" content="204 lines deleted, all doing one job. The two mechanisms I expected to delete stayed, and one got more load-bearing." />
+    <meta name="twitter:image" content="https://www.alexvervloet.com/portrait.duotone.jpeg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0e1113;
+        --bg-alt: #15191c;
+        --panel: #1a1f23;
+        --line: #252b31;
+        --ink: #d6dde3;
+        --dim: #8d969d;
+        --mute: #5c6770;
+        --accent: #7fb8a8;
+        --accent-dim: #4a6f66;
+        --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: var(--bg); }
+      body {
+        font-family: 'IBM Plex Sans', system-ui, sans-serif;
+        color: var(--ink);
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .mono { font-family: var(--mono); }
+      .wrap { max-width: 724px; margin: 0 auto; padding: 0 24px; }
+      .topbar { border-bottom: 1px solid var(--line); }
+      .topbar .wrap {
+        display: flex; justify-content: space-between; align-items: center;
+        padding-top: 18px; padding-bottom: 18px;
+        font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      }
+      .topbar a { color: var(--dim); }
+      .topbar a.name { color: var(--ink); }
+      .eyebrow {
+        color: var(--accent); font-size: 11px; letter-spacing: 0.22em;
+        text-transform: uppercase; margin: 60px 0 18px;
+      }
+      h1 {
+        font-size: 34px; line-height: 1.2; font-weight: 600;
+        letter-spacing: -0.02em; margin: 0 0 20px; color: #eef2f5;
+      }
+      .standfirst { font-size: 19px; line-height: 1.6; color: var(--dim); margin: 0 0 28px; }
+      .meta {
+        font-size: 12px; letter-spacing: 0.06em; color: var(--mute);
+        padding-bottom: 30px; margin-bottom: 40px; border-bottom: 1px solid var(--line);
+      }
+
+      article p { font-size: 18px; margin: 0 0 26px; }
+      article h2 {
+        font-size: 21px; font-weight: 600; letter-spacing: -0.01em;
+        color: #eef2f5; margin: 52px 0 18px;
+      }
+      article h3 {
+        font-size: 17px; font-weight: 600; color: #eef2f5;
+        margin: 36px 0 14px;
+      }
+      article strong { color: #eef2f5; font-weight: 600; }
+      article ul, article ol { font-size: 18px; margin: 0 0 26px; padding-left: 24px; }
+      article li { margin-bottom: 10px; }
+      article li::marker { color: var(--accent-dim); }
+
+      article :not(pre) > code {
+        font-family: var(--mono);
+        font-size: 0.86em;
+        padding: 2px 5px;
+        border-radius: 3px;
+        background: #1c2226;
+        border: 1px solid var(--line);
+        color: #cfe0da;
+        word-break: break-word;
+      }
+      article pre {
+        margin: 0 0 26px;
+        padding: 18px 20px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: #14181b;
+        font-family: var(--mono);
+        font-size: 13.3px;
+        line-height: 1.62;
+        tab-size: 2;
+      }
+      article pre code {
+        background: none; border: 0; padding: 0; font-size: inherit; color: var(--ink);
+      }
+      article pre::-webkit-scrollbar { height: 6px; }
+      article pre::-webkit-scrollbar-thumb { background: rgba(127, 127, 127, 0.3); }
+
+      .table-wrap { overflow-x: auto; margin: 0 0 28px; }
+      .table-wrap table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+      .table-wrap th, .table-wrap td {
+        text-align: left; vertical-align: top;
+        padding: 9px 14px; border-bottom: 1px solid var(--line);
+      }
+      .table-wrap th {
+        font-family: var(--mono); font-size: 10.5px;
+        letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--dim); font-weight: 500;
+        border-bottom-color: var(--accent-dim); white-space: nowrap;
+      }
+      .table-wrap td.num { text-align: right; font-family: var(--mono); color: var(--dim); }
+      .table-wrap td.name { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; color: #cfe0da; }
+      .table-wrap tbody tr:hover { background: var(--bg-alt); }
+
+      .callout {
+        margin: 0 0 28px; padding: 20px 22px;
+        border: 1px solid var(--line); border-left: 2px solid var(--accent-dim);
+        border-radius: 4px; background: var(--bg-alt);
+      }
+      .callout p { font-size: 17px; margin: 0; }
+      .callout p + p { margin-top: 16px; }
+
+      .footer {
+        margin: 56px 0 90px; padding-top: 30px; border-top: 1px solid var(--line);
+        font-size: 15px; color: var(--dim);
+      }
+      .footer .label {
+        color: var(--mute); font-size: 10px; letter-spacing: 0.22em;
+        text-transform: uppercase; margin-bottom: 12px;
+      }
+      .footer .refs a { margin-right: 18px; white-space: nowrap; line-height: 2; }
+      .footer .home { margin-top: 26px; }
+
+      @media (max-width: 600px) {
+        h1 { font-size: 27px; }
+        article p, article ul, article ol { font-size: 17px; }
+        article h2 { font-size: 19px; margin-top: 44px; }
+        .eyebrow { margin-top: 44px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="wrap mono">
+        <a class="name" href="/">← Alex Vervloet</a>
+        <a href="https://github.com/alexvervloet/deskhand">deskhand on GitHub ↗</a>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="eyebrow mono">// writing · engineering</div>
+      <h1>I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part.</h1>
+      <p class="standfirst">Deskhand hand-rolls durable execution on Postgres. I took the mechanism out, put a platform underneath it, and counted what was left. Two hundred and four lines went. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less.</p>
+      <div class="meta mono">Alex Vervloet · 2026 · 9 min read</div>
+
+      <article>
+        <p><a href="https://github.com/alexvervloet/deskhand">Deskhand</a> is a durable agent runtime for support operations. An agent reads a ticket, works it across many steps, and is allowed to do irreversible things: refund money, email a customer, cancel an order. The project exists for one sentence, which is <em>step 7 of 12 fails after step 6 already sent the email</em>.</p>
+
+        <p>It hand-rolls durable execution on Postgres. A run is a row, a worker leases it, the conversation gets rebuilt from a step log on every resume, and a worker that dies simply stops renewing its lease. The README has always been upfront that this is the wrong production answer and the right teaching one. Temporal or Trigger.dev is what you would actually reach for, and each of them hides exactly the mechanism the project was built to show.</p>
+
+        <p>Which left an obvious question I had never actually answered: how much of that machinery was essential, and how much was the cost of doing durability by hand?</p>
+
+        <p>So I took the mechanism out and put <a href="https://trigger.dev">Trigger.dev</a> underneath it.</p>
+
+        <p>The port runs the same five invariants against the same Postgres, the same schema and the same seed data. A refund it issues is indistinguishable from one the Python worker issues. Only the runtime moved.</p>
+
+        <h2>The result in one line</h2>
+
+        <p>Two hundred and four lines of code deleted, all of them doing one job, and three mechanisms that looked like they should have gone with them stayed exactly where they were.</p>
+
+        <p>The total size barely moved. 1,025 code lines of Python runtime became 986 lines of TypeScript. That is not the interesting number, and quoting it either way would be dishonest. The interesting number is which 204 lines went and what happened to the rest.</p>
+
+        <h2>What was deleted</h2>
+
+        <p>Everything in this table existed to answer one question: how does a process survive not being in memory. Trigger.dev answers it, so the code that answered it is gone.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Deleted</th><th>Lines</th><th>What it did</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="name">runs.claim_next</td><td class="num">23</td><td><code>for update skip locked</code> over the queue, plus the expired-lease recovery clause</td></tr>
+              <tr><td class="name">runs.renew_lease</td><td class="num">9</td><td>Extended the claim, and told a slow worker it had been declared dead</td></tr>
+              <tr><td class="name">runs.suspend_for_approval</td><td class="num">8</td><td>Parked a run and released its lease before a human could take a day to answer</td></tr>
+              <tr><td class="name">runs.requeue</td><td class="num">10</td><td>Made a suspended run claimable, and handed the human's thinking time back to the deadline</td></tr>
+              <tr><td class="name">approvals.expire_stale</td><td class="num">9</td><td>Swept timed-out approvals and woke their runs so they could notice and fail</td></tr>
+              <tr><td class="name">loop.LeaseLost</td><td class="num">1</td><td>The exception that means stop touching this run immediately</td></tr>
+              <tr><td class="name">loop._last_model_call</td><td class="num">8</td><td>Found the turn a resumed worker was in the middle of</td></tr>
+              <tr><td class="name">loop._unresolved</td><td class="num">15</td><td>The resume point: which tool calls have no result yet</td></tr>
+              <tr><td class="name">transcript.rebuild</td><td class="num">52</td><td>Replayed step rows into a messages array, on every single step</td></tr>
+              <tr><td class="name">worker.py</td><td class="num">69</td><td>The whole process: poll, claim, drive, back off, handle signals, fail a crashed run explicitly</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Four columns went with them. <code>lease_owner</code>, <code>lease_expires_at</code>, <code>attempt</code> and <code>suspended_at</code> have no reader in the port, and two values of the run status enum, <code>queued</code> and <code>awaiting_approval</code>, describe states the platform now owns.</p>
+
+        <p><code>suspended_at</code> is the one I would point at in an interview. It exists in deskhand because of a bug that took real money. The run deadline bounded how long the <em>agent</em> could work, and a person reading an approval screen carefully spent that budget on their behalf. A refund approved twenty minutes late executed, and then the run died on its wall-clock deadline with the money gone and no summary written. The fix was to record the moment of suspension and hand the elapsed wait back.</p>
+
+        <p>On Trigger.dev a suspended waitpoint does not consume <code>maxDuration</code> at all. The bug cannot happen, and the column that fixed it has nothing to do.</p>
+
+        <p>That is the honest shape of the win. Not "less code", but "a class of bug that is now unavailable".</p>
+
+        <h2>What the loop became</h2>
+
+        <p>The Python loop opens by insisting that nothing about a run's position lives in a variable. Every iteration re-derives the next action from rows:</p>
+
+        <div class="callout">
+          <p>are there tool calls the model asked for that have no result yet? resolve those. otherwise, ask the model for the next turn.</p>
+        </div>
+
+        <p>In the port, <code>messages</code> is a variable. That is the entire port.</p>
+
+        <p>It is worth being clear that the Python version was never clever for its own sake. It was the price of making a run resumable by a different process on a different machine. Trigger.dev pays that price, so the code that paid it is gone. What is left is the loop anyone would write: ask the model, settle the tool calls it asked for, repeat.</p>
+
+        <p>The platform's whole footprint is one 33-line file: a task definition, a duration ceiling, a queue, and an adapter that turns <code>wait.createToken</code> and <code>wait.forToken</code> into a four-method interface the loop asks for. The loop takes its suspension mechanism as an argument rather than importing it, which is not testing ceremony. It is the measurement. Everything Trigger.dev contributes to this agent arrives through four methods, and the rest of the file cannot tell what is on the other side of them.</p>
+
+        <h2>What did not delete</h2>
+
+        <h3>The idempotency ledger</h3>
+
+        <p>I expected this one to go. It did not, and the reason is the single most important thing I learned.</p>
+
+        <p><strong>Trigger.dev retries a failed run by re-entering the run function from the top, not from the point of failure.</strong> Everything the loop did before the crash gets replayed, including the refund. Their own <code>idempotencyKey</code> solves the neighbouring problem, stopping a retrying parent from re-triggering a child task, and the docs are explicit that this is exactly-once task <em>creation</em>. A refund is not a task creation.</p>
+
+        <p>So the ledger stays, with the same three-step protocol and the same deterministic <code>run_id:seq</code> key. The determinism requirement is actually stronger here. In Python a resumed run recomputed the key from persisted rows. Here a retried run recomputes it from the trajectory it takes the second time, and those two agree only while the trajectory is reproducible.</p>
+
+        <p>The test kills the process immediately after the refund commits, retries from the top, and asserts one refund, one ledger row, and a replay flag on the four tool calls the first attempt had already completed.</p>
+
+        <h3>The consent binding</h3>
+
+        <p>A waitpoint replaces almost all of the approval plumbing. The pending state, the expiry sweep, the wake-the-run dance, the suspend and requeue pair: all of it exists to keep a process alive that is not in memory, and <code>wait.createToken({ timeout })</code> even carries the TTL.</p>
+
+        <p>What stays is the argument hash, and it stays for a reason that has nothing to do with durability.</p>
+
+        <div class="callout">
+          <p><strong>A token id is a capability to resume. It is not a statement about what was consented to.</strong></p>
+          <p>Whoever holds it can complete the waitpoint with any payload, and the run wakes up holding that payload. Nothing in the platform knows that this particular resume was supposed to mean "a human looked at a USD 19.00 refund against order NW-1042 and said yes".</p>
+        </div>
+
+        <p>Deskhand proves this invariant with a test that rewrites a pending call from $19.00 to $48.00 by hand, modelling a hostile caller. On Trigger.dev the same situation arrives <em>without anyone being hostile</em>, as an ordinary consequence of the retry semantics:</p>
+
+        <ol>
+          <li>Attempt one asks for USD 19.00 and opens a waitpoint.</li>
+          <li>The worker dies while the human is still deciding.</li>
+          <li>The platform re-enters the run function from the top.</li>
+          <li>Attempt two re-derives the trajectory and this time asks for USD 48.00.</li>
+          <li>The token is idempotent, so the wait resolves on attempt one's approval.</li>
+        </ol>
+
+        <p>A human said yes to nineteen dollars. Forty-eight is about to leave. Every step in that sequence is correct from the platform's point of view: a token was created, a person completed it, a run resumed. The only thing standing between it and the money is a hash comparison.</p>
+
+        <p>That is a <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/tests/consent.test.ts">test in the port</a>, and it passes. The run ends <code>approval_denied</code> with zero refunds. The neighbouring test confirms it refuses divergence rather than refusing retries, by running the same amount twice and watching the refund go through.</p>
+
+        <h3>The bounds</h3>
+
+        <p>Steps, tokens, dollars of inference and repeated identical tool calls are facts about an <em>agent</em>. A job runner has no opinion about them, and that is not a gap in Trigger.dev.</p>
+
+        <p>The one that nearly moved is the deadline. <code>maxDuration</code> is a wall-clock ceiling and looks like a straight replacement, but it bounds an <em>attempt</em>. Deskhand's deadline is absolute and stamped once at creation, specifically so that a crash-looping run cannot earn itself a fresh clock on every resume. Under a platform that retries three times by default, a per-attempt ceiling is three fresh clocks. So <code>maxDuration</code> is set as a backstop on the process, and the absolute deadline stays on the row.</p>
+
+        <h3>The step log, for a different reason</h3>
+
+        <p>The step log survives, and the rows are identical, but its job changed completely.</p>
+
+        <p>In Python it was the resume mechanism. A worker arriving mid-trajectory rebuilt the conversation by replaying those rows, so they had to be complete, ordered and append-only or a resumed run would reach a different decision. Now nothing reads them to decide what to do next. They are written because "who did what, at what cost, and how do I replay it" is an invariant of its own, and no amount of durable execution answers that for the merchant's auditor.</p>
+
+        <p>One line changed as a result. The insert became an upsert, because a retried attempt walks the same trajectory and reaches the same sequence number again. In Python that could only have meant a bug.</p>
+
+        <p>The idempotency ledger pointedly did <em>not</em> get the same treatment. A step row is a description, and overwriting one with an identical description costs nothing. A ledger row is a claim that a side effect happened, and letting a retry overwrite that claim would be the whole bug.</p>
+
+        <h2>The road not taken</h2>
+
+        <p>Trigger.dev has a <code>chat.agent()</code> primitive with a <code>needsApproval: true</code> flag on a tool, which expresses deskhand's approval gate better than my code does. It is declared on the tool, in backend code, unreachable from a tool result, which is precisely the property deskhand's frozen registry exists to guarantee.</p>
+
+        <p>I did not build on it, because deskhand is a headless backend agent with one opening prompt and no conversation partner, and <code>chat.agent</code> is keyed on a chat id with a client sending messages. Wearing that shape would have made the comparison less honest, not more.</p>
+
+        <p>One thing I would want to check before using it for money. The documented resume path is that the frontend sends the updated assistant message back and the SDK matches it in the conversation accumulator by message ID. Matching an ID establishes <em>which</em> call is being answered, which is a different question from <em>what</em> was agreed to. If the arguments round-trip through the client, the argument hash is load-bearing there too. I could not test this without building the frontend half, so I am flagging it as a question rather than claiming a finding.</p>
+
+        <h2>What I did not verify</h2>
+
+        <p>Worth being precise about, since the people who would find this interesting are the people who build the thing.</p>
+
+        <ul>
+          <li><strong>Not deployed.</strong> This ran locally against real Postgres, not on Trigger.dev infrastructure. The tests substitute the waiter for one that answers instead of suspending.</li>
+          <li><strong>The checkpoint and resume itself is taken on trust.</strong> That Trigger.dev suspends a waiting run, frees its compute and brings it back is their code, and it is the entire reason to use them. My tests do not check it and could not.</li>
+          <li><strong>"Retries re-enter from the top" comes from the documentation</strong>, not from a deployment I watched. It is consistent with why <code>idempotencyKey</code> exists at all, and the whole idempotency argument above depends on it. If it is wrong, that section is wrong, and I would rather say so than imply I watched it happen.</li>
+        </ul>
+
+        <p>What the tests <em>do</em> establish is every claim about what the code still has to do for itself: a divergent retry cannot execute on a stale approval, a replay from the top does not refund twice, an obedient model reading a forged pre-approval in a ticket body still hits the gate, and a payout ceiling holds after a human has clicked approve. Those are claims about my code, and they are checked rather than asserted. Twenty-five tests, against a real database, no account needed to run them.</p>
+
+        <h2>The thing I would tell myself before starting</h2>
+
+        <p>When a platform absorbs a mechanism, ask what the mechanism was <em>for</em> rather than what it was called.</p>
+
+        <p>"Durability" turned out to cover two unrelated jobs in this codebase. Keeping a process resumable, which Trigger.dev does properly and which I should never have written by hand. And never paying a customer twice, which is a claim about a database and stayed mine.</p>
+
+        <p>I had read the sentence in their docs that says idempotency keys are exactly-once task creation before I started, and I still expected the ledger to be redundant, because "durable execution" sounds like it should mean "my side effects happen once". It does not, it does not claim to, and the gap between those two readings is where the money is.</p>
+      </article>
+
+      <div class="footer">
+        <div class="label mono">The code, if you want to read it</div>
+        <div class="refs mono">
+          <a href="https://github.com/alexvervloet/deskhand">deskhand ↗</a>
+          <a href="https://github.com/alexvervloet/deskhand/tree/main/trigger">the port ↗</a>
+          <a href="https://github.com/alexvervloet/deskhand/blob/main/docs/TRIGGER-PORT.md">the full writeup ↗</a>
+          <a href="https://github.com/alexvervloet/deskhand/blob/main/LESSONS.md">lessons ↗</a>
+        </div>
+        <div class="home mono">
+          <a href="/">← Back to alexvervloet.com</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
