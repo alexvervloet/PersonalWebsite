@@ -102,6 +102,12 @@ export const DATA = {
   ],
   projects: [
     {
+      name: 'deskhand',
+      url: 'https://github.com/alexvervloet/deskhand',
+      desc: 'A durable agent runtime for support operations, where the agent is allowed to do irreversible things: refund money, email a customer, cancel an order. It exists for one sentence, which is "step 7 of 12 fails after step 6 already sent the email." Five invariants, each attacked by a test that tries to break it: a worker is killed after it has already refunded a customer and a second one resumes without paying twice; a $19.00 approval is rewritten to $48.00 mid-flight and the runtime refuses rather than executing something nobody saw. 25 trajectory evals gate every merge, and they assert on the path rather than the answer. Deleting the approval check fails 14 of them; deleting the fence around untrusted content fails only 3, which is the uncomfortable half of defence in depth and is written up rather than hidden. Live at deskhand.fly.dev, where a seeded ticket carries a forged "SYSTEM:" block ordering an unapproved refund and the gate holds anyway. I then ported the runtime onto Trigger.dev to find out how much of it was essential: 204 lines deleted, and the idempotency ledger and consent binding both stayed.',
+      tags: ['Agents', 'Durable execution', 'Trigger.dev', 'Live demo'],
+    },
+    {
       name: 'knowledge-desk',
       url: 'https://github.com/alexvervloet/knowledge-desk',
       desc: 'A multi-tenant knowledge assistant where a question can only ever reach the documents the asker is allowed to see — enforced three independent times, so no single missed filter leaks data: an org_id stamp on every query, an ACL filter inside the ranking SQL so forbidden rows are never scored, and Postgres row-level security denying by default underneath. Live at knowledge-desk.fly.dev, where two seeded tenants ask the same question and get different answers, and the tenant with no matching documents gets a refusal rather than the model\'s general knowledge. The retrieval core is 126 of its 3,169 lines; the other 96% is the operational layer — async ingestion, per-tenant and platform spend ceilings, audit, and evals that gate merges.',
