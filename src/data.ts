@@ -157,6 +157,13 @@ export const DATA = {
   },
   writing: [
     {
+      title: 'I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part.',
+      href: '/writing/porting-a-durable-agent-runtime/',
+      standfirst:
+        'Deskhand hand-rolls durable execution on Postgres. I took the mechanism out, put a platform underneath it, and counted what was left. 204 lines went. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less.',
+      meta: 'Engineering · 2026',
+    },
+    {
       title: 'I Was an AI Skeptic. Then I Realized It Was the Same Problem I Had as a Teacher.',
       href: '/writing/i-was-an-ai-skeptic/',
       standfirst:
