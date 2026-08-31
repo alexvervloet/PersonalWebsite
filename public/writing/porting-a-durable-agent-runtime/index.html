@@ -273,6 +273,8 @@
 
         <p>That is a <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/tests/consent.test.ts">test in the port</a>, and it passes. The run ends <code>approval_denied</code> with zero refunds. The neighbouring test confirms it refuses divergence rather than refusing retries, by running the same amount twice and watching the refund go through.</p>
 
+        <p>One consequence worth stating, because two timeouts disagree on purpose. The waitpoint times out after a day; its idempotency key lives for seven. A retry in that gap resolves the cached, already-expired token, gets <code>ok: false</code>, and ends the run <code>approval_expired</code> without asking anybody. Making the two equal would be worse: the key would expire with the token, the retry would mint a fresh waitpoint, and a second person would be asked to authorise a payment whose consent window had already closed.</p>
+
         <h3>The bounds, and what <code>maxDuration</code> actually is</h3>
 
         <p>I got this wrong first, and the corrected version is the sharper finding.</p>
@@ -292,7 +294,7 @@
 
         <p>Nothing else in the bounds has a platform counterpart, and that is not a gap. Steps, tokens, dollars of inference and repeated identical tool calls are facts about an <em>agent</em>, and a job runner has no opinion about them.</p>
 
-        <h3>The step log, for a different reason</h3>
+        <h3>The step log, doing a different job</h3>
 
         <p>The step log survives, and the rows are identical, but its job changed completely.</p>
 
