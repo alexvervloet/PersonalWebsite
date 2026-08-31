@@ -23,6 +23,7 @@ const outDir = path.join(root, 'public', 'dives')
 // Routes that exist outside this generator, for the sitemap.
 const STATIC_ROUTES = [
   { loc: '/', changefreq: 'monthly', priority: '1.0' },
+  { loc: '/writing/porting-a-durable-agent-runtime/', changefreq: 'yearly', priority: '0.8' },
   { loc: '/writing/i-was-an-ai-skeptic/', changefreq: 'yearly', priority: '0.8' },
 ]
 
