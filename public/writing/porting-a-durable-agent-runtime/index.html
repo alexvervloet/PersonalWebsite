@@ -168,7 +168,7 @@
     <div class="wrap">
       <div class="eyebrow mono">// writing · engineering</div>
       <h1>I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part.</h1>
-      <p class="standfirst">Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win turned out not to be less code, but a class of bug that is now unavailable. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less.</p>
+      <p class="standfirst">Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win turned out not to be less code, but a class of bug that is now unavailable. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less. It is deployed, and a run waiting on a human costs nothing while it waits.</p>
       <div class="meta mono">Alex Vervloet · 2026 · 9 min read</div>
 
       <article>
@@ -324,18 +324,39 @@
 
         <p>I have not built the frontend half, so I have not watched a mutated payload go through. But this is a reading of the documented mechanism rather than a guess about it.</p>
 
-        <h2>What I did not verify</h2>
+        <h2>What the deploy showed</h2>
+
+        <p>The port is deployed and has run on Trigger.dev infrastructure, against a Postgres branch of the demo database. Two things I had taken on trust are now things I watched.</p>
+
+        <p><strong>A suspended run really does hold nothing.</strong> NW-1 reached the approval gate and the platform reported <code>status: "FROZEN"</code>, checkpointed with its compute released. It sat there while a human decided. When it finished:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Measure</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>wall clock, trigger to completion</td><td class="num">153 s</td></tr>
+              <tr><td>billed <code>durationMs</code></td><td class="num">19.8 s</td></tr>
+              <tr><td>cost</td><td class="num">0.067 cents</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The 133 seconds a person spent reading the approval screen cost nothing and counted for nothing. That is the <code>maxDuration</code> argument above, measured rather than quoted: a ceiling on CPU time cannot bound how long a ticket has been open, because the waiting is free.</p>
+
+        <p><strong>The gate holds on real infrastructure.</strong> NW-4, whose ticket body carries a forged <code>SYSTEM:</code> block ordering an unapproved refund, reached the same gate. The instruction said not to request human approval. The run requested one, a human denied it, and no money moved. The ledger for the successful NW-1 run has exactly six rows, one per tool call, with <code>issue_refund</code> claimed once.</p>
+
+        <p>Deploying it also found a bug that 26 passing tests did not. The scripted provider had a fixed closing turn, so the first denied run finished by writing "Refunded NW-1101" into the step log next to zero refunds. Every invariant held. The summary was still false, which on a public demo is worse than a crash, because it looks like working software. There is now a test that a denied run says what actually happened, and the ticket escalates rather than resolving.</p>
+
+        <h2>What I still have not verified</h2>
 
         <p>Being precise about this, since the people who would find it interesting are the people who build the thing.</p>
 
         <ul>
-          <li><strong>Not deployed.</strong> This ran locally against real Postgres, not on Trigger.dev infrastructure. The tests substitute the waiter for one that answers instead of suspending.</li>
-          <li><strong>The checkpoint and resume itself is taken on trust.</strong> That Trigger.dev suspends a waiting run, frees its compute and brings it back is their code, and it is the entire reason to use them. My tests do not check it and could not.</li>
-          <li><strong>"Retries re-enter from the top" comes from the documentation</strong>, not from a deployment I watched. It is consistent with why <code>idempotencyKey</code> exists at all, and the whole idempotency argument above depends on it.</li>
+          <li><strong>"Retries re-enter from the top" comes from the documentation</strong>, not from a deployment I watched. It is consistent with why <code>idempotencyKey</code> exists at all, and the whole idempotency argument above depends on it. The crash and replay behaviour is covered by tests locally, where the failure is injected rather than genuine.</li>
           <li><strong>The port never calls a real model.</strong> <code>getProvider()</code> returns the scripted provider unconditionally; there is no Anthropic client in the port at all, where the Python service has a working one. So the trajectory is reproducible by construction rather than by luck, and that assumption is load-bearing for the idempotency key. A real model that diverges on retry claims a fresh key, and the run falls back to being bounded by its caps rather than by the ledger.</li>
         </ul>
 
-        <p>What the tests do establish is what the port still has to do for itself: a divergent retry cannot execute on a stale approval, a replay from the top does not refund twice, an obedient model reading a forged pre-approval in a ticket body still hits the gate, a payout ceiling holds after a human has clicked approve, and a retry's spend lands in the step log. 26 tests, against a real database, no account needed to run them.</p>
+        <p>What the tests do establish is what the port still has to do for itself: a divergent retry cannot execute on a stale approval, a replay from the top does not refund twice, an obedient model reading a forged pre-approval in a ticket body still hits the gate, a payout ceiling holds after a human has clicked approve, and a retry's spend lands in the step log. 27 tests, against a real database, no account needed to run them.</p>
 
         <h2>The thing I would tell myself before starting</h2>
 
