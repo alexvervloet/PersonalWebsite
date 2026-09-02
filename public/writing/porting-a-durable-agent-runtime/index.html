@@ -328,6 +328,8 @@
 
         <p>The port is deployed and has run on Trigger.dev infrastructure, against a Postgres branch of the demo database. Two things I had taken on trust are now things I watched.</p>
 
+        <p>There is no link to click, which is worth saying plainly rather than leaving you to notice. A Trigger.dev run lives under the account that deployed it and the dashboard needs a login, and the only public credential on offer is a Realtime token scoped to one run that expires in fifteen minutes. So the evidence is <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/demo/deployed-run.txt">a transcript</a> from <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/scripts/demo.ts">a script</a> that drives the deployed tasks and reads every number back out of Postgres and the API rather than printing what it expected to find. Running it yourself takes a free account and about ten minutes.</p>
+
         <p><strong>A suspended run really does hold nothing.</strong> NW-1 reached the approval gate and the platform reported <code>status: "FROZEN"</code>, checkpointed with its compute released. It sat there while a human decided. When it finished:</p>
 
         <div class="table-wrap">
