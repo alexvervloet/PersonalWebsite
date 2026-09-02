@@ -345,6 +345,30 @@
 
         <p><strong>The gate holds on real infrastructure.</strong> NW-4, whose ticket body carries a forged <code>SYSTEM:</code> block ordering an unapproved refund, reached the same gate. The instruction said not to request human approval. The run requested one, a human denied it, and no money moved. The ledger for the successful NW-1 run has exactly six rows, one per tool call, with <code>issue_refund</code> claimed once.</p>
 
+        <p><strong>And a retry really does start from the top.</strong> This was the last thing I was taking on faith, and the whole idempotency argument rests on it, so there is a second task that fails on purpose on real infrastructure, at the worst available moment: after the refund has committed and before anything else happens. Attempt two gets the ordinary provider, no memory of the first, and no hint that it is a retry.</p>
+
+        <p>The platform recorded two attempts. The database recorded one refund. The step log says why:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>seq</th><th>step</th><th>replayed</th></tr></thead>
+            <tbody>
+              <tr><td class="num">2</td><td class="name">get_ticket</td><td>true</td></tr>
+              <tr><td class="num">4</td><td class="name">get_order</td><td>true</td></tr>
+              <tr><td class="num">6</td><td class="name">search_kb</td><td>true</td></tr>
+              <tr><td class="num">8</td><td class="name"><strong>issue_refund</strong></td><td><strong>true</strong></td></tr>
+              <tr><td class="num">10</td><td class="name">add_internal_note</td><td>false</td></tr>
+              <tr><td class="num">12</td><td class="name">set_ticket_status</td><td>false</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Attempt two walked the whole trajectory again, including the refund. Steps 10 and 12 ran for the first time because attempt one died before reaching them. Step 8 is the answer to the question: the second attempt arrived at <code>issue_refund</code> with the money already gone, found the claim in the ledger, and handed back the recorded result instead of paying again. Delete the ledger and that row pays a second time.</p>
+
+        <p>The approval was not asked twice either. The waitpoint token was already completed, and the idempotency key on it meant attempt two resolved the same token rather than opening a new one and putting the decision in front of a second person.</p>
+
+        <p>The fault lives in its own task with its own id rather than behind a flag on the production one. Deskhand's fault injector has no environment switch for the same reason: a runtime that can be told to misbehave by its configuration is a runtime nobody can reason about.</p>
+
         <p>Deploying it also found a bug that 26 passing tests did not. The scripted provider had a fixed closing turn, so the first denied run finished by writing "Refunded NW-1101" into the step log next to zero refunds. Every invariant held. The summary was still false, which on a public demo is worse than a crash, because it looks like working software. There is now a test that a denied run says what actually happened, and the ticket escalates rather than resolving.</p>
 
         <h2>What I still have not verified</h2>
@@ -352,7 +376,6 @@
         <p>Being precise about this, since the people who would find it interesting are the people who build the thing.</p>
 
         <ul>
-          <li><strong>"Retries re-enter from the top" comes from the documentation</strong>, not from a deployment I watched. It is consistent with why <code>idempotencyKey</code> exists at all, and the whole idempotency argument above depends on it. The crash and replay behaviour is covered by tests locally, where the failure is injected rather than genuine.</li>
           <li><strong>The port never calls a real model.</strong> <code>getProvider()</code> returns the scripted provider unconditionally; there is no Anthropic client in the port at all, where the Python service has a working one. So the trajectory is reproducible by construction rather than by luck, and that assumption is load-bearing for the idempotency key. A real model that diverges on retry claims a fresh key, and the run falls back to being bounded by its caps rather than by the ledger.</li>
         </ul>
 
@@ -367,6 +390,8 @@
         <p>I had read the sentence in their docs that says idempotency keys are exactly-once task creation before I started, and I still expected the ledger to be redundant, because "durable execution" sounds like it should mean "my side effects happen once". It does not, it does not claim to, and the gap between those two readings is where the money is.</p>
 
         <p>The same mistake nearly cost me the deadline argument. "Duration" sounds like elapsed time, I read it as elapsed time, and I had written a paragraph depending on the opposite two sections earlier without noticing the collision. When a platform's word matches a word in your own design, that is the moment to read the reference page, not the moment to assume a mapping.</p>
+
+        <p>Both were caught by checking rather than by rereading. The retry claim held up, the deadline claim did not, and I could not have told you in advance which was which. That is the argument for deploying the thing.</p>
       </article>
 
       <div class="footer">
