@@ -11,6 +11,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { DIVES, DIVE_DOCS, REFERENCE, SITE_ORIGIN, repoUrl } from './dives/catalog.mjs'
 import { render } from './dives/markdown.mjs'
@@ -20,12 +21,72 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const contentDir = path.join(root, 'content')
 const outDir = path.join(root, 'public', 'dives')
 
-// Routes that exist outside this generator, for the sitemap.
+// Routes that exist outside this generator, for the sitemap. `sources` are the
+// tracked files whose newest edit dates the route.
 const STATIC_ROUTES = [
-  { loc: '/', changefreq: 'monthly', priority: '1.0' },
-  { loc: '/writing/porting-a-durable-agent-runtime/', changefreq: 'yearly', priority: '0.8' },
-  { loc: '/writing/i-was-an-ai-skeptic/', changefreq: 'yearly', priority: '0.8' },
+  { loc: '/', changefreq: 'monthly', priority: '1.0', sources: ['index.html', 'src'] },
+  {
+    loc: '/writing/porting-a-durable-agent-runtime/',
+    changefreq: 'yearly',
+    priority: '0.8',
+    sources: ['public/writing/porting-a-durable-agent-runtime/index.html'],
+  },
+  {
+    loc: '/writing/i-was-an-ai-skeptic/',
+    changefreq: 'yearly',
+    priority: '0.8',
+    sources: ['public/writing/i-was-an-ai-skeptic/index.html'],
+  },
 ]
+
+// Crawlers use <lastmod> to decide what is worth fetching again. Stamping every
+// page with the build date tells them the whole site changed on every deploy,
+// which trains them to ignore the field, so each route is dated by the last
+// commit that touched the file it is built from.
+//
+// git is the only source that survives CI, where a fresh clone gives every file
+// the same checkout mtime. A shallow clone can still leave a path with no
+// history, so mtime is the fallback and the build says when it fell back.
+const mtimeFallbacks = []
+
+function gitDate(relPath) {
+  try {
+    const out = execFileSync('git', ['log', '-1', '--format=%cs', '--', relPath], {
+      cwd: root,
+      encoding: 'utf-8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+    return out || null
+  } catch {
+    return null
+  }
+}
+
+function mtimeDate(relPath) {
+  try {
+    return fs.statSync(path.join(root, relPath)).mtime.toISOString().slice(0, 10)
+  } catch {
+    return null
+  }
+}
+
+/** Newest edit date across the given repo-relative paths, as YYYY-MM-DD. */
+function lastmod(...relPaths) {
+  const dates = []
+  for (const rel of relPaths) {
+    const fromGit = gitDate(rel)
+    if (fromGit) {
+      dates.push(fromGit)
+      continue
+    }
+    const fromMtime = mtimeDate(rel)
+    if (fromMtime) {
+      mtimeFallbacks.push(rel)
+      dates.push(fromMtime)
+    }
+  }
+  return dates.length ? dates.sort().at(-1) : new Date().toISOString().slice(0, 10)
+}
 
 function read(file) {
   return fs.existsSync(file) ? fs.readFileSync(file, 'utf-8') : null
@@ -181,11 +242,21 @@ async function main() {
   }
 
   // ── Sitemap ──
-  const today = new Date().toISOString().slice(0, 10)
+  const rel = (abs) => path.relative(root, abs)
   const urls = [
-    ...STATIC_ROUTES,
-    { loc: '/dives/', changefreq: 'weekly', priority: '0.9' },
-    ...pages.map((p) => ({ loc: p.route, changefreq: 'monthly', priority: '0.7' })),
+    ...STATIC_ROUTES.map(({ sources, ...u }) => ({ ...u, lastmod: lastmod(...sources) })),
+    {
+      loc: '/dives/',
+      changefreq: 'weekly',
+      priority: '0.9',
+      lastmod: lastmod(rel(path.join(contentDir, 'series-readme.md'))),
+    },
+    ...pages.map((p) => ({
+      loc: p.route,
+      changefreq: 'monthly',
+      priority: '0.7',
+      lastmod: lastmod(rel(p.doc.file)),
+    })),
   ]
   fs.writeFileSync(
     path.join(root, 'public', 'sitemap.xml'),
@@ -195,7 +266,7 @@ ${urls
   .map(
     (u) => `  <url>
     <loc>${SITE_ORIGIN}${u.loc === '/' ? '' : u.loc}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${u.lastmod}</lastmod>
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`,
@@ -218,6 +289,13 @@ ${urls
   console.log(
     `Generated ${pages.length + 1} deep-dive pages into public/dives/ (${checked} internal links checked)`,
   )
+
+  if (mtimeFallbacks.length) {
+    console.warn(
+      `\nsitemap: no git history for ${mtimeFallbacks.length} path(s), dated by mtime instead:`,
+    )
+    ;[...new Set(mtimeFallbacks)].forEach((f) => console.warn('  ' + f))
+  }
 
   if (unresolved.length) {
     console.error(`\n${unresolved.length} link(s) no rule could resolve:`)
