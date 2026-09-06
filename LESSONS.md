@@ -31,3 +31,39 @@ sitemap.
 
 Next time: install measurement before the content that needs measuring, not
 after. A month of traffic with no way to attribute it is a month of data lost.
+
+## Cloudflare Pages `_headers` merges rules instead of ranking them
+
+Expected the usual most-specific-wins behaviour, and wrote a `/*` catch-all
+setting `Cache-Control: public, max-age=0, must-revalidate` for HTML alongside
+`/assets/*` and `/fonts/*` set to `immutable`.
+
+Pages does neither most-specific-wins nor last-match-wins. The docs say an
+incoming request matching several patterns "will inherit all rules' headers",
+and "if a header is applied twice in the `_headers` file, the values are joined
+with a comma separator". The immutable assets would have been served
+`Cache-Control: public, max-age=31536000, immutable, public, max-age=0,
+must-revalidate`.
+
+Next time: treat `_headers` patterns as a set union, not a cascade. Any header
+name that appears under two patterns capable of matching the same path is a
+bug. The catch-all may only carry headers no other rule sets. HTML needed no
+rule at all, because the Pages default is already `max-age=0, must-revalidate`.
+
+This also rules out convenience globs. `/*.png` looks harmless until Vite emits
+an imported image into `/assets/`, at which point that file matches both
+patterns and gets two cache policies. The favicons are listed one path at a
+time for that reason.
+
+## `fetchPriority` typechecks but react-dom 18.3.1 does not implement it
+
+`@types/react` 18.3 has `fetchPriority` in `ImgHTMLAttributes`, so `tsc -b`
+passed clean. At render time react-dom warned "React does not recognize the
+`fetchPriority` prop on a DOM element" and emitted the camelCase spelling
+verbatim. HTML attribute names are case-insensitive so it would probably have
+worked, but it warns on every render and depends on parser leniency.
+
+Spreading the lowercase attribute (`{...{ fetchpriority: 'high' }}`) renders a
+clean `fetchpriority="high"` and still typechecks. Worth remembering that the
+types and the renderer ship on separate schedules, and a green `tsc` says
+nothing about whether react-dom knows an attribute.
