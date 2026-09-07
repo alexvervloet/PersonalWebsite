@@ -167,8 +167,9 @@ export function Page() {
               transition: 'opacity 0.6s',
             }}
           >
-            For eight years I shipped production React and React Native to
-            millions of users. Now I build AI systems from scratch — RAG,
+            For eight years I shipped production web and mobile software to a
+            platform with two million users, owning flows end to end from React
+            through NestJS and Kafka. Now I build AI systems from scratch — RAG,
             agents, evals, guardrails — to understand them at the primitive
             level, not the framework level. The throughline is the same: I
             translate between how a system actually works and what a team is
