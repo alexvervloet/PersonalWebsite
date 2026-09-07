@@ -179,6 +179,16 @@ The example changes only the index schema and observes the actual release decisi
 flip. `allowed_models={"*"}` is the one explicit wildcard; strings such as
 `"model-*"` are literal and do not silently widen approval.
 
+A concrete instance of this compatibility tuple failing, found in the wild:
+[knowledge-desk](https://github.com/alexvervloet/knowledge-desk) exposed `answer_model`
+as configuration while sending `output_config.effort` on every request. Claude Haiku
+rejects that parameter outright, so setting the model to Haiku did not degrade an answer,
+it failed every one of them. The model was a setting; the request shape around it was
+not, and nothing in the release checked that the two agreed. It was found by
+[model-swap](https://github.com/alexvervloet/model-swap) trying to use the app as a
+library, which is the cheapest compatibility test there is: make something else drive
+your release tuple from outside.
+
 ## 9. Dependency locking and artifact integrity
 
 Version ranges describe acceptable resolution inputs. A lock records the exact installation

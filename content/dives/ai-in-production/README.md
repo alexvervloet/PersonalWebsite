@@ -244,6 +244,13 @@ v2 passes.
 python examples/07_eval_gate.py        # exits non-zero if nothing clears the bar
 ```
 
+A threshold on a fixed gold set is the right first gate and it has a limit worth knowing
+about. It compares one score against one number, so it cannot tell a real regression from
+a run that landed differently. [model-swap](https://github.com/alexvervloet/model-swap)
+gates the same kind of change on paired per-case outcomes and an interval instead, which
+turns "87% versus 89%" into ship, do not ship, or inconclusive with the number of extra
+cases that would settle it.
+
 ---
 
 ## 10. The capstone: `serve.py`
@@ -284,9 +291,9 @@ changes is the key. A real provider needs one, it lives in your keychain rather 
 
 ---
 
-## Going further: three more production concerns
+## Going further: four more production concerns
 
-The capstone covers the core seven layers. These three are the next ones you hit at
+The capstone covers the core seven layers. These four are the next ones you hit at
 scale, and like everything here they run offline on the mock.
 
 ### Semantic caching
@@ -314,6 +321,17 @@ on answers turns production into your best eval set. The thumbs-down cases are e
 what to add as regression tests, per the evals dive, and as fine-tuning data.
 ```bash
 python examples/11_rate_limiting_and_feedback.py
+```
+
+### Cost per successful task
+§4 prices a call. Nobody buys calls. Divide total spend by the tasks that actually
+finished, add the human time spent correcting the output at a loaded hourly rate, and
+compare that against whatever the workflow replaced. That number decides whether the
+system is worth running, and it usually says something the model bill cannot: on a
+workflow with a person in the loop, a model ten times cheaper moves the total by 3%
+while halving review time moves it by 48%.
+```bash
+python examples/12_cost_per_successful_task.py
 ```
 
 ---
@@ -387,6 +405,7 @@ examples/
   09_semantic_caching.py    ← cache by meaning (embedding similarity), not exact text
   10_model_fallback.py      ← failover to a backup model + cost routing by difficulty
   11_rate_limiting_and_feedback.py ← per-tenant token bucket + the thumbs up/down feedback loop
+  12_cost_per_successful_task.py   ← the unit economics: is the workflow worth running?
 ```
 
 ---

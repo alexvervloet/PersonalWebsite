@@ -386,6 +386,19 @@ versioning, and eval gates) get built from scratch and wired into one running ap
 the series and where this repo's eval gate sits on the request path. It runs offline on
 a mock provider, so you can see the whole ops machinery with no key and no cost.
 
+Everything above runs on fixtures, offline, for free, which is what makes it a lab.
+[model-swap](https://github.com/alexvervloet/model-swap) runs the same statistics
+against a deployed application and a real bill, and the parts that change are the
+interesting ones. Its judge is calibrated against human labels before it grades
+anything, and refuses below a floor declared in the repository beforehand. Its margin
+is a product decision written down before the comparison ran. And its first
+finding is one no lab produces. Comparing two real models on 120 paired cases returned
+`inconclusive`: the cheaper model is measurably worse, and 120 cases cannot settle
+whether it is worse by more than the 5% declared acceptable. The interval spans the
+margin, the report says so, and roughly 81 more cases would settle it. A suite that
+returns "inconclusive" rather than laundering a 5-point measurement into a decision is
+the thing this dive is teaching you to build.
+
 ---
 
 ## File map

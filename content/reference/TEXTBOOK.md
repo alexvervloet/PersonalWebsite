@@ -45,7 +45,7 @@ Standalone chapters that extend the core path. Each notes where it slots in.
 | 10 | [The Window, or Memory as a Policy](context-engineering-deep-dive/TEXTBOOK.md) | The model knows only what is in its window, so manage it with memory, compaction, and assembly. | Agents (6); pairs with RAG (4) |
 | 11 | [More Than Text](multimodal-deep-dive/TEXTBOOK.md) | A multimodal model takes images and audio too. Put each one in the right slot and mind the cost. | The API chapters (1, 2) |
 | 12 | [The Two Hundred Millisecond Problem](realtime-voice-deep-dive/TEXTBOOK.md) | Conversational voice is a low-latency, full-duplex loop with interruption, and every hundred milliseconds gets felt. | Multimodal (11) |
-| 13 | [Teaching Behavior, Not Facts](fine-tuning-deep-dive/TEXTBOOK.md) | Fine-tuning changes how a model behaves, not what it knows, and you must prove it beat your baseline. | RAG (4) + Evals (5) |
+| 13 | [Teaching Behavior, Not Facts](fine-tuning-deep-dive/TEXTBOOK.md) | Fine-tuning teaches behavior well and facts badly, and you must prove it beat your baseline. | RAG (4) + Evals (5) |
 | 14 | [A Protocol, Not a Product](mcp-deep-dive/TEXTBOOK.md) | Write a tool server once against the Model Context Protocol and any client can discover and use it. | Agents (6) |
 | 15 | [The Model on Your Own Machine](local-models-deep-dive/TEXTBOOK.md) | An open-weight model speaks the same API, so running local is mostly an operations choice. | The API chapters (1, 2) |
 | 16 | [The Next Six Weeks](observability-deep-dive/TEXTBOOK.md) | A prototype gets judged once. A production system gets judged continuously, so quality is a trend you watch. | Production (8); pairs with Evals (5) |
@@ -57,6 +57,7 @@ Standalone chapters that extend the core path. Each notes where it slots in.
 | 22 | [The Memory-and-Queue Scheduler](inference-platform-deep-dive/TEXTBOOK.md) | An inference platform turns finite accelerator memory and compute into latency, throughput, reliability, and cost outcomes by scheduling KV state and queued token work. | Local Models (15); Production (8); Architecture (21) |
 | 23 | [The Evidence a Release Owes](testing-and-delivery-deep-dive/TEXTBOOK.md) | A release is a claim, only as good as the independent evidence behind it. No check may take its expected answer from the input it judges, and no passing result counts unless it names the candidate it tested. | Evals (5) + Production (8); pairs with GenAI Security (20) |
 | 24 | [The Numeric Contracts Beneath the Model](ml-foundations-for-ai-engineers/TEXTBOOK.md) | Shapes decide what can interact, loss decides what training rewards, attention decides what each token can read, and calibration, quantization, and retained state decide what an inference result means and costs. | The API chapters (1, 2); before Fine-tuning (13), Local Models (15), and Inference Platforms (22) |
+| 25 | [The Database Settles It](structured-data-ai-deep-dive/TEXTBOOK.md) | A generated query is a hypothesis, and only the database settles it. Score by executing, expect the join that multiplies a total, recognize an undefined metric as a specification gap wearing a model-shaped costume, and put the boundary in a role rather than a prompt. | Evals (5); pairs with GenAI Security (20) |
 
 ---
 

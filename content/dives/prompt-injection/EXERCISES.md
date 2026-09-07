@@ -221,6 +221,123 @@ the app never emits harmful content even if a jailbreak or hallucination produce
 
 ---
 
+## Section 12: encoding evasion
+
+**Predict.** `contains_secret` already strips non-alphanumerics, so it catches
+`B L U E - M O O N - 4 2`. Will it catch `ВLUЕ-MOON-42`, spelled with a Cyrillic
+В and Е? Write your answer down, then run `python examples/12_unicode_evasion.py`.
+
+<details><summary>▸ Answer</summary>
+
+No, and this was a real bug in this repo rather than a hypothetical. The squash
+keeps anything `str.isalnum()` accepts, and that is true for Cyrillic and
+fullwidth letters, so they pass through unchanged and the comparison fails on a
+passphrase that any human reads correctly.
+
+The fix is to fold before comparing: strip invisible characters, expand
+compatibility forms, drop combining marks, substitute Latin lookalikes. Note
+what it does *not* fix. The paraphrase in section 6 still walks past the
+heuristic and the benign "ignore the typos" message still trips it. Encoding
+and meaning are different problems that both get called "obfuscation".
+</details>
+
+**Do.** `CONFUSABLES` in `guardrails/normalize.py` has a few dozen entries and the
+real Unicode table has thousands. What does `is_mixed_script` buy you that adding
+more entries does not?
+
+<details><summary>▸ Answer</summary>
+
+It catches the family as a class instead of one character at a time, so it does
+not depend on your table being complete. The cost is that it only works where
+the text is supposed to be one script, and it has to run per word: a Greek
+quotation inside an English document is legitimate, while a single word built
+from two alphabets is not.
+</details>
+
+---
+
+## Section 13: delimiter forgery
+
+**Recall.** Section 5 said delimiters are a speed bump because you are asking a
+trickable model to police itself. There is a second failure underneath that one.
+What is it, and why is only one of the two fixable?
+
+<details><summary>▸ Answer</summary>
+
+If the tag is a fixed string, the attacker does not have to argue with the model
+at all: they write `</untrusted_document>` inside the document, and everything
+after it reads as application text. That is impersonation rather than
+persuasion.
+
+The persuasion half is a fact about models and you cannot fix it in your string
+handling. The impersonation half is a fact about your concatenation and you can:
+put a nonce in the tag, because a document written last week cannot carry digits
+generated at request time. Run `python examples/13_delimiter_forgery.py` to see
+both halves, including a politely-worded request that survives the fence intact
+because there was nothing forged to strip.
+</details>
+
+---
+
+## Section 14: the other end of the exfiltration channel
+
+**Recall.** `strip_exfil_links` removes markdown images and links to domains you do not
+control. Name the component that could have refused the request without reading the
+model's output at all, and what you would configure on it.
+
+<details><summary>▸ Answer</summary>
+
+The browser. A Content-Security-Policy restricting `img-src` and `connect-src` to
+origins you control means the beacon fetch is never issued, rather than being stripped
+just before it would have been. For an interface that renders model-authored HTML,
+`script-src` with a per-response nonce stops a model-produced `<script>` executing, for
+the same reason the delimiter nonce works: the attacker writes the payload before the
+value exists.
+
+The limit is the interesting half. A policy protects the page your application serves
+and does nothing when some other client renders your model's output, which describes
+most integrations. So it layers with the output check rather than replacing it, and an
+output check remains the only defense that travels with the text.
+</details>
+
+---
+
+## Section 15: the region you cannot fence
+
+**Recall.** You wrap the untrusted document in a nonce tag and strip anything
+tag-shaped out of it, so the attacker can neither guess your delimiter nor forge
+one. Name the text in that prompt the nonce protects nothing about, and say why
+you could not have fenced it even if you had wanted to.
+
+<details><summary>▸ Answer</summary>
+
+Everything outside the tags: the task line, the instructions, the identifiers.
+The nonce protects the boundary between the two regions and says nothing about
+what you yourself put on the trusted side of it.
+
+You could not have fenced it because of the ordering. The prompt is assembled
+before the nonce exists, so the outer region is written first and by definition
+is not inside anything. That is not a flaw in the design, it is what a fence
+means: it marks a region, so there is always a region it does not mark.
+
+Which makes the fence worth exactly what your assembly keeps out of that region,
+and the failure looks like helpfulness rather than like an attack. A ticket
+subject in the task line, a customer's email in a heading, the first forty
+characters of a body quoted for context. Run
+`python examples/14_unfenceable_region.py`: four of its five plausible task lines
+carry untrusted text across the boundary, and no string defense in this repo
+reports a problem, because nothing was forged.
+
+The rule is that identifiers your system minted are safe there and anything a
+user typed is not. The part worth copying is that the rule is testable.
+`unfenced_untrusted` asks which untrusted fields appear outside the fence and
+should always answer none. A comment saying the same thing is not a test, and
+writing one makes the claim less likely to be checked, because every later reader
+takes it as established.
+</details>
+
+---
+
 ### Where to take it next
 
 Invent your own attacks against your own systems (only your own; this is

@@ -44,9 +44,12 @@ By the end, you will be able to:
 - keep restricted data out of context, output, logs, and incident evidence;
 - verify exact models, prompts, datasets, and dependencies before deployment;
 - quarantine named poisoning signals without deleting investigative evidence;
-- validate model output for JSON, SQL, and HTML sinks;
-- authorize tools from authenticated identity with least privilege, bound approval,
-  idempotency, timeouts, and output limits;
+- validate model output for JSON, SQL, and HTML sinks, and escape retrieved text before
+  it is concatenated into a prompt that has a grammar of its own;
+- authorize tools from authenticated identity with least privilege, single-use bound
+  approval, idempotency, timeouts, and output limits;
+- keep server-side conversation state bound to its owner, and one subject's turns out
+  of another subject's answer;
 - enforce tenant, ACL, provenance, citation, cache, egress, and runtime boundaries;
 - bound denial-of-wallet across a complete request rather than one API call;
 - gate releases on attack resistance, benign utility, coverage, and evaluator health;
@@ -110,6 +113,8 @@ command, the invariant to inspect, and a pointer to what comes next.
 | 10 | Resource controls | Shared, atomic pre-call reservations | LLM10 |
 | 11 | Red-team gate | Attacks, utility, coverage, evaluator health | Verification |
 | 12 | Incident response | Contain before tested recovery | Operations |
+| 13 | Context assembly | Escaped passages, nonce-fenced region | LLM01, LLM08 |
+| 14 | Session correlation | Owner-bound handles, per-turn subject | LLM02, LLM06 |
 
 The `LLM01` to `LLM10` codes come from the
 [OWASP Top 10 for LLM and GenAI Applications 2025](https://genai.owasp.org/llm-top-10/), a
@@ -187,6 +192,15 @@ irreversible operation fails without approval and passes only with approval boun
 subject, tenant, tool, and idempotency key. The effective tenant and requester come from
 the trusted session.
 
+Then the read that every one of those controls allows. A support agent, in the right
+tenant, holding a role that genuinely grants customer reads, asks for a different
+customer's history. Well-formed arguments, no trusted field supplied, and a read owes no
+approval, so nothing above refuses it. Who is asking and on whose installation are two
+questions; about which person is a third, and a role is silent on it. The tool carries
+the record the request is about, read from the case rather than from the proposal, and
+the pivot is refused on what it names rather than quietly rewritten, because a corrected
+pivot returns data the caller asked for and leaves nothing to say an attempt happened.
+
 ### 7. Vector, cache, and claim isolation
 
 ```bash
@@ -232,6 +246,15 @@ One reservation charges once across replay. An oversized recursive branch gets r
 before any work happens and leaves every counter unchanged. Real distributed agents need
 the same atomic reservation invariant in a concurrency-safe shared store.
 
+Then the ceiling that budget does not have. Tokens, calls, steps, bytes and latency are
+all the operator's resources, which is why they get limits: the person writing them is
+the person holding the bill. An agent that can refund, credit, discount, or upgrade is
+moving somebody else's money, and that figure usually appears on a dashboard instead.
+The lesson pays three refunds, each comfortably inside a per-request ceiling, and the
+third is refused by the account window, because a per-request ceiling bounds a day only
+if the number of requests is bounded and a retry or a redelivery produces a fresh one.
+For each resource an agent can move, ask whose it is.
+
 ### 11. Red-team release gates
 
 ```bash
@@ -255,6 +278,38 @@ contains, records root cause and regression, passes the gate, recovers, and clos
 owner. Hash chaining detects changed metadata and not a deleted tail. The run shows a
 truncated log verifying cleanly right up until you check it against an anchored head.
 Production still needs restricted, durable, append-only evidence storage.
+
+### 13. Context assembly
+
+```bash
+python examples/13_context_assembly.py
+```
+
+The naive prompt carries three citation keys and the retriever issued two. The forged one
+came from a support ticket and occupies the same position, in the same syntax, as a real
+one. Escaping defuses the heading, the key, the operator line, and the forged fence
+without deleting any of them, so the ticket's actual wording survives for an
+investigation. The region is then fenced with a per-request nonce the document could not
+have contained. A politely worded request comes through untouched, because nothing was
+forged: impersonation is closed here, persuasion is lesson 6's problem.
+
+### 14. Session correlation
+
+```bash
+python examples/14_session_correlation.py
+```
+
+A conversation handle is a bearer reference to accumulated context, so it comes from the
+CSPRNG and every resume checks the owner. A colleague in the same tenant and a matching
+name in another tenant are both refused, with the same wording a missing handle gets, so
+the store is not a membership oracle.
+
+Then the harder half. One operator preps two clients in a morning inside a conversation
+they own, and every turn is one they were entitled to see. The answer being composed is
+about the second client. Turns carry the subject recorded when they happened, so the
+first client's amount and date are withheld, and a question naming nobody is still
+attributed correctly. No permission was exceeded anywhere in that paragraph, which is
+what makes it an attribution failure rather than an access-control one.
 
 ## Hands-on capstone
 
@@ -330,6 +385,8 @@ genai_security/                 executable security controls
   provenance.py                artifact manifests, digest and approval checks
   poisoning.py                 record and corpus quarantine findings
   sinks.py                     strict JSON, parameterized SQL, escaped HTML
+  context.py                   escaped passages and a nonce-fenced prompt region
+  sessions.py                  owner-bound conversation handles and turn subjects
   capabilities.py              identity, roles, approval, idempotency, limits
   vectors.py                   tenant/ACL/provenance prefilter and cache keys
   claims.py                    pinned structural evidence for factual claims
@@ -338,7 +395,7 @@ genai_security/                 executable security controls
   resources.py                 request-wide atomic reservations
   redteam.py                   adversarial evaluation and release policy
   incidents.py                 stateful response and tamper-evident audit metadata
-examples/                      twelve narrated, executable lessons
+examples/                      fourteen narrated, executable lessons
 hands_on/security_review.py    deterministic naive-vs-hardened capstone
 tests/                         offline security-invariant test suite
 check_setup.py                 environment and capstone readiness check

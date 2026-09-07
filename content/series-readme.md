@@ -81,13 +81,14 @@ Standalone deep dives that extend the core path. Each one notes where it slots i
 | [Multimodal](multimodal-deep-dive/) | A multimodal model takes more than text. Put the right images and audio in the right slot, and mind the token cost. | the API dives (1–2); pairs with RAG (4) |
 | [Realtime Voice](realtime-voice-deep-dive/) | Conversational voice is a low-latency, full-duplex loop. Stream audio both ways, handle interruption (barge-in), and choose between a pipeline and a speech-to-speech model. | Multimodal; the API dives (1–2) |
 | [ML Foundations for AI Engineers](ml-foundations-for-ai-engineers/) | A model is a chain of numeric contracts. Trace shapes, logits, loss, gradients, masked attention, sampling, calibration, quantization, and retained memory through runnable NumPy and PyTorch code. | the API dives (1–2); before Fine-tuning, Local Models, and Inference Platforms |
-| [Fine-tuning](fine-tuning-deep-dive/) | Fine-tuning changes how a model behaves, not what it knows. Teach behavior by example, then prove it beat your baseline. | RAG (4) + Evals (5) |
+| [Fine-tuning](fine-tuning-deep-dive/) | Fine-tuning teaches behavior well and facts badly. Teach behavior by example, then prove it beat your baseline. | RAG (4) + Evals (5) |
 | [MCP](mcp-deep-dive/) | The Model Context Protocol hands an LLM tools, data, and prompts from a separate process. Write the server once and any client can use it. | Agents (6) |
 | [Local Models](local-models-deep-dive/) | An open-weight model on your machine speaks the same OpenAI API, so running local is mostly an ops choice about privacy, cost, and control. | the API dives (1–2); pairs with Fine-tuning |
 | [Inference Platform Engineering](inference-platform-deep-dive/) | A self-hosted model becomes a service only when memory and queue scheduling turn finite GPUs into measured latency, throughput, reliability, and cost. | Local Models; Production; Architecture |
 | [Observability](observability-deep-dive/) | A prototype gets judged once. A production system gets judged continuously, so watch quality as a trend: drift, silent regressions, and alerting that does not cry wolf. It ends by emitting the same telemetry as real OpenTelemetry over OTLP, so you can see which half of the problem the standard actually solves. | Production (8); pairs with Evals (5) |
 | [Architecture](architecture-deep-dive/) | The seams between the components. Where conversation state lives, what a queue buys, what streaming costs your guardrails, and where the tenant boundary goes. Every decision measured rather than asserted. | Production (8); pairs with Observability |
 | [Testing & Delivery](testing-and-delivery-deep-dive/) | A release is an evidence pipeline. Requirements defined independently decide whether the reproducibility, compatibility, security, rollout, and recovery evidence is good enough to promote. | Evals (5) + Production (8); pairs with GenAI Security |
+| [Structured Data + AI](structured-data-ai-deep-dive/) | Most of what a company knows is in a database. Ask it questions in English, then do the work that makes the answers trustworthy: score by executing the SQL, catch the join that silently multiplies revenue, discover the metric nobody defined, and put the read-only boundary somewhere a prompt cannot reach. | Evals (5); pairs with GenAI Security |
 | [Professional Tools](professional-tools-deep-dive/) | Volume 2. Rebuild each from-scratch piece with the tool professionals actually reach for (LiteLLM, Instructor, LlamaIndex, DeepEval, LangGraph, Llama Guard, Langfuse) and measure both on the same eval, so "should we adopt this framework?" becomes an experiment instead of a taste. | Everything (you need the pieces first) |
 
 ---
@@ -160,6 +161,34 @@ signals into promotion and rollback evidence you can reproduce.
 ML Foundations takes the numeric path beneath the API call. It belongs before the
 dives where you tune weights, compress them, or schedule their memory.
 
+
+---
+
+## Applied companions
+
+Each dive stops where a lab should stop. The technique works, on a corpus small
+enough to read, with a mock provider so the first run is free. What a lab cannot
+show you is the same technique under the conditions that make it hard. These are
+separate repositories that took one dive further and wrote down what changed.
+
+They are not part of the course and nothing here depends on them. Read one when
+a dive leaves you wondering what happens once the corpus is large, the bill is
+real, or someone else is using it.
+
+| Dive | Companion | What it took further |
+|---|---|---|
+| RAG (4) | [rag-at-scale](https://github.com/alexvervloet/rag-at-scale) | Brute force, IVFFlat and HNSW at 1 to 5 million chunks. Recall, latency, build time and memory, measured as the corpus grows. |
+| Evals (5) | [model-swap](https://github.com/alexvervloet/model-swap) | The statistics applied to a deployed app instead of a fixture: a calibrated judge, a predeclared margin, and what a 120-case suite can and cannot detect. |
+| Agents (6), Prompt Injection (7) | [deskhand](https://github.com/alexvervloet/deskhand) | An agent allowed to move money. Durable runs across a worker crash, an approval gate bound to an argument hash, and 25 trajectory evals as a merge gate. |
+| Production (8) | [knowledge-desk](https://github.com/alexvervloet/knowledge-desk) | The operational layer around a live multi-tenant assistant: tenancy, ACL-aware retrieval, background ingestion, quotas, cost attribution and audit. |
+| Context Engineering (10) | [client-context-compiler](https://github.com/alexvervloet/client-context-compiler) | Packing one window under a token budget when two clients share an advisor, and the attribution failure that every permission check passes. |
+| Fine-tuning (13) | [local-lora](https://github.com/alexvervloet/local-lora) | The dive's mock trainer replaced with real weights: a LoRA fine-tune on Apple Silicon, held out and measured against its own baseline. |
+| Capstone (17) | [askrepo-live](https://github.com/alexvervloet/askrepo-live) | The capstone deployed and left running in public, with rate limits, a budget cap and uptime monitoring. |
+| Professional Tools (18) | [askrepo-langchain](https://github.com/alexvervloet/askrepo-langchain) | The same app rebuilt on LangChain and LangGraph, with both implementations scored on the same gold questions. |
+
+The interesting reading in most of them is `LESSONS.md`, which records what the
+lab did not predict.
+
 ---
 
 ## Setup (the same everywhere)
@@ -196,7 +225,9 @@ the eval anatomy, the injection attack catalog, the quantization calculator).
 | The complete AI security control plane, no key | [GenAI Security](genai-security-deep-dive/) (deterministic attacks and release gate) |
 | A complete inference fleet control plane, no GPU | [Inference Platform Engineering](inference-platform-deep-dive/) (deterministic memory, scheduling, scaling, and rollout decisions) |
 | A complete release-evidence pipeline, no services | [Testing & Delivery](testing-and-delivery-deep-dive/) (deterministic tests, gates, rollout, and rollback) |
+| Ten architecture decisions measured, no key | [Architecture](architecture-deep-dive/) (every chapter's stressor runs offline in under a minute) |
 | Model mechanics, no API key or GPU | [ML Foundations for AI Engineers](ml-foundations-for-ai-engineers/) (NumPy math and a tiny CPU transformer) |
+| A text-to-SQL benchmark that executes, no key or database server | [Structured Data + AI](structured-data-ai-deep-dive/) (SQLite fixture, canned model, real enforcement) |
 | Six weeks of monitoring, no key | [Observability](observability-deep-dive/) (synthetic traffic) |
 | Real models, no per-token bill | [Local Models](local-models-deep-dive/) (Ollama on your machine) |
 | Offline sections | the first lesson in most repos (look for "offline, no key") |

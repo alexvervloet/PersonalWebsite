@@ -194,7 +194,51 @@ have different grammars and different security properties. Often the safest desi
 to remove a sink entirely: render prose as text and expose a small typed operation
 instead of executing model-generated code.
 
-## 20.8 Agency: authority follows the authenticated principal
+## 20.8 Retrieved content is an input boundary too
+
+The previous section treats model output as untrusted because it crosses into a sink
+with a grammar. The prompt is also a document with a grammar, and retrieved passages are
+concatenated into it, so the same reasoning applies in the other direction and is
+skipped far more often.
+
+A prompt has structure: section headings, evidence markers, citation keys, and a fence
+separating instructions from data. If a passage is concatenated verbatim, anything it
+contains joins that structure. A support ticket whose body reads `## Approved policy`
+produces a heading the application never wrote. A wiki page containing `[doc:policy/7]`
+produces a citation key the retriever never issued. The model cannot distinguish these
+from the real ones, because there is nothing to distinguish: same bytes, same position,
+same meaning to a reader.
+
+This is not the cross-tenant problem. The passage is genuinely the caller's, genuinely
+authorized, and correctly retrieved. It is lying about what kind of text it is.
+
+Note what a citation check does and does not catch here. Verifying that every key in the
+answer exists in the approved set is necessary and insufficient, because a model that
+reads a forged policy can attribute it to the *real* key of the passage that carried it.
+The citation then validates and the false claim reads as sourced. Pinning the quote to
+the source text, as §20.12 requires, is what closes that; key existence alone does not.
+
+Two controls, answering different questions:
+
+1. Escape the passage so it cannot write the document's grammar. Defuse headings,
+   key-shaped tokens, evidence markers, and fence tags. Defuse rather than delete: after
+   an incident the first question is what the document actually said, and a control that
+   erases the evidence answers it badly.
+2. Fence the untrusted region with a nonce generated per request. This is the actual
+   boundary. A document written last week cannot contain a value invented at request
+   time, so forging the fence becomes impossible rather than unlikely. A fixed delimiter
+   is one the attacker can simply type.
+
+Count what you defuse and treat it as a signal. A corpus where forged-heading counts are
+nonzero and rising is a corpus somebody is writing into.
+
+Neither control stops a passage from arguing. Text that politely asks the model to
+confirm an invented policy arrives intact, correctly labelled as data, and whether the
+model complies is a question about the model. These controls remove the ability to
+impersonate the application; they do not remove the ability to persuade it, and no
+string function will. Authority still has to follow the authenticated principal.
+
+## 20.9 Agency: authority follows the authenticated principal
 
 An agent combines a confused-deputy problem with automation. Separate four things:
 
@@ -209,12 +253,98 @@ argument schema, timeout, and maximum output. Require idempotency keys for write
 Irreversible operations should be rare, separately permissioned, and bound to a human
 approval containing subject, tenant, tool, object, and operation key.
 
+A role is a statement about capability and says nothing about aim, which is the gap
+that stays open when everything above is in place. Separate a third question from the
+first two. *Who is asking* is the principal, *on whose installation* is the tenant, and
+*about which person* is the request's scope. A support agent legitimately holds "read
+customer history"; which customer is an ordinary argument, and the model chose it after
+reading a ticket a stranger wrote. Tenancy does not help, because both people are
+customers of the same merchant, which is the ordinary case rather than an edge one. So
+a tool keyed by a person carries the record the request belongs to, read from the case
+rather than from the proposal, and answers for that record only. Tools addressed by an
+identifier the system minted do not need it, and scoping them anyway would make an
+invoice unreadable from the ticket about it.
+
+Refuse a pivot on what it names rather than rewriting it to the scoped subject. The
+correction returns exactly the data the caller asked for, so nothing looks wrong at the
+call site and nothing in the log says an attempt happened. This is the same argument as
+rejecting a model-supplied tenant instead of overwriting it, one level further in, and
+it matters more here because a read looks harmless: no approval is owed, no effect is
+recorded, and the data still ends up in a conversation with a reply tool on the other
+end of it.
+
+Binding is not freshness, and the distinction is easy to lose because both get called
+replay protection. An approval bound to one subject, tenant, tool, and object cannot be
+*aimed* somewhere else. It can still be presented again at the same target, and an
+agent that retries a failed step, resumes after a crash, or loops is a machine for
+producing exactly that. Binding answers "is this approval for this operation"; it never
+answers "has this approval already been spent". So an approval also needs a challenge:
+issued by trusted code from a CSPRNG, valid for a short window, and consumed on use.
+
+Two tokens, two jobs, and this is where systems conflate them:
+
+| | who issues it | what it guarantees | may it be predictable |
+|---|---|---|---|
+| idempotency key | the caller may choose it | a repeat is *recognised* | yes |
+| approval challenge | only the server | a repeat is *refused* | no, never |
+
+An idempotency key is not a nonce. It makes a duplicate submission converge on one
+effect, which is a correctness property. It does not stop an attacker producing the
+duplicate, which is the security property, and a value the model can see or compute is
+not a challenge at all. If a challenge is derived from the operation's own fields, every
+input to it is visible to the thing you are defending against.
+
+Spend the challenge at the authorization decision rather than after the effect
+succeeds. A crash between decision and effect then costs one re-approval, while the
+other ordering leaves a live single-use token after a failure, which is the state an
+attacker is most able to arrange.
+
 The [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
 extends the system view to goal hijacking, tool misuse, identity and privilege abuse,
 agent communication, memory, cascading failures, and rogue agents. These are reasons
 to shrink authority and blast radius, not reasons to ask the model to be more careful.
 
-## 20.9 Retrieval: filter before similarity work
+## 20.10 Conversation state is a credential, and a turn has a subject
+
+Stateful model APIs moved the transcript to the server. The client sends a short handle
+and the provider supplies everything said so far, which makes that handle a bearer
+reference to accumulated context: whoever presents it gets the material. It is usually
+treated as a routing detail and given the care a routing detail gets.
+
+Two failures follow, and the second is the one that survives a careful team.
+
+**An unbound handle is an access-control hole.** Issue handles from a CSPRNG rather than
+a counter or a hash of the participants, since a sequential id turns reading another
+person's conversation into arithmetic and a derived id turns it into a hash of values
+the caller already knows. Then check ownership on every resume, because handles leak
+through logs, referrers, support tickets, and shared links. Give a denied resume the
+same answer as a missing one; distinguishing them turns the store into a membership
+oracle over the handle space. Expire conversations, and compare the handle with a
+constant-time comparison, since it is a secret in every sense that matters.
+
+**A bound handle still drifts.** This is the part that has no analogue in the earlier
+sections. Context accumulated under one authorization survives into later turns and
+nothing re-checks it. An operator working a queue preps one subject at nine and another
+at nine fifteen, inside one conversation they own, every turn of which they were
+entitled to see. Composing the second answer from the whole transcript puts the first
+subject's amounts and dates into it. No permission check fires, because no permission
+was exceeded.
+
+Record each turn's subject when the turn happens, from trusted state, and filter the
+transcript by it before composing. The subject cannot be recovered from the text later:
+the question that causes the damage is usually "what about the September obligation?",
+which names nobody, and inferring a subject from prose is how one person's obligation
+becomes another's. Return the withheld turns alongside the admitted ones rather than
+dropping them, because "the model never saw it" and "the model saw it and ignored it"
+are different incidents and only one of them is a failure of this control.
+
+Note what kind of failure this is. Every authorization check passes and the answer is
+still wrong about whose facts it is stating. Binding the handle answers whether this
+caller may read this conversation; it never answers whether this turn belongs in the
+answer being composed now. Treating those as one question is the mistake, and the
+second one is the one a customer telephones about.
+
+## 20.11 Retrieval: filter before similarity work
 
 Vector databases are authorization systems once they hold multi-tenant or
 access-controlled data. Store tenant, ACL, source URI, digest, version, and approval
@@ -233,7 +363,7 @@ Cache keys must include tenant, effective principals, normalized query, corpus v
 and any policy state that changes visibility. An empty ACL denies at ingestion. Test
 cross-tenant, cross-role, revoked-source, stale-cache, and duplicate-ID paths.
 
-## 20.10 Misinformation and evidence
+## 20.12 Misinformation and evidence
 
 Security includes integrity: confidently wrong output can cause financial, medical,
 legal, or operational harm even without a malicious attacker.
@@ -249,7 +379,7 @@ presence of a link proves a claim.
 
 Measure downstream decision quality, not just fluent similarity to a reference answer.
 
-## 20.11 Egress and SSRF
+## 20.13 Egress and SSRF
 
 Any model-selected URL is attacker controlled. Server-side request forgery can reach
 cloud metadata, loopback services, private control planes, and credentials embedded in
@@ -272,7 +402,7 @@ Prefer no general network tool. Where egress is necessary:
 String matching a URL is not enough. Lesson 8 uses an injected resolver and makes no
 network request so every path stays deterministic.
 
-## 20.12 Generated-code isolation
+## 20.14 Generated-code isolation
 
 `eval`, `exec`, subprocess calls, import filters, and Python object tricks do not create
 a trustworthy sandbox inside the application process. If generated code is a product
@@ -297,7 +427,7 @@ The course policy validates a request *to* such a runtime. It is intentionally n
 called a sandbox. Symlink handling, mounts, namespaces, kernel configuration, and
 resource enforcement must be proven by integration tests against the actual runner.
 
-## 20.13 Unbounded consumption and denial-of-wallet
+## 20.15 Unbounded consumption and denial-of-wallet
 
 Per-minute rate limits do not bound one accepted request. A shared request budget must
 cover input and output tokens, model calls, tool calls, agent steps, retries, bytes,
@@ -310,11 +440,48 @@ important invariants:
 2. failed reservations mutate no counters; and
 3. retries with the same operation key charge once.
 
+Validate the limits themselves before trusting them, and check finiteness before
+magnitude. Every guard in a budget is an ordered comparison, and every ordered
+comparison against NaN is false, so a NaN limit passes a `< 0` check, passes a `<= 0`
+check, and then loses every comparison that would have rejected a charge. The control
+does not fail; it switches itself off and keeps reporting success. A limit arriving as
+NaN or infinity is not exotic: it comes from a config file, a unit conversion, or a
+division that found a zero. This module shipped with exactly that hole until a reader
+went looking for it.
+
 Place limits at multiple scopes: request, user, tenant, tool, and provider account.
 Use circuit breakers and backpressure for shared dependencies. Return a bounded error
 instead of asking the model to repeatedly repair an exhausted operation.
 
-## 20.14 Red-team tests are release tests
+Now read that list of resources again and ask whose each one is. Tokens, calls, steps,
+bytes, latency, and cost are all yours. They get bounded early and thoroughly for a
+reason that is worth naming rather than admiring: the person writing the limits is the
+person who receives the bill. An agent permitted to refund, credit, discount, waive a
+fee, or upgrade a plan is moving somebody else's money, and in most systems that number
+exists only as a figure on a dashboard. Denial-of-wallet has a second form, and it
+empties the wrong wallet.
+
+The shape of the ceiling differs too, which is why copying the request budget does not
+work. A per-request limit bounds one request, and it bounds a day only if the number of
+requests is bounded, which nothing does: a retry, a redelivered queue message, or one
+customer opening four tickets each produce a fresh request that is individually well
+behaved. So the second scope is the account over a rolling window, and it is the one
+that actually caps exposure. Charge it before the payment for the same reason you
+reserve tokens before the call, since a ceiling verified afterwards is a report.
+
+Two things this is not. It is not an approval gate and does not replace one: approval
+asks a person about one payment, and this holds whatever the person decides, which
+matters precisely because the failure mode is a series of individually reasonable
+approvals on a busy afternoon. And it is not satisfied by a per-order or per-item
+sanity check, which answers whether one payment is proportionate to one object and says
+nothing about a run that touches four objects once each.
+
+The general rule generalises past money. For every resource an agent can move, ask who
+owns it. Reputation, a customer's inbox, a partner's rate limit, and a counterparty's
+support queue are all things an agent can spend on somebody else's behalf, and all of
+them tend to be measured rather than bounded.
+
+## 20.16 Red-team tests are release tests
 
 An adversarial string collection becomes an engineering control when every probe has:
 
@@ -340,7 +507,7 @@ Test controls at layers:
 Version attacks and expected outcomes beside the code. When an incident finds a new
 path, add the smallest reproducible probe before recovering service.
 
-## 20.15 Incident response is part of the design
+## 20.17 Incident response is part of the design
 
 Prepare system-specific containment actions before an incident:
 
@@ -367,7 +534,7 @@ Production evidence needs access control, retention, legal/privacy policy, trust
 timestamps, and durable append-only storage. Do not copy raw customer secrets into a
 ticket merely to prove a leak occurred.
 
-## 20.16 Secure development lifecycle
+## 20.18 Secure development lifecycle
 
 [NIST SP 800-218A](https://csrc.nist.gov/pubs/sp/800/218/a/final) augments the Secure
 Software Development Framework with practices for generative AI and dual-use
@@ -389,7 +556,7 @@ Translate lifecycle guidance into evidence:
 
 Compliance language without executable evidence is not a boundary.
 
-## 20.17 Common failed approaches
+## 20.19 Common failed approaches
 
 **"The system prompt says never reveal secrets."** Prompts are model input. Remove the
 secret and enforce disclosure policy at context and output boundaries.
@@ -397,8 +564,20 @@ secret and enforce disclosure policy at context and output boundaries.
 **"The model only calls tools from a schema."** A schema validates shape. Trusted code
 must authorize semantics against authenticated identity.
 
+**"The conversation belongs to this user, so its history is safe to use."** Ownership
+says they may read it. It says nothing about which subject the current answer is about.
+Record a subject per turn and filter before composing.
+
+**"The approval is bound to the operation, so it cannot be replayed."** Binding stops it
+being aimed elsewhere, not being presented twice at the same target. Add a server-issued
+single-use challenge with an expiry.
+
 **"We sanitize all model output."** There is no universal sanitizer. Parse and encode
 for each exact sink.
+
+**"The retrieved text is just data."** Only if you escaped it. Concatenated verbatim it
+writes your headings and citation keys, and the model has no way to tell those from
+yours. Escape the grammar and fence the region with a per-request nonce.
 
 **"We filter vector results after search."** Unauthorized content has already affected
 ranking and perhaps caches. Filter first.
@@ -409,22 +588,29 @@ Authorize the resolved destination at connection time.
 **"The Python wrapper is a sandbox."** It is a policy helper. Isolation belongs to the
 runtime and kernel boundary.
 
+**"The budget rejects anything over the limit."** Only if the limit is a number. NaN
+loses every ordered comparison, so it passes validation and then bounds nothing. Check
+finiteness first.
+
 **"Our attack suite has a 100% block rate."** Check benign utility, suite coverage, and
 harness errors before celebrating.
 
 **"A citation means the answer is factual."** Prove source approval and quote presence,
 then separately evaluate entailment and decision quality.
 
-## 20.18 Review checklist
+## 20.20 Review checklist
 
 Before release, a senior engineer should be able to answer:
 
 - Which assets and trust boundaries exist, and who owns each high risk?
 - What can an attacker control if the next model output is arbitrary?
 - Which identity authorizes each effect, and can the model influence it?
+- Is every high-risk approval single-use and time-bounded, or only bound to a target?
+- Are conversation handles unguessable, owner-checked, expiring, and filtered by subject?
 - What data is excluded from context, output, logs, and provider retention?
 - Which exact behavior artifacts were built and approved by which workflow?
 - How are poisoning, cross-tenant retrieval, detached citations, and stale caches tested?
+- What stops retrieved text from writing your headings, citation keys, or fence?
 - What prevents SSRF, generated-code escape, excessive cost, and replayed writes?
 - Do adversarial gates retain benign utility and fail when their harness is damaged?
 - What is the fastest tested containment action for every high-impact capability?
@@ -432,7 +618,7 @@ Before release, a senior engineer should be able to answer:
 
 If an answer is "the model should," the boundary is probably still missing.
 
-## 20.19 From lesson to production
+## 20.21 From lesson to production
 
 The repository is intentionally offline and dependency-free. That makes its invariants
 easy to inspect, but it also draws a bright line around what it does not prove.
@@ -451,7 +637,7 @@ Before production, replace teaching adapters with:
 
 Keep the same invariants. Change the adapters, not the trust model.
 
-## 20.20 Continue
+## 20.22 Continue
 
 Run the lessons in order, complete [EXERCISES.md](EXERCISES.md), then execute the
 capstone twice. Inspect `security-report.json`: the naive system must fail, the hardened

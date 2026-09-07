@@ -285,6 +285,18 @@ cannot see a secret in the URL, because it may be encoded.
 secrun python examples/10_data_exfiltration.py
 ```
 
+That check is one end of the channel. The other end is the browser, which is the only
+component that can refuse the request without inspecting anything: a Content-Security-Policy
+restricting `img-src` and `connect-src` to origins you control means the fetch is never
+issued, rather than being stripped before it would have been. If you render model-authored
+HTML instead of markdown, add `script-src` with a per-response nonce, which is the delimiter
+trick from section 5 pointed at the browser, and works for the same reason: the attacker
+writes the payload before the nonce exists. There is no example for this because the repo
+has no browser, and a simulated one would teach less than the paragraph. Note the limit
+too. A policy protects the page you serve and does nothing when another client renders
+your model's output, which is most integrations, so it layers with the output check rather
+than replacing it.
+
 ### Content moderation, a different guardrail from injection defense
 Injection defense stops the model being hijacked. Moderation stops harmful content, so
 hate, violence, sexual, and self-harm, coming in or going out. They are independent
@@ -293,6 +305,77 @@ dedicated moderation endpoint, since OpenAI's is free, for the input gate.
 ```bash
 secrun python examples/11_content_moderation.py
 ```
+
+---
+
+## Two holes in the string handling
+
+Both of these are in the same category, and it is not the category the rest of the
+repo is about. Everything above concerns a model that can be argued with. These two
+concern comparisons and concatenations that the attacker gets to write into, which
+means unlike most of this material they have complete fixes.
+
+### The filter reads bytes, the model reads words
+
+Every check here is a string comparison, and the attacker picks the bytes. `BLUE-MOON-42`
+and `ВLUЕ-MOON-42` are different strings and the same passphrase, because the second holds
+a Cyrillic В and Е.
+
+```bash
+python examples/12_unicode_evasion.py
+```
+
+This one was live in this repo. `contains_secret` stripped non-alphanumerics to catch
+`B L U E - M O O N`, but `str.isalnum()` is true for Cyrillic and fullwidth letters, so
+they survived the squash and the leak check missed them. Note that this is a different
+failure from the "misses obfuscated attacks" line in section 6, even though both get
+called obfuscation: a paraphrase needs a smarter classifier, a respelling needs four
+lines of folding.
+
+### A fixed delimiter is one the attacker can type
+
+Section 5 says delimiters are a speed bump because the model can be talked past them.
+True, and it stops one step short. If the tag never changes, a poisoned document can
+contain `</untrusted_document>` and everything after it reads as application text.
+
+```bash
+python examples/13_delimiter_forgery.py
+```
+
+A nonce in the tag closes that completely, since a document written last week cannot
+carry digits generated at request time. What it does not close is the document politely
+asking for the passphrase, which arrives intact and correctly marked as data. Fixing the
+impersonation does not fix the persuasion, and that is the honest split.
+
+### The region you cannot fence
+
+The mirror image, and the one that survives review, because nothing is forged and every
+mechanism above works perfectly while it happens.
+
+```bash
+python examples/14_unfenceable_region.py
+```
+
+A fenced prompt has two regions, and the nonce protects only the boundary between them.
+Outside the tags is the task line, the instructions, the identifiers: the part the model
+is meant to read as yours. You cannot fence that region, and in a nonce design the
+ordering forces it, since the prompt is assembled before the nonce exists. So the fence
+is worth exactly what your assembly keeps out of it.
+
+The failure looks like helpfulness. A ticket has an id and a subject, the id reads as
+noise in a trace, and the subject is one short line that makes the trajectory legible, so
+it goes in the task line. The subject is also a field a customer typed into a form. The
+example enumerates five task lines a developer might reasonably write and shows which
+ones carry untrusted text across the boundary. Four of the five do, including one that
+merely quotes the first forty characters of the body for context.
+
+There is no mechanism for this, only a rule: identifiers your system minted are safe on
+the trusted side, and anything a user typed belongs on the other side of the tags,
+however short and however useful. What makes it stick is that the rule is testable.
+`unfenced_untrusted` in [guardrails/targets.py](guardrails/targets.py) asks which
+untrusted fields appear outside the fence and should always answer none. Four lines, and
+it fails on exactly the change that reintroduces the bug, which is more than the comment
+that usually stands in for it can do.
 
 ---
 
@@ -378,6 +461,7 @@ README.md                   ← this guide
 EXERCISES.md                ← predict-then-run prompts, one per section
 guardrails/                 ← the from-scratch defense toolkit (read it!)
   providers.py              ← the ONLY provider-specific file: generate()
+  normalize.py              ← fold text before any filter compares it
   attacks.py                ← the attack catalog + a benign control set
   detectors.py              ← input guardrails: heuristic + LLM detection
   output_checks.py          ← output guardrails: secret / prompt-leak / PII checks
@@ -397,6 +481,8 @@ examples/
   09_redteam_eval.py        ← attack-success-rate, before vs after
   10_data_exfiltration.py   ← markdown image/link leaks; defend the channel on output
   11_content_moderation.py  ← moderate harmful content (input + output): a distinct layer
+  12_unicode_evasion.py     ← the filter reads bytes, the model reads words (no key)
+  13_delimiter_forgery.py   ← a fixed delimiter is one the attacker can type (no key)
 ```
 
 ---
