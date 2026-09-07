@@ -208,6 +208,14 @@ export const DIVES = [
     after: 'the API dives (1, 2); before Fine-tuning (13), Local Models (15), and Inference Platforms (22)',
     idea: 'A model is a chain of numeric contracts. Trace shapes, logits, loss, gradients, masked attention, sampling, calibration, quantization, and retained memory through runnable NumPy and PyTorch code.',
   },
+  {
+    slug: 'structured-data',
+    dir: 'structured-data-ai-deep-dive',
+    title: 'Structured Data + AI',
+    track: 'bonus',
+    after: 'Evals (5); pairs with GenAI Security (20)',
+    idea: 'A generated query is a hypothesis, and only the database settles it. Score by executing, expect the join that multiplies a total, recognize an undefined metric as a specification gap, and put the boundary in a role rather than a prompt.',
+  },
 
   // ── Capstone ──
   // ── A companion, deliberately outside the numbering ──
