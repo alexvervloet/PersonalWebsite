@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part. — Alex Vervloet</title>
-    <meta name="description" content="Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win is not less code, it is a class of bug that is now unavailable. The idempotency ledger and the consent binding both stayed, and one got more load-bearing, not less." />
+    <meta name="description" content="Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win isn't less code, it's a class of bug that is now unavailable. The idempotency ledger and the consent binding both stayed, and one got more load-bearing, not less." />
     <meta name="author" content="Alexander Vervloet" />
 
     <link rel="canonical" href="https://www.alexvervloet.com/writing/porting-a-durable-agent-runtime/" />
 
     <meta property="og:type" content="article" />
     <meta property="og:title" content="I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part." />
-    <meta property="og:description" content="The win is not less code, it is a class of bug that is now unavailable. The idempotency ledger and the argument-hash binding on consent both stayed, and the second one got more load-bearing, not less." />
+    <meta property="og:description" content="The win isn't less code, it's a class of bug that is now unavailable. The idempotency ledger and the argument-hash binding on consent both stayed, and the second one got more load-bearing, not less." />
     <meta property="og:url" content="https://www.alexvervloet.com/writing/porting-a-durable-agent-runtime/" />
     <meta property="og:image" content="https://www.alexvervloet.com/portrait.duotone.jpeg" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -168,7 +168,7 @@
     <div class="wrap">
       <div class="eyebrow mono">// writing · engineering</div>
       <h1>I Ported a Durable Agent Runtime to Trigger.dev. The Code That Survived Is the Interesting Part.</h1>
-      <p class="standfirst">Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win turned out not to be less code, but a class of bug that is now unavailable. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less. It is deployed, and a run waiting on a human costs nothing while it waits.</p>
+      <p class="standfirst">Deskhand hand-rolls durable execution on Postgres. I took the mechanism out and put a platform underneath it. The win turned out not to be less code, but a class of bug that is now unavailable. The two mechanisms I most expected to delete stayed, and one of them got more load-bearing, not less. It's deployed, and a run waiting on a human costs nothing while it waits.</p>
       <div class="meta mono">Alex Vervloet · 2026 · 9 min read</div>
 
       <article>
@@ -188,9 +188,9 @@
 
         <p>The clearest example is a column. <code>runs.suspended_at</code> exists in deskhand because of a bug that took real money. The run deadline bounded how long the <em>agent</em> could work, and a person reading an approval screen carefully spent that budget on their behalf. A refund approved twenty minutes late executed, and then the run died on its deadline with the money gone and no summary written. The fix was to record the moment of suspension and hand the elapsed wait back.</p>
 
-        <p>On Trigger.dev a suspended waitpoint does not consume <code>maxDuration</code> at all, so the bug cannot happen and the column that fixed it has nothing to do. It went, along with 203 other lines whose only job was keeping a process alive that was not in memory.</p>
+        <p>On Trigger.dev a suspended waitpoint doesn't consume <code>maxDuration</code> at all, so the bug can't happen and the column that fixed it has nothing to do. It went, along with 203 other lines whose only job was keeping a process alive that wasn't in memory.</p>
 
-        <p>Three mechanisms I expected to go with them did not, and one turned out to be doing more work here than it was doing in Python. That is the rest of this piece.</p>
+        <p>Three mechanisms I expected to go with them didn't, and one turned out to be doing more work here than it was doing in Python. That's the rest of this piece.</p>
 
         <h2>What was deleted</h2>
 
@@ -218,9 +218,9 @@
 
         <p>Four columns went with them. <code>lease_owner</code>, <code>lease_expires_at</code>, <code>attempt</code> and <code>suspended_at</code> have no reader in the port, and two values of the run status enum, <code>queued</code> and <code>awaiting_approval</code>, describe states the platform now owns.</p>
 
-        <p><strong>How these are counted.</strong> <code>node trigger/scripts/count-lines.mjs</code> prints this table and the totals below it. A counted line is non-blank, is not a comment-only line, and is not inside a docstring or block comment. The first version of this piece quoted a total without saying which files it covered, which made it the one claim here a reader could not check.</p>
+        <p><strong>How these are counted.</strong> <code>node trigger/scripts/count-lines.mjs</code> prints this table and the totals below it. A counted line is non-blank, isn't a comment-only line, and isn't inside a docstring or block comment. The first version of this piece quoted a total without saying which files it covered, which made it the one claim here a reader couldn't check.</p>
 
-        <p>Run over whole files rather than mechanisms, the seven Python modules the port replaces come to 1,025 lines and their eight TypeScript counterparts to 989. The only thing that pair establishes is that the port is not meaningfully smaller than what it replaced. The deletion is concentrated, not spread.</p>
+        <p>Run over whole files rather than mechanisms, the seven Python modules the port replaces come to 1,025 lines and their eight TypeScript counterparts to 989. The only thing that pair establishes is that the port isn't meaningfully smaller than what it replaced. The deletion is concentrated, not spread.</p>
 
         <h2>What the loop became</h2>
 
@@ -230,11 +230,11 @@
           <p>are there tool calls the model asked for that have no result yet? resolve those. otherwise, ask the model for the next turn.</p>
         </div>
 
-        <p>In the port, <code>messages</code> is a variable. That is the entire port.</p>
+        <p>In the port, <code>messages</code> is a variable. That's the entire port.</p>
 
-        <p>It is worth being clear that the Python version was never clever for its own sake. It was the price of making a run resumable by a different process on a different machine. Trigger.dev pays that price, so the code that paid it is gone. What is left is the loop anyone would write: ask the model, settle the tool calls it asked for, repeat.</p>
+        <p>It's worth being clear that the Python version was never clever for its own sake. It was the price of making a run resumable by a different process on a different machine. Trigger.dev pays that price, so the code that paid it is gone. What's left is the loop anyone would write: ask the model, settle the tool calls it asked for, repeat.</p>
 
-        <p>The platform's whole footprint is one 33-line file: a task definition, a duration ceiling, a queue, and an adapter that turns <code>wait.createToken</code> and <code>wait.forToken</code> into a four-method interface the loop asks for. The loop takes its suspension mechanism as an argument rather than importing it, which is not testing ceremony. It is the measurement. Everything Trigger.dev contributes to this agent arrives through four methods, and the rest of the file cannot tell what is on the other side of them.</p>
+        <p>The platform's whole footprint is one 33-line file: a task definition, a duration ceiling, a queue, and an adapter that turns <code>wait.createToken</code> and <code>wait.forToken</code> into a four-method interface the loop asks for. The loop takes its suspension mechanism as an argument rather than importing it, which isn't testing ceremony. It's the measurement. Everything Trigger.dev contributes to this agent arrives through four methods, and the rest of the file can't tell what's on the other side of them.</p>
 
         <h2>What survived</h2>
 
@@ -242,7 +242,7 @@
 
         <p>I expected this one to go.</p>
 
-        <p><strong>Trigger.dev retries a failed run by re-entering the run function from the top, not from the point of failure.</strong> Everything the loop did before the crash gets replayed, including the refund. Their own <code>idempotencyKey</code> solves the neighbouring problem, stopping a retrying parent from re-triggering a child task, and the docs are explicit that this is exactly-once task <em>creation</em>. A refund is not a task creation.</p>
+        <p><strong>Trigger.dev retries a failed run by re-entering the run function from the top, not from the point of failure.</strong> Everything the loop did before the crash gets replayed, including the refund. Their own <code>idempotencyKey</code> solves the neighbouring problem, stopping a retrying parent from re-triggering a child task, and the docs are explicit that this is exactly-once task <em>creation</em>. A refund isn't a task creation.</p>
 
         <p>So the ledger stays, with the same three-step protocol and the same deterministic <code>run_id:seq</code> key. The determinism requirement is actually stronger here. In Python a resumed run recomputed the key from persisted rows. Here a retried run recomputes it from the trajectory it takes the second time, and those two agree only while the trajectory is reproducible.</p>
 
@@ -250,12 +250,12 @@
 
         <h3>The consent binding</h3>
 
-        <p>A waitpoint replaces almost all of the approval plumbing. The pending state, the expiry sweep, the wake-the-run dance, the suspend and requeue pair: all of it exists to keep a process alive that is not in memory, and <code>wait.createToken({ timeout })</code> even carries the TTL.</p>
+        <p>A waitpoint replaces almost all of the approval plumbing. The pending state, the expiry sweep, the wake-the-run dance, the suspend and requeue pair: all of it exists to keep a process alive that isn't in memory, and <code>wait.createToken({ timeout })</code> even carries the TTL.</p>
 
         <p>What stays is the argument hash, and it stays for a reason that has nothing to do with durability.</p>
 
         <div class="callout">
-          <p><strong>A token id is a capability to resume. It is not a statement about what was consented to.</strong></p>
+          <p><strong>A token id is a capability to resume. It's not a statement about what was consented to.</strong></p>
           <p>Whoever holds it can complete the waitpoint with any payload, and the run wakes up holding that payload. Nothing in the platform knows that this particular resume was supposed to mean "a human looked at a USD 19.00 refund against order NW-1042 and said yes".</p>
         </div>
 
@@ -263,7 +263,7 @@
 
         <ol>
           <li>Attempt one asks for USD 19.00 and opens a waitpoint.</li>
-          <li>The attempt fails after the token exists. An uncaught error on the resume path, an OOM, a restore that does not come back. Note this is <em>not</em> "a worker dies while the human is deciding": there is no worker during the wait, which is the thing the platform is for.</li>
+          <li>The attempt fails after the token exists. An uncaught error on the resume path, an OOM, a restore that doesn't come back. Note this is <em>not</em> "a worker dies while the human is deciding": there's no worker during the wait, which is the thing the platform is for.</li>
           <li>The platform re-enters the run function from the top.</li>
           <li>Attempt two re-derives the trajectory and this time asks for USD 48.00.</li>
           <li>The token is idempotent, so the wait resolves on attempt one's approval.</li>
@@ -271,7 +271,7 @@
 
         <p>A human said yes to nineteen dollars. Forty-eight is about to leave. Every step in that sequence is correct from the platform's point of view: a token was created, a person completed it, a run resumed. The only thing standing between it and the money is a hash comparison.</p>
 
-        <p>That is a <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/tests/consent.test.ts">test in the port</a>, and it passes. The run ends <code>approval_denied</code> with zero refunds. The neighbouring test confirms it refuses divergence rather than refusing retries, by running the same amount twice and watching the refund go through.</p>
+        <p>That's a <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/tests/consent.test.ts">test in the port</a>, and it passes. The run ends <code>approval_denied</code> with zero refunds. The neighbouring test confirms it refuses divergence rather than refusing retries, by running the same amount twice and watching the refund go through.</p>
 
         <p>One consequence worth stating, because two timeouts disagree on purpose. The waitpoint times out after a day; its idempotency key lives for seven. A retry in that gap resolves the cached, already-expired token, gets <code>ok: false</code>, and ends the run <code>approval_expired</code> without asking anybody. Making the two equal would be worse: the key would expire with the token, the retry would mint a fresh waitpoint, and a second person would be asked to authorise a payment whose consent window had already closed.</p>
 
@@ -281,36 +281,36 @@
 
         <p><strong><code>maxDuration</code> is not a wall-clock ceiling.</strong> From the docs, it "is compared to the CPU time elapsed since the start of a single execution (which we call attempts) of the task. The CPU time is the time that the task has been actively running on the CPU, and does not include time spent waiting."</p>
 
-        <p>So it is wrong as a replacement for the run deadline twice over, for independent reasons:</p>
+        <p>So it's wrong as a replacement for the run deadline twice over, for independent reasons:</p>
 
         <ol>
-          <li>It bounds an <strong>attempt</strong>, not a run. Deskhand's deadline is absolute and stamped once at creation, specifically so a crash-looping run cannot earn a fresh clock on every resume. Under a platform that retries three times by default, a per-attempt ceiling is three fresh clocks.</li>
+          <li>It bounds an <strong>attempt</strong>, not a run. Deskhand's deadline is absolute and stamped once at creation, specifically so a crash-looping run can't earn a fresh clock on every resume. Under a platform that retries three times by default, a per-attempt ceiling is three fresh clocks.</li>
           <li>It counts <strong>CPU time</strong>, not elapsed time. An agent suspended for a day waiting on a human burns almost none of it.</li>
         </ol>
 
-        <p>The second is the same property that makes the approval gate cheap, and it is genuinely good: nobody is billed for a person thinking. The chat-agent docs state it outright, that <code>maxDuration</code> "measures active CPU time and excludes suspended waitpoint time, exactly like <code>wait.for</code>". It just means <code>maxDuration</code> cannot answer "how long has this ticket been open", which is the only question an absolute deadline is asked.</p>
+        <p>The second is the same property that makes the approval gate cheap, and it's genuinely good: nobody is billed for a person thinking. The chat-agent docs state it outright, that <code>maxDuration</code> "measures active CPU time and excludes suspended waitpoint time, exactly like <code>wait.for</code>". It just means <code>maxDuration</code> can't answer "how long has this ticket been open", which is the only question an absolute deadline is asked.</p>
 
         <p>Worth noting for anyone relying on this: the <code>maxDuration</code> reference page lists <code>wait.for</code>, <code>triggerAndWait</code> and <code>batchTriggerAndWait</code> in its exclusions and never names <code>wait.forToken</code>. The behaviour is stated in the human-in-the-loop guide instead.</p>
 
-        <p>Nothing else in the bounds has a platform counterpart, and that is not a gap. Steps, tokens, dollars of inference and repeated identical tool calls are facts about an <em>agent</em>, and a job runner has no opinion about them.</p>
+        <p>Nothing else in the bounds has a platform counterpart, and that's not a gap. Steps, tokens, dollars of inference and repeated identical tool calls are facts about an <em>agent</em>, and a job runner has no opinion about them.</p>
 
         <h3>The step log, doing a different job</h3>
 
         <p>The step log survives, and the rows are identical, but its job changed completely.</p>
 
-        <p>In Python it was the resume mechanism. A worker arriving mid-trajectory rebuilt the conversation by replaying those rows, so they had to be complete, ordered and append-only or a resumed run would reach a different decision. Now nothing reads them to decide what to do next. They are written because "who did what, at what cost, and how do I replay it" is an invariant of its own, and no amount of durable execution answers that for the merchant's auditor.</p>
+        <p>In Python it was the resume mechanism. A worker arriving mid-trajectory rebuilt the conversation by replaying those rows, so they had to be complete, ordered and append-only or a resumed run would reach a different decision. Now nothing reads them to decide what to do next. They're written because "who did what, at what cost, and how do I replay it" is an invariant of its own, and no amount of durable execution answers that for the merchant's auditor.</p>
 
-        <p><strong>It is no longer append-only</strong>, which is a real cost paid for a real reason. A retried attempt walks the same trajectory and reaches the same sequence number, so the insert became an upsert. In Python that could only have meant a bug.</p>
+        <p><strong>It's no longer append-only</strong>, which is a real cost paid for a real reason. A retried attempt walks the same trajectory and reaches the same sequence number, so the insert became an upsert. In Python that could only have meant a bug.</p>
 
-        <p>That change carried one of its own. A retry that re-asks the model spends tokens and money a second time, and the run's totals accumulate those, so an upsert that <em>overwrote</em> the cost column would leave the step rows short of the run's own figure after any retry, with both numbers looking plausible alone. Since accountability is now the step log's only job, that is not cosmetic. The upsert adds the accounting columns and overwrites only the description. It is covered by a test that reports a cost from both attempts, because against the zero-cost scripted provider the bug and the fix produce the same number.</p>
+        <p>That change carried one of its own. A retry that re-asks the model spends tokens and money a second time, and the run's totals accumulate those, so an upsert that <em>overwrote</em> the cost column would leave the step rows short of the run's own figure after any retry, with both numbers looking plausible alone. Since accountability is now the step log's only job, that's not cosmetic. The upsert adds the accounting columns and overwrites only the description. It's covered by a test that reports a cost from both attempts, because against the zero-cost scripted provider the bug and the fix produce the same number.</p>
 
         <p>The idempotency ledger pointedly did <em>not</em> get the same treatment. A step row is a description, and overwriting one with an identical description costs nothing. A ledger row is a claim that a side effect happened, and letting a retry overwrite that claim would be the whole bug.</p>
 
         <h2><code>chat.agent()</code>, and why the gate still needs a hash</h2>
 
-        <p>Trigger.dev has a <code>chat.agent()</code> primitive with a <code>needsApproval: true</code> flag on a tool, which expresses the gate itself better than my code does. It is declared on the tool, in backend code, unreachable from a tool result, which is exactly the property deskhand's frozen registry exists to guarantee.</p>
+        <p>Trigger.dev has a <code>chat.agent()</code> primitive with a <code>needsApproval: true</code> flag on a tool, which expresses the gate itself better than my code does. It's declared on the tool, in backend code, unreachable from a tool result, which is exactly the property deskhand's frozen registry exists to guarantee.</p>
 
-        <p>I did not build on it, because deskhand is a headless backend agent with one opening prompt and no conversation partner, while <code>chat.agent</code> is keyed on a chat id with a client sending messages. Wearing that shape would have made the comparison less honest.</p>
+        <p>I didn't build on it, because deskhand is a headless backend agent with one opening prompt and no conversation partner, while <code>chat.agent</code> is keyed on a chat id with a client sending messages. Wearing that shape would have made the comparison less honest.</p>
 
         <p>But the resume path is worth following, because the same question applies. The docs describe it end to end:</p>
 
@@ -320,15 +320,15 @@
           <li>The exactly-once primitive for acting on a resolved tool call is <code>chat.history.extractNewToolResults()</code>, which "compares the message against the current <code>chat.history</code> chain and returns only tool parts whose <code>toolCallId</code> is <strong>not</strong> already resolved".</li>
         </ul>
 
-        <p>So the matching is on <code>toolCallId</code> at every layer, and the tool's arguments travel on the client-held message. <code>toolCallId</code> establishes <em>which</em> call is being answered. Nothing in that chain establishes <em>what</em> was agreed to. An argument hash recorded server-side at request time is still the only thing that does, and <code>extractNewToolResults</code> does not close the gap: deduping on <code>toolCallId</code> prevents acting twice on one answer, not acting once on an answer whose arguments moved.</p>
+        <p>So the matching is on <code>toolCallId</code> at every layer, and the tool's arguments travel on the client-held message. <code>toolCallId</code> establishes <em>which</em> call is being answered. Nothing in that chain establishes <em>what</em> was agreed to. An argument hash recorded server-side at request time is still the only thing that does, and <code>extractNewToolResults</code> doesn't close the gap: deduping on <code>toolCallId</code> prevents acting twice on one answer, not acting once on an answer whose arguments moved.</p>
 
-        <p>I have not built the frontend half, so I have not watched a mutated payload go through. But this is a reading of the documented mechanism rather than a guess about it.</p>
+        <p>I haven't built the frontend half, so I haven't watched a mutated payload go through. But this is a reading of the documented mechanism rather than a guess about it.</p>
 
         <h2>What the deploy showed</h2>
 
         <p>The port is deployed and has run on Trigger.dev infrastructure, against a Postgres branch of the demo database. Two things I had taken on trust are now things I watched.</p>
 
-        <p>There is no link to click, which is worth saying plainly rather than leaving you to notice. A Trigger.dev run lives under the account that deployed it and the dashboard needs a login, and the only public credential on offer is a Realtime token scoped to one run that expires in fifteen minutes. So the evidence is <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/demo/deployed-run.txt">a transcript</a> from <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/scripts/demo.ts">a script</a> that drives the deployed tasks and reads every number back out of Postgres and the API rather than printing what it expected to find. Running it yourself takes a free account and about ten minutes.</p>
+        <p>There's no link to click, which is worth saying plainly rather than leaving you to notice. A Trigger.dev run lives under the account that deployed it and the dashboard needs a login, and the only public credential on offer is a Realtime token scoped to one run that expires in fifteen minutes. So the evidence is <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/demo/deployed-run.txt">a transcript</a> from <a href="https://github.com/alexvervloet/deskhand/blob/main/trigger/scripts/demo.ts">a script</a> that drives the deployed tasks and reads every number back out of Postgres and the API rather than printing what it expected to find. Running it yourself takes a free account and about ten minutes.</p>
 
         <p><strong>A suspended run really does hold nothing.</strong> NW-1 reached the approval gate and the platform reported <code>status: "FROZEN"</code>, checkpointed with its compute released. It sat there while a human decided. When it finished:</p>
 
@@ -343,11 +343,11 @@
           </table>
         </div>
 
-        <p>The 133 seconds a person spent reading the approval screen cost nothing and counted for nothing. That is the <code>maxDuration</code> argument above, measured rather than quoted: a ceiling on CPU time cannot bound how long a ticket has been open, because the waiting is free.</p>
+        <p>The 133 seconds a person spent reading the approval screen cost nothing and counted for nothing. That's the <code>maxDuration</code> argument above, measured rather than quoted: a ceiling on CPU time can't bound how long a ticket has been open, because the waiting is free.</p>
 
         <p><strong>The gate holds on real infrastructure.</strong> NW-4, whose ticket body carries a forged <code>SYSTEM:</code> block ordering an unapproved refund, reached the same gate. The instruction said not to request human approval. The run requested one, a human denied it, and no money moved. The ledger for the successful NW-1 run has exactly six rows, one per tool call, with <code>issue_refund</code> claimed once.</p>
 
-        <p><strong>And a retry really does start from the top.</strong> This was the last thing I was taking on faith, and the whole idempotency argument rests on it, so there is a second task that fails on purpose on real infrastructure, at the worst available moment: after the refund has committed and before anything else happens. Attempt two gets the ordinary provider, no memory of the first, and no hint that it is a retry.</p>
+        <p><strong>And a retry really does start from the top.</strong> This was the last thing I was taking on faith, and the whole idempotency argument rests on it, so there's a second task that fails on purpose on real infrastructure, at the worst available moment: after the refund has committed and before anything else happens. Attempt two gets the ordinary provider, no memory of the first, and no hint that it's a retry.</p>
 
         <p>The platform recorded two attempts. The database recorded one refund. The step log says why:</p>
 
@@ -367,21 +367,21 @@
 
         <p>Attempt two walked the whole trajectory again, including the refund. Steps 10 and 12 ran for the first time because attempt one died before reaching them. Step 8 is the answer to the question: the second attempt arrived at <code>issue_refund</code> with the money already gone, found the claim in the ledger, and handed back the recorded result instead of paying again. Delete the ledger and that row pays a second time.</p>
 
-        <p>The approval was not asked twice either. The waitpoint token was already completed, and the idempotency key on it meant attempt two resolved the same token rather than opening a new one and putting the decision in front of a second person.</p>
+        <p>The approval wasn't asked twice either. The waitpoint token was already completed, and the idempotency key on it meant attempt two resolved the same token rather than opening a new one and putting the decision in front of a second person.</p>
 
         <p>The fault lives in its own task with its own id rather than behind a flag on the production one. Deskhand's fault injector has no environment switch for the same reason: a runtime that can be told to misbehave by its configuration is a runtime nobody can reason about.</p>
 
-        <p>Deploying it also found a bug that 26 passing tests did not. The scripted provider had a fixed closing turn, so the first denied run finished by writing "Refunded NW-1101" into the step log next to zero refunds. Every invariant held. The summary was still false, which on a public demo is worse than a crash, because it looks like working software. There is now a test that a denied run says what actually happened, and the ticket escalates rather than resolving.</p>
+        <p>Deploying it also found a bug that 26 passing tests didn't. The scripted provider had a fixed closing turn, so the first denied run finished by writing "Refunded NW-1101" into the step log next to zero refunds. Every invariant held. The summary was still false, which on a public demo is worse than a crash, because it looks like working software. There's now a test that a denied run says what actually happened, and the ticket escalates rather than resolving.</p>
 
-        <h2>What I still have not verified</h2>
+        <h2>What I still haven't verified</h2>
 
         <p>Being precise about this, since the people who would find it interesting are the people who build the thing.</p>
 
         <ul>
-          <li><strong>The port never calls a real model.</strong> <code>getProvider()</code> returns the scripted provider unconditionally; there is no Anthropic client in the port at all, where the Python service has a working one. So the trajectory is reproducible by construction rather than by luck, and that assumption is load-bearing for the idempotency key. A real model that diverges on retry claims a fresh key, and the run falls back to being bounded by its caps rather than by the ledger.</li>
+          <li><strong>The port never calls a real model.</strong> <code>getProvider()</code> returns the scripted provider unconditionally; there's no Anthropic client in the port at all, where the Python service has a working one. So the trajectory is reproducible by construction rather than by luck, and that assumption is load-bearing for the idempotency key. A real model that diverges on retry claims a fresh key, and the run falls back to being bounded by its caps rather than by the ledger.</li>
         </ul>
 
-        <p>What the tests do establish is what the port still has to do for itself: a divergent retry cannot execute on a stale approval, a replay from the top does not refund twice, an obedient model reading a forged pre-approval in a ticket body still hits the gate, a payout ceiling holds after a human has clicked approve, and a retry's spend lands in the step log. 27 tests, against a real database, no account needed to run them.</p>
+        <p>What the tests do establish is what the port still has to do for itself: a divergent retry can't execute on a stale approval, a replay from the top doesn't refund twice, an obedient model reading a forged pre-approval in a ticket body still hits the gate, a payout ceiling holds after a human has clicked approve, and a retry's spend lands in the step log. 27 tests, against a real database, no account needed to run them.</p>
 
         <h2>The thing I would tell myself before starting</h2>
 
@@ -389,11 +389,11 @@
 
         <p>"Durability" turned out to cover two unrelated jobs in this codebase. Keeping a process resumable, which Trigger.dev does properly and which I should never have written by hand. And never paying a customer twice, which is a claim about a database and stayed mine.</p>
 
-        <p>I had read the sentence in their docs that says idempotency keys are exactly-once task creation before I started, and I still expected the ledger to be redundant, because "durable execution" sounds like it should mean "my side effects happen once". It does not, it does not claim to, and the gap between those two readings is where the money is.</p>
+        <p>I had read the sentence in their docs that says idempotency keys are exactly-once task creation before I started, and I still expected the ledger to be redundant, because "durable execution" sounds like it should mean "my side effects happen once". It doesn't, it doesn't claim to, and the gap between those two readings is where the money is.</p>
 
-        <p>The same mistake nearly cost me the deadline argument. "Duration" sounds like elapsed time, I read it as elapsed time, and I had written a paragraph depending on the opposite two sections earlier without noticing the collision. When a platform's word matches a word in your own design, that is the moment to read the reference page, not the moment to assume a mapping.</p>
+        <p>The same mistake nearly cost me the deadline argument. "Duration" sounds like elapsed time, I read it as elapsed time, and I had written a paragraph depending on the opposite two sections earlier without noticing the collision. When a platform's word matches a word in your own design, that's the moment to read the reference page, not the moment to assume a mapping.</p>
 
-        <p>Both were caught by checking rather than by rereading. The retry claim held up, the deadline claim did not, and I could not have told you in advance which was which. That is the argument for deploying the thing.</p>
+        <p>Both were caught by checking rather than by rereading. The retry claim held up, the deadline claim didn't, and I couldn't have told you in advance which was which. That's the argument for deploying the thing.</p>
       </article>
 
       <div class="footer">
