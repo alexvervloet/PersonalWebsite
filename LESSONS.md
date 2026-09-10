@@ -1,5 +1,20 @@
 # Lessons
 
+## 2026-09-10 — sitemap lastmod dates commit one build behind
+
+Expected: a build that only touched the homepage would leave the other 40
+sitemap entries alone.
+
+What happened: 40 of them moved forward by up to three weeks. `lastmod()` in
+`scripts/build-dives.mjs` reads the last commit date of each source file, so a
+sitemap generated *before* its content commit lands records the previous commit
+date. Regenerating the sitemap and committing it in the same breath as the
+content it describes always dates it one commit behind, and the correction only
+shows up on the next unrelated build.
+
+Next time: commit the content first, then run the build, then commit the
+sitemap. The dates are only right when git already knows about the change.
+
 ## 2026-09-05 — the site has four kinds of page, and only two go through a template
 
 Expected: adding an analytics beacon meant editing one or two head templates,
