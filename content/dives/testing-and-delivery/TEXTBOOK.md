@@ -12,7 +12,7 @@ and causal evidence remain visible.
 ## 1. A release is a claim supported by several kinds of evidence
 
 An AI system has conventional software behavior and probabilistic product behavior.
-One test family cannot cover both.
+One test family can't cover both.
 
 | Evidence | Primary question | Typical failure it catches |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ One test family cannot cover both.
 | Load | Does behavior hold at a target traffic shape? | saturation, latency tail, queue growth, rate limiting |
 | Fault | Does recovery preserve correctness under partial failure? | duplicate side effect, retry storm, stale fallback |
 
-The portfolio policy is an input owned by the release process. Observed tests do not
+The portfolio policy is an input owned by the release process. Observed tests don't
 get to decide which categories count. This prevents a common vacuous gate:
 
 1. collect whichever checks happened to run;
@@ -35,7 +35,7 @@ That loop proves only that the input equals itself. In `portfolio.py`, required
 kinds and observations enter separately. Missing, failed, and duplicate required
 evidence have distinct reasons.
 
-An eval is not a synonym for a unit test. A deterministic JSON parser should have
+An eval isn't a synonym for a unit test. A deterministic JSON parser should have
 unit tests. An assistant's grounded answer quality needs an eval dataset and scorer.
 An eval runner itself needs unit tests. A release usually needs both.
 
@@ -66,7 +66,7 @@ A useful contract specifies:
 - required and optional fields;
 - JSON types and null behavior;
 - whether request and response objects permit unknown fields;
-- enumerated values whose expansion is or is not forward compatible;
+- enumerated values whose expansion is or isn't forward compatible;
 - error shapes and streaming event order;
 - version-negotiation behavior.
 
@@ -81,7 +81,7 @@ reviewed contract. Never overwrite the only historical evidence without review.
 
 ### What this implementation omits
 
-`contracts.py` implements five JSON type categories and object fields. It does not
+`contracts.py` implements five JSON type categories and object fields. It doesn't
 implement JSON Schema composition, numeric formats, streaming protocols, HTTP
 headers, or semantic value constraints. Use a schema validator or generated client
 contract suite for those, but preserve the same independence rule.
@@ -119,7 +119,7 @@ Good AI-system properties include:
 
 - a tokenizer or cost estimate never returns a negative count;
 - serialization then parsing preserves a tool-call object;
-- changing request IDs does not change semantic model input;
+- changing request IDs doesn't change semantic model input;
 - tenant filtering never introduces documents from another tenant;
 - a bounded context assembler never exceeds its token budget;
 - retrying with one idempotency key creates at most one durable effect.
@@ -128,7 +128,7 @@ Good AI-system properties include:
 
 Use a mature engine for rich data generation, shrinking, example databases, and
 stateful rules. Keep failing seeds in CI and convert important failures into named
-regression cases. Bound input size and test time so a generator cannot become a
+regression cases. Bound input size and test time so a generator can't become a
 denial of service against the build.
 
 ## 4. Deterministic mocks, stubs, and fakes
@@ -142,7 +142,7 @@ Terminology varies, but three roles are useful:
 The course double is a fake with a scripted stub layer. Its inputs configure
 behavior: prompt responses, one-shot errors, fallback, and retained-history size.
 The product test separately asserts required behavior. Passing the expected answer
-into a helper and then asserting the helper returned its own input is not a test.
+into a helper and then asserting the helper returned its own input isn't a test.
 
 Determinism often requires controlling more than model output:
 
@@ -176,7 +176,7 @@ latency_ms = (finished_s - started_s) * 1000
 error_rate = failed_requests / number_of_requests
 ```
 
-`span_s` is a duration. It is not the absolute final timestamp. Shifting every
+`span_s` is a duration. It isn't the absolute final timestamp. Shifting every
 timestamp by a constant must not change any derived duration or rate. The test suite
 checks that metamorphic relationship with `assertAlmostEqual`, and the example prints
 the observed drift, because the relation is invariance rather than bit equality. The
@@ -192,8 +192,8 @@ rank = ceil(percentile * n)       # one-based
 value = sorted_values[rank - 1]  # zero-based language index
 ```
 
-For values `0..19`, `n=20`, p95 has rank 19 and selects value 18. Rank and value are
-not interchangeable. The implementation rejects an empty sample rather than
+For values `0..19`, `n=20`, p95 has rank 19 and selects value 18. Rank and value aren't
+interchangeable. The implementation rejects an empty sample rather than
 inventing zero latency.
 
 Throughput and latency depend on workload shape: request sizes, input/output tokens,
@@ -224,7 +224,7 @@ performing the effect again.
 The retry trace includes attempts, planned delay in milliseconds, eventual result,
 and the observed side-effect count. A success response alone is insufficient.
 
-A lost response is not a one-time event. The reply carrying the deduplicated
+A lost response isn't a one-time event. The reply carrying the deduplicated
 receipt can be lost on exactly the same path as the original, so the course writer
 applies an after-commit fault on the deduplicated branch too. The resulting shape is
 the point of the chapter: with idempotency the effect count stays flat no matter how
@@ -261,7 +261,7 @@ dependency lock digest
 
 Testing prompt v7 on model A and deploying it on model B is a different candidate.
 Testing against a 1,536-dimensional index and deploying an older 3,072-dimensional
-index is not a weights-only difference; the application can fail before generation.
+index isn't a weights-only difference; the application can fail before generation.
 
 Context requirements use tokens consistently:
 
@@ -274,7 +274,7 @@ additions such as tool schemas; the teaching policy uses one fixed number, while
 production policy may split those budgets explicitly.
 
 Compatibility matrices should be generated from approved requirements, not from the
-cross-product of artifacts found in storage. Artifact discovery cannot define which
+cross-product of artifacts found in storage. Artifact discovery can't define which
 combinations the team supports.
 
 ## 8. Dependency locking and reproducibility
@@ -292,15 +292,15 @@ specification:
   environment to one entry.
 
 The course has no runtime dependencies, so its root lock has an empty package array.
-That is still useful evidence: it fixes the lock format, Python requirement, and
+That's still useful evidence: it fixes the lock format, Python requirement, and
 supported environment rather than leaving dependency state implicit.
 
-The teaching audit compares marker strings exactly. It does not solve them. It also
-does not verify downloaded bytes against a hash because the offline course downloads
+The teaching audit compares marker strings exactly. It doesn't solve them. It also
+doesn't verify downloaded bytes against a hash because the offline course downloads
 nothing. A production installer must resolve the correct entry for its environment,
 obtain the recorded artifact, verify size and digest, and refuse unrecorded inputs.
 
-Locks do not eliminate supply-chain risk. They make the selected inputs reviewable
+Locks don't eliminate supply-chain risk. They make the selected inputs reviewable
 and repeatable. A locked vulnerable version remains vulnerable until updated.
 
 ## 9. CI as executable compatibility evidence
@@ -315,10 +315,10 @@ The matrix decision distinguishes:
 - missing required cell;
 - failed required cell;
 - duplicate ambiguous observations;
-- extra experimental cells, which do not affect the required promise.
+- extra experimental cells, which don't affect the required promise.
 
 The repository workflow uses a nonempty discovery assertion. `unittest` can exit
-successfully with zero discovered tests, so merely executing the command is not
+successfully with zero discovered tests, so merely executing the command isn't
 enough. It also compiles hidden Python paths, runs every numbered example, executes
 the capstone twice, and compares the output bytes.
 
@@ -348,10 +348,10 @@ Security scanning is a portfolio too:
 
 The policy supplies required scanners, the blocking severity, blocked licenses, and
 source revision. A finding supplies identifier, category, severity, package, and
-license. It does not supply `expected_block=True`.
+license. It doesn't supply `expected_block=True`.
 
 Unknown severity fails closed in the teaching gate. Duplicate required scanner
-reports are ambiguous, and a report for a different source revision cannot release
+reports are ambiguous, and a report for a different source revision can't release
 the candidate. Findings from extra scanners are still evaluated; optional evidence
 must not become a way to hide a known critical issue.
 
@@ -362,7 +362,7 @@ revision and found no policy-blocking result at that time.
 
 ## 11. Staged rollout and rollback
 
-Build-time evidence cannot predict every production interaction. Staged rollout
+Build-time evidence can't predict every production interaction. Staged rollout
 limits exposure while collecting runtime evidence.
 
 ### Shadow
@@ -376,7 +376,7 @@ policies apply.
 
 Route a small real slice to the candidate. Choose allocation and duration before
 looking at results. Segment by tenant, geography, request class, and model path so an
-aggregate does not hide a harmed cohort.
+aggregate doesn't hide a harmed cohort.
 
 ### Decision ordering
 
@@ -385,13 +385,13 @@ safety metric fails, rollback wins over low volume. If metrics pass but request 
 is below the minimum, hold. At each metric boundary, equality passes.
 
 The trace deliberately includes 500 requests between zero and the 1,000-request
-requirement. That proves the hold result is not an artifact of comparing only empty
+requirement. That proves the hold result isn't an artifact of comparing only empty
 and full samples.
 
 A rollback path must be verified before release. Verification includes artifact
 availability, configuration compatibility, data migration direction, cache behavior,
 traffic switching, and operator permissions. Some schema or external side effects
-cannot be rolled back; design forward fixes and feature disablement for those.
+can't be rolled back; design forward fixes and feature disablement for those.
 
 ## 12. Evidence lineage, freshness, and provenance
 
@@ -424,7 +424,7 @@ An age just inside or exactly at `max_age_s` passes. One second outside fails. A
 negative age means evidence claims to come from the future and fails. Time should be
 supplied by a trusted build environment in production.
 
-Hashes detect content changes but do not establish who created the evidence. SLSA
+Hashes detect content changes but don't establish who created the evidence. SLSA
 provenance adds a defined subject, build definition, run details, and authenticated
 builder identity. Signing and verification policy turn that statement into stronger
 supply-chain evidence.
@@ -441,7 +441,7 @@ policies remain outside it. `_run_decisions()` computes twelve real decisions.
 4. evaluates coverage, pass status, subject, source, and age;
 5. emits a deterministic bundle.
 
-The rollout path is derived. The canary decision receives `shadow.next_stage`; it is
+The rollout path is derived. The canary decision receives `shadow.next_stage`; it's
 not handed a hard-coded canary stage. The final release flag consumes both the
 portfolio and evidence decision.
 
@@ -450,6 +450,6 @@ index schema, deleting a fixture field, duplicating a side effect, injecting an
 advisory, or regressing canary telemetry changes the reported decision and final
 release flag. A benign candidate takes the same path and passes.
 
-That is the standard to carry into a production delivery system: independently
+That's the standard to carry into a production delivery system: independently
 defined requirements, actual observations, traceable derived values, explicit units
 and state bounds, adversarial perturbations, and a tested recovery path.

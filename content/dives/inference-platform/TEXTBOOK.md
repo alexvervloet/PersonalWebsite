@@ -27,7 +27,7 @@ workload -> admit/queue/shed -> batch -> execute -> timestamps/counters
 ```
 
 Every arrow is a measurable claim. The course keeps requirements, stimuli, decisions,
-and the final grader separate so a missing case cannot erase the requirement it was
+and the final grader separate so a missing case can't erase the requirement it was
 supposed to prove.
 
 ## 22.2 Memory is the first scheduler
@@ -60,8 +60,8 @@ usable/GPU   = physical VRAM × configured usable fraction
 
 Weight fit is therefore necessary but insufficient. Context length, concurrency, and
 output bounds can flip a model from fit to no-fit without changing one weight byte.
-PagedAttention reduces fragmentation by managing KV in non-contiguous blocks; it does
-not make KV free. Runtime-reported cache token capacity and an overload load test are
+PagedAttention reduces fragmentation by managing KV in non-contiguous blocks; it doesn't
+make KV free. Runtime-reported cache token capacity and an overload load test are
 the evidence that should refine the arithmetic.
 
 ## 22.3 Measure the service users experience
@@ -74,7 +74,7 @@ Four metrics must not collapse into "latency":
   time between tokens; define the exact calculation on your dashboard.
 - **End-to-end latency**: arrival to completion. It depends heavily on output length.
 - **Token throughput**: prompt or output tokens completed per wall-clock second across
-  the fleet. It is not the sum of per-request rates.
+  the fleet. It isn't the sum of per-request rates.
 
 Request throughput alone hides workload size. A server handling ten short responses
 per second may have less work than one generating a long response. Average latency
@@ -104,7 +104,7 @@ head-of-line waiting, but the policy still matters:
 Lesson 3 intentionally holds execution cost constant to isolate membership. The
 [Orca paper](https://www.usenix.org/conference/osdi22/presentation/yu) establishes the
 iteration-level scheduling idea; production selection needs a workload replay against
-the runtime and configuration you will deploy.
+the runtime and configuration you'll deploy.
 
 ## 22.5 Prefix caching is a correctness boundary
 
@@ -120,9 +120,9 @@ the activation:
 - tenant, ACL, or security domain when cached state reflects protected content.
 
 A text hash is insufficient because tokenizer revisions can change token ids. A
-caller-provided "same prefix" label is not evidence. Cache lookup computes identity
+caller-provided "same prefix" label isn't evidence. Cache lookup computes identity
 from actual execution inputs and verifies the exact prefix. Invalidation, eviction,
-and hit-rate metrics then become operational policy. A high hit rate is not inherently
+and hit-rate metrics then become operational policy. A high hit rate isn't inherently
 good if it crosses an authorization boundary.
 
 ## 22.6 Quantization trades several things at once
@@ -130,7 +130,7 @@ good if it crosses an authorization boundary.
 Reducing weight precision usually reduces weight storage. It may also improve memory
 bandwidth or permit larger batches, but kernels, dequantization, hardware support,
 activation precision, and workload shape determine performance. Weight quantization
-does not automatically shrink KV cache.
+doesn't automatically shrink KV cache.
 
 A useful candidate record contains:
 
@@ -140,9 +140,9 @@ A useful candidate record contains:
 4. TTFT, TPOT, throughput, errors, and warmup behavior; and
 5. comparison with a measured baseline under equivalent load.
 
-Use absolute quality floors and maximum regression together. A weak baseline should
-not authorize an unacceptable candidate, while an absolute floor alone can permit a
-large regression. Passing permits a canary or staging test; it is not direct promotion.
+Use absolute quality floors and maximum regression together. A weak baseline shouldn't
+authorize an unacceptable candidate, while an absolute floor alone can permit a
+large regression. Passing permits a canary or staging test; it isn't direct promotion.
 The current vLLM [quantization matrix](https://docs.vllm.ai/en/latest/features/quantization/)
 also illustrates why format support must be checked against actual hardware.
 
@@ -152,7 +152,7 @@ A draft model proposes multiple tokens cheaply. The target model verifies them i
 parallel step that covers every draft position plus the position after the last one.
 It accepts the matching prefix and supplies the first correction when they diverge, or
 a bonus token from that extra position when the whole draft agrees. Correct speculative
-sampling preserves the target distribution; it does not merely trust the smaller model.
+sampling preserves the target distribution; it doesn't merely trust the smaller model.
 
 That extra position is why speculation can win at all. A round of `k` drafts emits
 between 1 and `k + 1` tokens, so a fully accepted round returns more tokens than it
@@ -182,11 +182,11 @@ high-bandwidth domain when possible.
 
 **Pipeline parallelism (PP)** assigns layer ranges to stages. It can cross nodes and
 avoid some fine-grained collectives, but stage imbalance and bubbles affect latency and
-throughput. It is useful when a model exceeds one node or when intra-node links do not
+throughput. It's useful when a model exceeds one node or when intra-node links don't
 favor TP.
 
 **Data parallelism (DP)** duplicates complete model layouts. It scales independent
-requests only after each replica already fits. It cannot rescue a too-large replica.
+requests only after each replica already fits. It can't rescue a too-large replica.
 
 **Expert parallelism (EP)** distributes MoE experts. Expert count, routing, active
 experts, token imbalance, and all-to-all communication matter. Dense attention and MoE
@@ -220,7 +220,7 @@ request's worst plausible footprint before external work:
 The decision order matters. Reject a request that violates its own bound before
 considering shared capacity. Reject work predicted to miss its deadline rather than
 letting it expire after consuming resources. If live capacity is full, use a bounded
-queue. When that is full, shed with a stable reason and retry guidance.
+queue. When that's full, shed with a stable reason and retry guidance.
 
 An atomic reservation prevents two requests from both seeing the last capacity and
 claiming it. Rejection must leave counters unchanged, and replay must not double
@@ -239,13 +239,13 @@ prevent starvation and abusive priority selection.
 - model residency to avoid a long cold load.
 
 Placement is a constrained group decision. Picking individual GPUs greedily can leave
-stranded fragments that cannot host the next parallel replica. Packing a tight fit can
+stranded fragments that can't host the next parallel replica. Packing a tight fit can
 preserve larger groups; reusing resident weights can cut warmup. Those objectives can
 conflict, so rank them explicitly and return the deciding facts.
 
-A pure planner is not an allocator. Recheck inventory and reserve the entire group
-atomically. Coordinate pod/workload scheduling with node autoscaling: adding a pod does
-not create an accelerator, and adding a node does not make warmed model capacity ready.
+A pure planner isn't an allocator. Recheck inventory and reserve the entire group
+atomically. Coordinate pod/workload scheduling with node autoscaling: adding a pod doesn't
+create an accelerator, and adding a node doesn't make warmed model capacity ready.
 
 ## 22.11 Autoscaling is a delayed control loop
 
@@ -262,7 +262,7 @@ cooldown, but scale down only after a full stabilization window. Otherwise cold 
 and transient lulls create oscillation.
 
 Track at least three states: desired, warming, and ready. Warming capacity may prevent
-launching duplicate replicas, but it cannot serve the current queue. Readiness should
+launching duplicate replicas, but it can't serve the current queue. Readiness should
 turn true only after model load, compilation/capture, cache initialization, and a
 representative warmup request. Kubernetes HPA supports custom metrics and stabilization
 behavior; node autoscaling is a separate loop with longer provisioning delay.
@@ -278,13 +278,13 @@ A safe sequence can be:
 5. expand through fixed gates; and
 6. remove or retain the previous version only after rollback is proven.
 
-Shadow output cannot prove the serving path's user-facing latency or error behavior.
+Shadow output can't prove the serving path's user-facing latency or error behavior.
 An unwarmed canary should hold rather than be mislabeled a regression. Once the sample
 is mature, regressions in protected quality, TTFT, TPOT, throughput, or error rate
 should remove traffic automatically.
 
 Declare requirements before looking at candidate results. Compare like workload slices
-and control for cache state, hardware, time, and load. Averages cannot protect a tail
+and control for cache state, hardware, time, and load. Averages can't protect a tail
 SLO. Preserve exact failure reasons so operators know whether to wait for warmup,
 collect evidence, tune serving, or roll back the artifact.
 
@@ -299,7 +299,7 @@ distributions and replay.
 Calculate prefill, decode, and concurrency requirements separately, discount measured
 replica capacity by headroom, and take the largest. Add redundancy and maintenance
 constraints appropriate to your failure model. If the required fleet exceeds cost or
-quota, report the conflict. Do not shrink below safe capacity to make a spreadsheet
+quota, report the conflict. Don't shrink below safe capacity to make a spreadsheet
 green.
 
 Normalize cost carefully. Cost per million offered output tokens can compare scenarios,
@@ -343,4 +343,4 @@ Before approving an inference design, ask:
 12. Which conclusions came from measurements, and which remain assumptions?
 
 If the answer is only a framework name, GPU count, or average benchmark, the platform
-decision has not yet been made.
+decision hasn't yet been made.

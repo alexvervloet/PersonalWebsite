@@ -10,7 +10,7 @@ same system twice, naive and hardened, and emits evidence an engineer can inspec
 
 > **About the attack material in this repo.** It ships deliberately vulnerable toy
 > systems, poisoned documents and datasets, SSRF targets, and a naive pipeline built to
-> lose so the hardened one has something to beat. That is the teaching method: attack the
+> lose so the hardened one has something to beat. That's the teaching method: attack the
 > same system twice and compare the evidence. All of it is offline, deterministic, and
 > aimed at code in this same repo, and every credential in it is invented. If a scanner
 > or a CodeQL run flags this repo, this is what it found. Details in
@@ -34,9 +34,9 @@ Prompt injection stays the focused treatment of instruction-and-data confusion. 
 repository covers the larger system that has to stay safe when a model is wrong or
 compromised.
 
-## What you will build
+## What you'll build
 
-By the end, you will be able to:
+By the end, you'll be able to:
 
 - turn assets, trust boundaries, entry points, and consequences into a threat model;
 - cover everything in the OWASP LLM Top 10 2025 without mistaking a list for your system's
@@ -45,7 +45,7 @@ By the end, you will be able to:
 - verify exact models, prompts, datasets, and dependencies before deployment;
 - quarantine named poisoning signals without deleting investigative evidence;
 - validate model output for JSON, SQL, and HTML sinks, and escape retrieved text before
-  it is concatenated into a prompt that has a grammar of its own;
+  it's concatenated into a prompt that has a grammar of its own;
 - authorize tools from authenticated identity with least privilege, single-use bound
   approval, idempotency, timeouts, and output limits;
 - keep server-side conversation state bound to its owner, and one subject's turns out
@@ -59,7 +59,7 @@ By the end, you will be able to:
 ## Why it runs offline
 
 The whole course uses only Python's standard library. It makes no model call, needs no API
-key, and contacts no external service. That is deliberate. Authorization, provenance,
+key, and contacts no external service. That's deliberate. Authorization, provenance,
 parsing, isolation requirements, budgets, and incident state all have to be testable
 independently of whichever model happens to sit inside them.
 
@@ -132,7 +132,7 @@ demonstration.
 python examples/01_threat_model.py
 ```
 
-Notice that assigning `LLM01` does not close the risk. The first model reports an
+Notice that assigning `LLM01` doesn't close the risk. The first model reports an
 uncontrolled boundary and an open score-20 risk, and findings clear only once a concrete
 authorization boundary and mitigation exist. In a real review, keep the residual risk
 rather than treating mitigation as elimination.
@@ -167,7 +167,7 @@ python examples/04_poisoning.py
 ```
 
 The gate identifies an untrusted source, a blocked marker, and conflicting labels. It
-quarantines both sides of the label conflict, because the detector cannot safely guess
+quarantines both sides of the label conflict, because the detector can't safely guess
 which side is true. Extend this with near-duplicate, distribution, influence, and held-out
 behavior tests for a real corpus.
 
@@ -179,7 +179,7 @@ python examples/05_output_handling.py
 
 Valid JSON becomes an exact typed action, SQL values stay in parameters, an unexpected
 `admin` field rejects the whole proposal, and model prose gets HTML-escaped. Repeat the
-pattern for every downstream grammar. There is no universal output sanitizer.
+pattern for every downstream grammar. There's no universal output sanitizer.
 
 ### 6. Excessive agency and identity
 
@@ -195,7 +195,7 @@ the trusted session.
 Then the read that every one of those controls allows. A support agent, in the right
 tenant, holding a role that genuinely grants customer reads, asks for a different
 customer's history. Well-formed arguments, no trusted field supplied, and a read owes no
-approval, so nothing above refuses it. Who is asking and on whose installation are two
+approval, so nothing above refuses it. Who's asking and on whose installation are two
 questions; about which person is a third, and a role is silent on it. The tool carries
 the record the request is about, read from the case rather than from the proposal, and
 the pivot is refused on what it names rather than quietly rewritten, because a corrected
@@ -209,7 +209,7 @@ python examples/07_vector_isolation.py
 
 The other tenant's semantically stronger secret never becomes a ranking candidate. The
 cache key binds to tenant, principals, query, and corpus version. A factual claim then
-keeps an approved source version, digest, and exact quote. Structural evidence does not by
+keeps an approved source version, digest, and exact quote. Structural evidence doesn't by
 itself prove semantic entailment, so keep a separate factuality evaluation.
 
 ### 8. Egress and SSRF
@@ -223,7 +223,7 @@ global address and fails when the same name resolves to loopback or to the cloud
 address, which no check on the URL string could catch. A plaintext metadata URL fails
 earlier, at the scheme, before any lookup happens. A redirect to an unapproved host fails
 too. The lesson opens no socket. A production client has to connect to the exact checked
-address, so a second DNS lookup cannot rebind it.
+address, so a second DNS lookup can't rebind it.
 
 ### 9. Generated-code isolation
 
@@ -246,7 +246,7 @@ One reservation charges once across replay. An oversized recursive branch gets r
 before any work happens and leaves every counter unchanged. Real distributed agents need
 the same atomic reservation invariant in a concurrency-safe shared store.
 
-Then the ceiling that budget does not have. Tokens, calls, steps, bytes and latency are
+Then the ceiling that budget doesn't have. Tokens, calls, steps, bytes and latency are
 all the operator's resources, which is why they get limits: the person writing them is
 the person holding the bill. An agent that can refund, credit, discount, or upgrade is
 moving somebody else's money, and that figure usually appears on a dashboard instead.
@@ -289,7 +289,7 @@ The naive prompt carries three citation keys and the retriever issued two. The f
 came from a support ticket and occupies the same position, in the same syntax, as a real
 one. Escaping defuses the heading, the key, the operator line, and the forged fence
 without deleting any of them, so the ticket's actual wording survives for an
-investigation. The region is then fenced with a per-request nonce the document could not
+investigation. The region is then fenced with a per-request nonce the document couldn't
 have contained. A politely worded request comes through untouched, because nothing was
 forged: impersonation is closed here, persuasion is lesson 6's problem.
 
@@ -302,7 +302,7 @@ python examples/14_session_correlation.py
 A conversation handle is a bearer reference to accumulated context, so it comes from the
 CSPRNG and every resume checks the owner. A colleague in the same tenant and a matching
 name in another tenant are both refused, with the same wording a missing handle gets, so
-the store is not a membership oracle.
+the store isn't a membership oracle.
 
 Then the harder half. One operator preps two clients in a morning inside a conversation
 they own, and every turn is one they were entitled to see. The answer being composed is
@@ -343,11 +343,11 @@ python -m json.tool security-report.json
 ```
 
 Each result carries a `control` field naming the boundary that decided it. Read those
-before trusting a pass. A probe can block for a reason unrelated to the risk it is named
-after, and an outcome on its own cannot show you that. The naive system records no
+before trusting a pass. A probe can block for a reason unrelated to the risk it's named
+after, and an outcome on its own can't show you that. The naive system records no
 controls, which is the point of it.
 
-Then extend it with a risk from your own threat model. A top-ten-only capstone is not a
+Then extend it with a risk from your own threat model. A top-ten-only capstone isn't a
 complete security review.
 
 ## Verification
@@ -404,9 +404,9 @@ EXERCISES.md                   progressive engineering exercises
 LESSONS.md                     surprises learned while building the course
 ```
 
-## What this course proves, and what it does not
+## What this course proves, and what it doesn't
 
-The offline suite proves the behavior of these teaching policies. It does not prove:
+The offline suite proves the behavior of these teaching policies. It doesn't prove:
 
 - that your identity provider supplies the correct tenant and roles;
 - that a vector database applies prefilters before its actual similarity engine;
@@ -456,7 +456,7 @@ fixed rather than waived as a pass.
 
 **A test passes only when network or credentials are available**
 
-That test does not belong in the default offline gate. Inject a deterministic adapter for
+That test doesn't belong in the default offline gate. Inject a deterministic adapter for
 the course, and add the live behavior as a clearly separated integration suite.
 
 ## Continue

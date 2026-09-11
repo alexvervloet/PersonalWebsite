@@ -1,6 +1,6 @@
 # Inference Platform Engineering: A Guided Deep Dive
 
-Running a model is not the same as operating an inference platform. Production serving has
+Running a model isn't the same as operating an inference platform. Production serving has
 to turn finite accelerator memory and compute into predictable first-token latency,
 inter-token latency, throughput, availability, and cost, and keep doing it while workloads,
 sequence lengths, and model versions change underneath it.
@@ -15,8 +15,8 @@ The one big idea:
 > **An inference platform is a memory-and-queue scheduler.**
 
 Model execution creates value only when scheduling decisions satisfy user SLOs inside
-memory, topology, reliability, and cost constraints. "The weights fit" is not a capacity
-plan. "The GPU is busy" is not a scaling policy. "Four bit" is not a performance result.
+memory, topology, reliability, and cost constraints. "The weights fit" isn't a capacity
+plan. "The GPU is busy" isn't a scaling policy. "Four bit" isn't a performance result.
 
 This is Chapter 22 of the AI Engineering Deep Dives. It follows
 [Local Models](https://github.com/alexvervloet/local-models-deep-dive),
@@ -24,9 +24,9 @@ This is Chapter 22 of the AI Engineering Deep Dives. It follows
 [AI Architecture](https://github.com/alexvervloet/architecture-deep-dive). Local Models
 teaches execution. This repository teaches the serving decisions around it.
 
-## What you will build
+## What you'll build
 
-By the end, you will be able to:
+By the end, you'll be able to:
 
 - budget weight, runtime, and sequence-dependent KV-cache memory;
 - distinguish TTFT, TPOT, end-to-end latency, request rate, and token throughput;
@@ -42,7 +42,7 @@ By the end, you will be able to:
   and
 - produce deterministic JSON that names the reason behind every fleet decision.
 
-## What the simulations do and do not prove
+## What the simulations do and don't prove
 
 The whole course uses Python's standard library. It needs no GPU, model download, API key,
 or network access, which keeps control ordering, invariants, and negative paths easy to
@@ -99,7 +99,7 @@ python examples/01_memory_and_kv.py
 
 Inspect weight memory, KV reservation, runtime overhead, usable VRAM, and maximum
 concurrency separately. The example supplies `kv_shards` explicitly, because grouped-query
-attention and runtime layouts do not always shard KV state the way they shard weights.
+attention and runtime layouts don't always shard KV state the way they shard weights.
 Extend the plan with observed runtime cache capacity before you buy hardware.
 
 ### 2. TTFT, TPOT, and throughput
@@ -186,8 +186,8 @@ by request id.
 python examples/09_gpu_scheduling.py
 ```
 
-The scheduler chooses resident weights on an eligible same-node pair. Free memory alone is
-not enough, because dtype and kernel capability and collective locality all constrain a
+The scheduler chooses resident weights on an eligible same-node pair. Free memory alone isn't
+enough, because dtype and kernel capability and collective locality all constrain a
 parallel replica. Production orchestration has to atomically reserve the proposed group
 after rechecking inventory, because a pure plan can race.
 

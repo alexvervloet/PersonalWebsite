@@ -40,9 +40,9 @@ flowchart LR
     N -->|regression| R
 ```
 
-The three incoming arrows matter. Candidate data supplies what you are testing, policy
+The three incoming arrows matter. Candidate data supplies what you're testing, policy
 supplies what has to be true, and stimuli exercise behavior. Combine those roles into one
-object and you have built a circular check.
+object and you've built a circular check.
 
 ## 1. Setup
 
@@ -81,12 +81,12 @@ python examples/01_test_portfolio.py
 ```
 
 The example deliberately supplies green unit and eval observations while the independent
-policy still requires a contract result. The subset gets blocked. That is the core
+policy still requires a contract result. The subset gets blocked. That's the core
 anti-vacuity rule for the rest of the course.
 
 ## 3. SDK contracts and recorded fixtures
 
-A recorded HTTP exchange is valuable test data and it is not the specification. The
+A recorded HTTP exchange is valuable test data and it isn't the specification. The
 contract has to declare, independently, the required fields, JSON types, unknown-field
 behavior, provenance metadata, and redaction policy. Otherwise recording a broken response
 teaches the test to expect the same broken response.
@@ -125,8 +125,8 @@ python examples/04_deterministic_doubles.py
 ```
 
 `DeterministicModelFake` has one-shot scripted outcomes, reusable prompt behavior, and a
-bounded call-history deque. Its retained state cannot grow forever, and its reset semantics
-explicitly do not replay faults that were already consumed.
+bounded call-history deque. Its retained state can't grow forever, and its reset semantics
+explicitly don't replay faults that were already consumed.
 
 ## 6. Load tests with explicit units
 
@@ -140,15 +140,15 @@ python examples/05_load_testing.py
 ```
 
 The same events are shifted one hour on the monotonic timeline. Duration-derived
-measurements survive the shift, which is a unit-sensitive metamorphic check. They do
-not survive it bit for bit: adding 3,600 to each timestamp costs low-order bits, so
+measurements survive the shift, which is a unit-sensitive metamorphic check. They don't
+survive it bit for bit: adding 3,600 to each timestamp costs low-order bits, so
 the example prints the actual drift against a named tolerance rather than asserting
-equality it cannot demonstrate. The error rate is a ratio of counts and is exactly
+equality it can't demonstrate. The error rate is a ratio of counts and is exactly
 equal. Policy equality passes; only a value beyond a bound fails.
 
 ## 7. Fault tests, retries, and idempotency
 
-The dangerous retry is not a clean failure before work starts. It is a response lost after
+The dangerous retry isn't a clean failure before work starts. It's a response lost after
 the server already committed a side effect. The client has no way to know whether retrying
 will duplicate the operation.
 
@@ -177,14 +177,14 @@ python examples/07_compatibility.py
 
 The example changes only the index schema and observes the actual release decision
 flip. `allowed_models={"*"}` is the one explicit wildcard; strings such as
-`"model-*"` are literal and do not silently widen approval.
+`"model-*"` are literal and don't silently widen approval.
 
 A concrete instance of this compatibility tuple failing, found in the wild:
 [knowledge-desk](https://github.com/alexvervloet/knowledge-desk) exposed `answer_model`
 as configuration while sending `output_config.effort` on every request. Claude Haiku
-rejects that parameter outright, so setting the model to Haiku did not degrade an answer,
-it failed every one of them. The model was a setting; the request shape around it was
-not, and nothing in the release checked that the two agreed. It was found by
+rejects that parameter outright, so setting the model to Haiku didn't degrade an answer,
+it failed every one of them. The model was a setting; the request shape around it wasn't
+and nothing in the release checked that the two agreed. It was found by
 [model-swap](https://github.com/alexvervloet/model-swap) trying to use the app as a
 library, which is the cheapest compatibility test there is: make something else drive
 your release tuple from outside.
@@ -207,7 +207,7 @@ audit resolves no dependency graphs and evaluates no marker expressions.
 ## 10. CI matrices, or executing the support promise
 
 `requires-python = ">=3.11"` is metadata. It becomes evidence only once CI runs on 3.11.
-Testing a newer local interpreter alone cannot prove the lower bound.
+Testing a newer local interpreter alone can't prove the lower bound.
 
 ```bash
 python examples/09_ci_matrix.py
@@ -246,7 +246,7 @@ python examples/11_staged_rollout.py
 ```
 
 The example uses 500 requests, sitting between zero and the 1,000-request requirement, so
-the hold decision cannot be an artifact of a zero-against-full tie. It then shows promotion
+the hold decision can't be an artifact of a zero-against-full tie. It then shows promotion
 at the boundary and rollback under several simultaneous regressions.
 
 ## 13. Release evidence and provenance
@@ -260,7 +260,7 @@ python examples/12_release_evidence.py
 ```
 
 Evidence exactly at the maximum age passes. Evidence one second older fails. Future
-timestamps fail. This bundle is not a signature and not a full SLSA provenance statement.
+timestamps fail. This bundle isn't a signature and not a full SLSA provenance statement.
 Production builds should create signed attestations on a hardened build platform.
 
 ## 14. Capstone: release one candidate
@@ -311,7 +311,7 @@ EXERCISES.md                modifications and reasoning prompts
 ## What this course deliberately simplifies
 
 - The property runner handles integers only and shrinks by bounded enumeration.
-- The load generator is synthetic and does not model coordinated omission or a
+- The load generator is synthetic and doesn't model coordinated omission or a
   distributed load generator.
 - Retry delays are recorded, not slept; no real payment system is contacted.
 - Marker strings in the lock audit are compared exactly, not semantically solved.

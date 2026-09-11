@@ -15,11 +15,11 @@ python examples/01_test_portfolio.py
 Before running, predict the exact missing-evidence reason. Then:
 
 1. Add a green `load` observation without adding it to `required_kinds`. Explain why
-   it is extra evidence rather than a release requirement.
+   it's extra evidence rather than a release requirement.
 2. Add `load` to the policy but remove its observation. Confirm the decision changes.
 3. Supply two unit results, one passing and one failing. Explain why choosing either
    one silently would hide flakiness.
-4. Name one failure that an eval catches but a unit test usually does not, and one in
+4. Name one failure that an eval catches but a unit test usually doesn't, and one in
    the opposite direction.
 
 ## 2. Recorded SDK contracts
@@ -37,7 +37,7 @@ Predict whether the extra `expected_id_type` field repairs the missing `id`. The
 2. Set `allow_unknown_response_fields=False` and observe the forward-compatibility
    tradeoff.
 3. Add an optional field to the independent contract, then omit it from the fixture.
-4. Design a fixture-refresh review that cannot automatically approve the shape it
+4. Design a fixture-refresh review that can't automatically approve the shape it
    just recorded.
 
 ## 3. Property testing
@@ -52,8 +52,8 @@ Predict the minimal counterexample for the broken lower clamp. Then:
 
 1. Repair `buggy_clamp` and confirm all generated cases pass.
 2. Change the invariant so zero itself fails. Trace the already-minimal path.
-3. Use a very large failing value and a tiny shrink budget. Confirm the report does
-   not claim complete shrinking.
+3. Use a very large failing value and a tiny shrink budget. Confirm the report doesn't
+   claim complete shrinking.
 4. Write one property for tenant filtering or context-window packing. State which
    inputs are generated and which requirement stays independent.
 
@@ -89,7 +89,7 @@ Predict whether shifting timestamps by 3,600 seconds changes throughput. Then:
    one more millisecond and confirm it fails.
 3. Replace `span_s` with the absolute maximum finish timestamp temporarily. Show why
    the time-origin metamorphic test catches the mistake.
-4. List workload dimensions the synthetic test does not model.
+4. List workload dimensions the synthetic test doesn't model.
 
 ## 6. Faults and idempotency
 
@@ -124,7 +124,7 @@ Predict the index-schema violation. Then:
 3. Try `allowed_models={"model-*"}` and then `{"*"}`. Explain the deliberate wildcard
    semantics.
 4. Add an embedding-model revision to both candidate and policy. Write a test where
-   dimensions match but the semantic embedding revision does not.
+   dimensions match but the semantic embedding revision doesn't.
 
 ## 8. Dependency locking
 
@@ -141,7 +141,7 @@ Predict the unhashed artifact violation. Then:
    `commit-id`. Explain which value an installer must use.
 3. Add two legal marker variants for the same normalized name, then add an exact
    duplicate entry.
-4. Explain what the audit cannot prove without downloading bytes and evaluating
+4. Explain what the audit can't prove without downloading bytes and evaluating
    marker expressions.
 
 ## 9. CI matrix coverage
@@ -155,7 +155,7 @@ python examples/09_ci_matrix.py
 Predict why one green current-runtime job is insufficient. Then:
 
 1. Fail only the Python 3.11 cell and inspect the run-specific reason.
-2. Add an optional failing macOS live-provider cell. Explain why it does not alter
+2. Add an optional failing macOS live-provider cell. Explain why it doesn't alter
    this policy, then decide whether your production policy should require it.
 3. Duplicate a required cell with one green and one red observation. Explain why
    the teaching gate refuses to cherry-pick.
@@ -205,7 +205,7 @@ Run:
 python examples/12_release_evidence.py
 ```
 
-Predict why prompt v6 unit evidence cannot release prompt v7. Then:
+Predict why prompt v6 unit evidence can't release prompt v7. Then:
 
 1. Test ages 3,599, 3,600, and 3,601 seconds against a 3,600-second maximum.
 2. Put the production time one second in the future and inspect the reason.
@@ -237,7 +237,7 @@ Before reading the tests, predict the full rollout path and evidence count. Then
 6. Make all decisions pass but age all records beyond policy. Explain why build-time
    success and releasable current evidence are separate claims.
 7. Add an `artifact_signature` field and a verifier interface. Keep the course
-   offline by using a deterministic teaching signer, and state why it is not a
+   offline by using a deterministic teaching signer, and state why it isn't a
    production trust root.
 
 ## Senior review checklist

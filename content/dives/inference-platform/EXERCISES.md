@@ -13,7 +13,7 @@ Acceptance criteria:
 
 - Weight and KV element precision remain separate inputs.
 - A shorter effective window reduces KV reservation without changing weight memory.
-- A model whose weights fit but target concurrency does not is rejected.
+- A model whose weights fit but target concurrency doesn't is rejected.
 - The test shows its byte/GiB arithmetic and crosses the fit boundary visibly.
 
 Stretch: compare the planner with cache capacity reported by a real runtime, recording
@@ -27,7 +27,7 @@ reports without averaging away the interactive tail.
 Acceptance criteria:
 
 - TTFT, TPOT, E2E, input tokens, and output tokens remain separate fields.
-- A slow batch trace does not fail an interactive objective, and vice versa.
+- A slow batch trace doesn't fail an interactive objective, and vice versa.
 - Unknown or empty workload classes fail validation.
 - One slow first token breaks TTFT while an unchanged decode sequence still passes TPOT.
 
@@ -57,7 +57,7 @@ for a model, tokenizer, adapter, tenant, or corpus revision.
 Acceptance criteria:
 
 - Only complete exact token blocks enter the cache.
-- A changed scope cannot hit even when token ids match.
+- A changed scope can't hit even when token ids match.
 - Eviction derives from access order and budget, not a fixture's expected victim.
 - Invalidating one tenant leaves another tenant's entries available.
 
@@ -77,7 +77,7 @@ Acceptance criteria:
 - Every measurement names immutable model/runtime/hardware identity.
 - Passing means staging, not production promotion.
 
-Stretch: add protected quality slices so an acceptable aggregate cannot hide one
+Stretch: add protected quality slices so an acceptable aggregate can't hide one
 critical task regression.
 
 ## 6. Evaluate speculation over many rounds
@@ -103,7 +103,7 @@ TP/PP/EP compositions. Reject unsupported or unsafe layouts.
 
 Acceptance criteria:
 
-- TP groups cannot silently cross a disallowed slow link.
+- TP groups can't silently cross a disallowed slow link.
 - DP is allocated only after a complete replica layout fits.
 - An MoE expert partition divides the declared expert count.
 - Removing one GPU or capability changes the layout or yields a specific no-fit reason.
@@ -121,7 +121,7 @@ Acceptance criteria:
 - Priority comes from trusted routing policy, not request/model text.
 - Rejected or expired work mutates no live-token or queue counters.
 - Replays reserve once.
-- Sustained interactive arrivals cannot starve a queued batch request beyond its
+- Sustained interactive arrivals can't starve a queued batch request beyond its
   declared maximum wait.
 
 Stretch: return retry-after guidance derived from service observations while keeping
@@ -151,7 +151,7 @@ Acceptance criteria:
 
 - CPU never becomes authoritative for token demand.
 - Pending and warming replicas contribute zero ready throughput.
-- The pod loop can request capacity while the node loop explains why it is pending.
+- The pod loop can request capacity while the node loop explains why it's pending.
 - A full stabilization window is required before scale-down.
 
 Stretch: add forecast-based prewarming and compare its idle cost with reactive SLO
@@ -165,7 +165,7 @@ stage explicit evidence and exit criteria.
 Acceptance criteria:
 
 - Requirements are declared separately from candidate measurements.
-- Shadow success cannot directly promote.
+- Shadow success can't directly promote.
 - Insufficient or unwarmed evidence holds rather than passes.
 - One protected quality or p95 latency regression removes traffic and names the gate.
 - Rollback itself is exercised and produces observable evidence.
@@ -193,7 +193,7 @@ unused reserved capacity explicitly.
 
 Extend `hands_on/plan_fleet.py` so every input and decision includes an immutable
 revision, observed-at timestamp, and expiry. Bind the JSON report to those inputs with
-a digest. Do not use the report itself as its own source of truth.
+a digest. Don't use the report itself as its own source of truth.
 
 Acceptance criteria:
 

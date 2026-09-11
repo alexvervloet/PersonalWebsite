@@ -1,6 +1,6 @@
 # Chapter 20: GenAI Security Engineering
 
-Security is not a prompt. It is the set of enforceable boundaries that still hold when
+Security isn't a prompt. It's the set of enforceable boundaries that still hold when
 the model is confused, manipulated, compromised, or simply wrong.
 
 This chapter assumes you already understand direct and indirect prompt injection. See
@@ -15,7 +15,7 @@ and operators.
 
 A principal proposes an action. A trusted reference monitor decides whether the
 authenticated user may perform that exact action in the current tenant and context.
-The model may help choose an invoice number; it cannot choose the tenant, role,
+The model may help choose an invoice number; it can't choose the tenant, role,
 approval, or policy used to authorize the lookup.
 
 That produces a useful system shape:
@@ -42,7 +42,7 @@ is a strong review baseline:
 
 | ID | Risk | Boundary emphasized in this course |
 |---|---|---|
-| LLM01 | Prompt Injection | Model output cannot grant authority |
+| LLM01 | Prompt Injection | Model output can't grant authority |
 | LLM02 | Sensitive Information Disclosure | Minimize context; inspect every egress path |
 | LLM03 | Supply Chain | Pin source, version, bytes, builder, and approval |
 | LLM04 | Data and Model Poisoning | Gate records and corpus-level distributions |
@@ -53,7 +53,7 @@ is a strong review baseline:
 | LLM09 | Misinformation | Pinned evidence, uncertainty, evals, human review |
 | LLM10 | Unbounded Consumption | Shared request budgets and pre-call reservation |
 
-The list cannot know that your highest-impact asset is a signing key, that an internal
+The list can't know that your highest-impact asset is a signing key, that an internal
 index contains acquisition documents, or that a refund tool has a weak rollback path.
 Begin with the system:
 
@@ -73,7 +73,7 @@ executable.
 ## 20.3 Trust boundaries beat instruction hierarchy
 
 System prompts, delimiters, instruction hierarchies, and model-level defenses can
-reduce attack success. They are defense in depth. They cannot create authorization
+reduce attack success. They're defense in depth. They can't create authorization
 because every instruction ultimately passes through the same probabilistic model.
 
 Assume an attacker can influence:
@@ -95,7 +95,7 @@ model.
 
 A disclosure filter is a last boundary, not a license to send secrets into context.
 Classify fields, declare the task purpose, and include only the minimum necessary data.
-Keep credentials in a secret manager behind narrow tools. Do not place them in system
+Keep credentials in a secret manager behind narrow tools. Don't place them in system
 prompts, examples, memory, traces, exception messages, or vector metadata.
 
 There are at least four egress paths to review:
@@ -132,7 +132,7 @@ An AI release is a graph, not one application image. Inventory at least:
 - the builder, workflow, and identities that approved them.
 
 Pin immutable versions and cryptographic digests. Verify bytes at deployment and
-startup, not only when downloading. A checksum detects changed bytes but does not say
+startup, not only when downloading. A checksum detects changed bytes but doesn't say
 who approved them; provenance binds artifacts to an expected source and build process.
 
 The course uses HMAC so the approval-versus-checksum distinction works offline. A
@@ -148,7 +148,7 @@ known-good too.
 
 ## 20.6 Poisoning requires record and population controls
 
-Approved origin does not make every record benign. Compromised accounts, connectors,
+Approved origin doesn't make every record benign. Compromised accounts, connectors,
 labeling workflows, and public uploads can introduce poisoning after the outer
 artifact has valid provenance.
 
@@ -168,7 +168,7 @@ Population signals include:
 - unusual influence on held-out behaviors; and
 - targeted regressions on protected groups or tasks.
 
-Quarantine with stable IDs and findings. Do not silently clean away the evidence an
+Quarantine with stable IDs and findings. Don't silently clean away the evidence an
 investigator needs. Run evaluation suites against the candidate corpus, preserve the
 previous approved snapshot, and make rollback cheap.
 
@@ -205,27 +205,27 @@ A prompt has structure: section headings, evidence markers, citation keys, and a
 separating instructions from data. If a passage is concatenated verbatim, anything it
 contains joins that structure. A support ticket whose body reads `## Approved policy`
 produces a heading the application never wrote. A wiki page containing `[doc:policy/7]`
-produces a citation key the retriever never issued. The model cannot distinguish these
-from the real ones, because there is nothing to distinguish: same bytes, same position,
+produces a citation key the retriever never issued. The model can't distinguish these
+from the real ones, because there's nothing to distinguish: same bytes, same position,
 same meaning to a reader.
 
-This is not the cross-tenant problem. The passage is genuinely the caller's, genuinely
-authorized, and correctly retrieved. It is lying about what kind of text it is.
+This isn't the cross-tenant problem. The passage is genuinely the caller's, genuinely
+authorized, and correctly retrieved. It's lying about what kind of text it is.
 
-Note what a citation check does and does not catch here. Verifying that every key in the
+Note what a citation check does and doesn't catch here. Verifying that every key in the
 answer exists in the approved set is necessary and insufficient, because a model that
 reads a forged policy can attribute it to the *real* key of the passage that carried it.
 The citation then validates and the false claim reads as sourced. Pinning the quote to
-the source text, as §20.12 requires, is what closes that; key existence alone does not.
+the source text, as §20.12 requires, is what closes that; key existence alone doesn't.
 
 Two controls, answering different questions:
 
-1. Escape the passage so it cannot write the document's grammar. Defuse headings,
+1. Escape the passage so it can't write the document's grammar. Defuse headings,
    key-shaped tokens, evidence markers, and fence tags. Defuse rather than delete: after
    an incident the first question is what the document actually said, and a control that
    erases the evidence answers it badly.
 2. Fence the untrusted region with a nonce generated per request. This is the actual
-   boundary. A document written last week cannot contain a value invented at request
+   boundary. A document written last week can't contain a value invented at request
    time, so forging the fence becomes impossible rather than unlikely. A fixed delimiter
    is one the attacker can simply type.
 
@@ -235,7 +235,7 @@ nonzero and rising is a corpus somebody is writing into.
 Neither control stops a passage from arguing. Text that politely asks the model to
 confirm an invented policy arrives intact, correctly labelled as data, and whether the
 model complies is a question about the model. These controls remove the ability to
-impersonate the application; they do not remove the ability to persuade it, and no
+impersonate the application; they don't remove the ability to persuade it, and no
 string function will. Authority still has to follow the authenticated principal.
 
 ## 20.9 Agency: authority follows the authenticated principal
@@ -255,14 +255,14 @@ approval containing subject, tenant, tool, object, and operation key.
 
 A role is a statement about capability and says nothing about aim, which is the gap
 that stays open when everything above is in place. Separate a third question from the
-first two. *Who is asking* is the principal, *on whose installation* is the tenant, and
+first two. *Who's asking* is the principal, *on whose installation* is the tenant, and
 *about which person* is the request's scope. A support agent legitimately holds "read
 customer history"; which customer is an ordinary argument, and the model chose it after
-reading a ticket a stranger wrote. Tenancy does not help, because both people are
+reading a ticket a stranger wrote. Tenancy doesn't help, because both people are
 customers of the same merchant, which is the ordinary case rather than an edge one. So
 a tool keyed by a person carries the record the request belongs to, read from the case
 rather than from the proposal, and answers for that record only. Tools addressed by an
-identifier the system minted do not need it, and scoping them anyway would make an
+identifier the system minted don't need it, and scoping them anyway would make an
 invoice unreadable from the ticket about it.
 
 Refuse a pivot on what it names rather than rewriting it to the scoped subject. The
@@ -273,8 +273,8 @@ it matters more here because a read looks harmless: no approval is owed, no effe
 recorded, and the data still ends up in a conversation with a reply tool on the other
 end of it.
 
-Binding is not freshness, and the distinction is easy to lose because both get called
-replay protection. An approval bound to one subject, tenant, tool, and object cannot be
+Binding isn't freshness, and the distinction is easy to lose because both get called
+replay protection. An approval bound to one subject, tenant, tool, and object can't be
 *aimed* somewhere else. It can still be presented again at the same target, and an
 agent that retries a failed step, resumes after a crash, or loops is a machine for
 producing exactly that. Binding answers "is this approval for this operation"; it never
@@ -288,11 +288,11 @@ Two tokens, two jobs, and this is where systems conflate them:
 | idempotency key | the caller may choose it | a repeat is *recognised* | yes |
 | approval challenge | only the server | a repeat is *refused* | no, never |
 
-An idempotency key is not a nonce. It makes a duplicate submission converge on one
-effect, which is a correctness property. It does not stop an attacker producing the
-duplicate, which is the security property, and a value the model can see or compute is
-not a challenge at all. If a challenge is derived from the operation's own fields, every
-input to it is visible to the thing you are defending against.
+An idempotency key isn't a nonce. It makes a duplicate submission converge on one
+effect, which is a correctness property. It doesn't stop an attacker producing the
+duplicate, which is the security property, and a value the model can see or compute isn't
+a challenge at all. If a challenge is derived from the operation's own fields, every
+input to it is visible to the thing you're defending against.
 
 Spend the challenge at the authorization decision rather than after the effect
 succeeds. A crash between decision and effect then costs one re-approval, while the
@@ -308,7 +308,7 @@ to shrink authority and blast radius, not reasons to ask the model to be more ca
 
 Stateful model APIs moved the transcript to the server. The client sends a short handle
 and the provider supplies everything said so far, which makes that handle a bearer
-reference to accumulated context: whoever presents it gets the material. It is usually
+reference to accumulated context: whoever presents it gets the material. It's usually
 treated as a routing detail and given the care a routing detail gets.
 
 Two failures follow, and the second is the one that survives a careful team.
@@ -320,7 +320,7 @@ the caller already knows. Then check ownership on every resume, because handles 
 through logs, referrers, support tickets, and shared links. Give a denied resume the
 same answer as a missing one; distinguishing them turns the store into a membership
 oracle over the handle space. Expire conversations, and compare the handle with a
-constant-time comparison, since it is a secret in every sense that matters.
+constant-time comparison, since it's a secret in every sense that matters.
 
 **A bound handle still drifts.** This is the part that has no analogue in the earlier
 sections. Context accumulated under one authorization survives into later turns and
@@ -331,7 +331,7 @@ subject's amounts and dates into it. No permission check fires, because no permi
 was exceeded.
 
 Record each turn's subject when the turn happens, from trusted state, and filter the
-transcript by it before composing. The subject cannot be recovered from the text later:
+transcript by it before composing. The subject can't be recovered from the text later:
 the question that causes the damage is usually "what about the September obligation?",
 which names nobody, and inferring a subject from prose is how one person's obligation
 becomes another's. Return the withheld turns alongside the admitted ones rather than
@@ -339,7 +339,7 @@ dropping them, because "the model never saw it" and "the model saw it and ignore
 are different incidents and only one of them is a failure of this control.
 
 Note what kind of failure this is. Every authorization check passes and the answer is
-still wrong about whose facts it is stating. Binding the handle answers whether this
+still wrong about whose facts it's stating. Binding the handle answers whether this
 caller may read this conversation; it never answers whether this turn belongs in the
 answer being composed now. Treating those as one question is the mistake, and the
 second one is the one a customer telephones about.
@@ -399,12 +399,12 @@ Prefer no general network tool. Where egress is necessary:
 - isolate the egress proxy from sensitive networks; and
 - bound request bytes, response bytes, redirects, and time.
 
-String matching a URL is not enough. Lesson 8 uses an injected resolver and makes no
+String matching a URL isn't enough. Lesson 8 uses an injected resolver and makes no
 network request so every path stays deterministic.
 
 ## 20.14 Generated-code isolation
 
-`eval`, `exec`, subprocess calls, import filters, and Python object tricks do not create
+`eval`, `exec`, subprocess calls, import filters, and Python object tricks don't create
 a trustworthy sandbox inside the application process. If generated code is a product
 requirement, move it to a real isolation boundary such as a short-lived container,
 microVM, or managed runner.
@@ -416,27 +416,27 @@ The runtime contract should include:
 - non-root identity and no privilege escalation;
 - read-only root filesystem;
 - explicit read-only inputs and one ephemeral writable scratch root;
-- mount destinations that cannot overlay system paths inside the guest;
+- mount destinations that can't overlay system paths inside the guest;
 - no ambient credentials or unexpected environment variables;
 - no network by default;
 - CPU, memory, process, file, output, and wall-clock limits;
 - kernel isolation and syscall filtering; and
 - destruction after use.
 
-The course policy validates a request *to* such a runtime. It is intentionally not
+The course policy validates a request *to* such a runtime. It's intentionally not
 called a sandbox. Symlink handling, mounts, namespaces, kernel configuration, and
 resource enforcement must be proven by integration tests against the actual runner.
 
 ## 20.15 Unbounded consumption and denial-of-wallet
 
-Per-minute rate limits do not bound one accepted request. A shared request budget must
+Per-minute rate limits don't bound one accepted request. A shared request budget must
 cover input and output tokens, model calls, tool calls, agent steps, retries, bytes,
 wall time, and maximum monetary cost.
 
 Reserve worst-case consumption before starting external work. That creates three
 important invariants:
 
-1. concurrent branches cannot both spend the last remaining budget;
+1. concurrent branches can't both spend the last remaining budget;
 2. failed reservations mutate no counters; and
 3. retries with the same operation key charge once.
 
@@ -444,8 +444,8 @@ Validate the limits themselves before trusting them, and check finiteness before
 magnitude. Every guard in a budget is an ordered comparison, and every ordered
 comparison against NaN is false, so a NaN limit passes a `< 0` check, passes a `<= 0`
 check, and then loses every comparison that would have rejected a charge. The control
-does not fail; it switches itself off and keeps reporting success. A limit arriving as
-NaN or infinity is not exotic: it comes from a config file, a unit conversion, or a
+doesn't fail; it switches itself off and keeps reporting success. A limit arriving as
+NaN or infinity isn't exotic: it comes from a config file, a unit conversion, or a
 division that found a zero. This module shipped with exactly that hole until a reader
 went looking for it.
 
@@ -461,18 +461,18 @@ fee, or upgrade a plan is moving somebody else's money, and in most systems that
 exists only as a figure on a dashboard. Denial-of-wallet has a second form, and it
 empties the wrong wallet.
 
-The shape of the ceiling differs too, which is why copying the request budget does not
+The shape of the ceiling differs too, which is why copying the request budget doesn't
 work. A per-request limit bounds one request, and it bounds a day only if the number of
 requests is bounded, which nothing does: a retry, a redelivered queue message, or one
 customer opening four tickets each produce a fresh request that is individually well
-behaved. So the second scope is the account over a rolling window, and it is the one
+behaved. So the second scope is the account over a rolling window, and it's the one
 that actually caps exposure. Charge it before the payment for the same reason you
 reserve tokens before the call, since a ceiling verified afterwards is a report.
 
-Two things this is not. It is not an approval gate and does not replace one: approval
+Two things this isn't. It isn't an approval gate and doesn't replace one: approval
 asks a person about one payment, and this holds whatever the person decides, which
 matters precisely because the failure mode is a series of individually reasonable
-approvals on a busy afternoon. And it is not satisfied by a per-order or per-item
+approvals on a busy afternoon. And it isn't satisfied by a per-order or per-item
 sanity check, which answers whether one payment is proportionate to one object and says
 nothing about a run that touches four objects once each.
 
@@ -492,7 +492,7 @@ An adversarial string collection becomes an engineering control when every probe
 - retained result and diagnostic evidence; and
 - a threshold that blocks release.
 
-Measure attack success rate and benign pass rate together. "Block everything" is not a
+Measure attack success rate and benign pass rate together. "Block everything" isn't a
 secure product. Require coverage of the risks named in the threat model. Count harness
 exceptions and missing categories as failures; otherwise a broken evaluator produces a
 comforting green dashboard.
@@ -522,16 +522,16 @@ Use an explicit lifecycle: detect, preserve, contain, eradicate, pass the regres
 and release gates, recover gradually, and close with owned systemic actions. Recovery
 before a passing gate recreates the incident.
 
-Hash chaining makes changed audit metadata detectable; it does not make storage
+Hash chaining makes changed audit metadata detectable; it doesn't make storage
 immutable. It also has one specific blind spot worth knowing by name: a chain detects
-a modified or inserted event, because every later hash depends on it, but it cannot
+a modified or inserted event, because every later hash depends on it, but it can't
 detect a deleted tail. Any prefix of a valid chain is itself a valid chain, so an
 attacker who truncates the log leaves a record that verifies cleanly. Anchoring the
-head hash somewhere they do not control, a monitoring system, a trusted timestamp, or
+head hash somewhere they don't control, a monitoring system, a trusted timestamp, or
 a separate append-only store, is what turns truncation back into a detectable event.
 
 Production evidence needs access control, retention, legal/privacy policy, trusted
-timestamps, and durable append-only storage. Do not copy raw customer secrets into a
+timestamps, and durable append-only storage. Don't copy raw customer secrets into a
 ticket merely to prove a leak occurred.
 
 ## 20.18 Secure development lifecycle
@@ -554,7 +554,7 @@ Translate lifecycle guidance into evidence:
 - incident runbooks and tabletop results; and
 - accepted residual risks with accountable owners and review dates.
 
-Compliance language without executable evidence is not a boundary.
+Compliance language without executable evidence isn't a boundary.
 
 ## 20.19 Common failed approaches
 
@@ -568,11 +568,11 @@ must authorize semantics against authenticated identity.
 says they may read it. It says nothing about which subject the current answer is about.
 Record a subject per turn and filter before composing.
 
-**"The approval is bound to the operation, so it cannot be replayed."** Binding stops it
+**"The approval is bound to the operation, so it can't be replayed."** Binding stops it
 being aimed elsewhere, not being presented twice at the same target. Add a server-issued
 single-use challenge with an expiry.
 
-**"We sanitize all model output."** There is no universal sanitizer. Parse and encode
+**"We sanitize all model output."** There's no universal sanitizer. Parse and encode
 for each exact sink.
 
 **"The retrieved text is just data."** Only if you escaped it. Concatenated verbatim it
@@ -585,7 +585,7 @@ ranking and perhaps caches. Filter first.
 **"The URL host is allowlisted."** DNS and redirects can still reach a private address.
 Authorize the resolved destination at connection time.
 
-**"The Python wrapper is a sandbox."** It is a policy helper. Isolation belongs to the
+**"The Python wrapper is a sandbox."** It's a policy helper. Isolation belongs to the
 runtime and kernel boundary.
 
 **"The budget rejects anything over the limit."** Only if the limit is a number. NaN
@@ -613,7 +613,7 @@ Before release, a senior engineer should be able to answer:
 - What stops retrieved text from writing your headings, citation keys, or fence?
 - What prevents SSRF, generated-code escape, excessive cost, and replayed writes?
 - Do adversarial gates retain benign utility and fail when their harness is damaged?
-- What is the fastest tested containment action for every high-impact capability?
+- What's the fastest tested containment action for every high-impact capability?
 - Which claims rely on unit evidence, and which require staging or production proof?
 
 If an answer is "the model should," the boundary is probably still missing.
@@ -621,7 +621,7 @@ If an answer is "the model should," the boundary is probably still missing.
 ## 20.21 From lesson to production
 
 The repository is intentionally offline and dependency-free. That makes its invariants
-easy to inspect, but it also draws a bright line around what it does not prove.
+easy to inspect, but it also draws a bright line around what it doesn't prove.
 
 Before production, replace teaching adapters with:
 

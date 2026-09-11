@@ -12,7 +12,7 @@ least one excessive-agency risk.
 
 Acceptance criteria:
 
-- A risk cannot reference an asset that has no accountable owner.
+- A risk can't reference an asset that has no accountable owner.
 - The initial model reports both an uncontrolled flow and an open risk.
 - Adding a named authorization control and mitigation removes those findings without
   lowering the risk's impact score.
@@ -21,7 +21,7 @@ Stretch: add a residual-risk field instead of treating mitigation as elimination
 
 ## 2. Prove a secret never enters observability
 
-Add a restricted OAuth refresh token to lesson 2. Confirm it is absent from context,
+Add a restricted OAuth refresh token to lesson 2. Confirm it's absent from context,
 model output, exception text, and serialized decisions.
 
 Acceptance criteria:
@@ -30,7 +30,7 @@ Acceptance criteria:
 - Diagnostics retain the field name, reason, and keyed fingerprint.
 - Fingerprinting the same token under a different pepper produces a different
   reference, and an unkeyed digest is rejected outright.
-- An authorized purpose still cannot override the classification ceiling.
+- An authorized purpose still can't override the classification ceiling.
 
 Stretch: define separate context policies for an interactive model and a tightly
 controlled batch job.
@@ -44,7 +44,7 @@ Acceptance criteria:
 
 - Every artifact uses an immutable version and approved source.
 - Verification names the exact mismatched artifact.
-- Updating a digest without a valid approval signature does not pass.
+- Updating a digest without a valid approval signature doesn't pass.
 
 Design question: where would the signing identity and transparency log live in your
 real build pipeline? The lesson HMAC is deliberately not an acceptable answer.
@@ -58,7 +58,7 @@ Acceptance criteria:
 
 - A clean, diverse corpus passes.
 - A concentrated duplicate campaign fails with stable record IDs.
-- Reordering input records does not change the set of accepted IDs or findings.
+- Reordering input records doesn't change the set of accepted IDs or findings.
 - Detector failure quarantines the batch; it never silently admits everything.
 
 Stretch: distinguish a rejected source record from a release-blocking corpus-level
@@ -66,7 +66,7 @@ finding.
 
 ## 5. Add a new output sink
 
-Add a `create_ticket` action with `title`, `body`, and `priority`. Do not share raw model
+Add a `create_ticket` action with `title`, `body`, and `priority`. Don't share raw model
 JSON with the ticket API.
 
 Acceptance criteria:
@@ -80,18 +80,18 @@ Acceptance criteria:
 ## 6. Design an approval replay attack
 
 Try to reuse an approval for a different tenant, subject, tool, object, or idempotency
-key. Strengthen the approval object if your new object identifier is not currently
+key. Strengthen the approval object if your new object identifier isn't currently
 bound.
 
 Then do the harder half: take an approval that legitimately succeeded and submit the
-identical call again. Binding cannot help you here, because nothing about the second
+identical call again. Binding can't help you here, because nothing about the second
 call is different.
 
 Acceptance criteria:
 
 - Only the exact approved operation passes.
 - A repeated write has one externally observable effect.
-- The model cannot place identity, roles, approval, or tenant into effective arguments.
+- The model can't place identity, roles, approval, or tenant into effective arguments.
 - Authorization policy failure denies the call and records why.
 - The same approval presented twice is refused the second time, and the reason
   distinguishes a spent challenge from a mis-aimed one.
@@ -101,13 +101,13 @@ Acceptance criteria:
   a sleep.
 
 Stretch: state which of these a caller-chosen idempotency key can provide on its own,
-and which it cannot. Then decide where the challenge should be spent: at the
+and which it can't. Then decide where the challenge should be spent: at the
 authorization decision, or after the effect succeeds. Both lose something.
 
 Then the read that none of the above refuses. Give the support principal a tool that
-answers questions about a person, point it at somebody who is not the subject of the
+answers questions about a person, point it at somebody who isn't the subject of the
 case, and confirm that the tenant matches, the role matches, the arguments are well
-formed, and no approval is owed because it is a read. Add the scope and watch it fail.
+formed, and no approval is owed because it's a read. Add the scope and watch it fail.
 
 Acceptance criteria:
 
@@ -133,7 +133,7 @@ Acceptance criteria:
 
 - Cache keys differ by tenant, effective principals, query, and corpus version.
 - Authorization happens before scoring and before cache insertion.
-- A source whose approval is revoked disappears even if it is semantically closest.
+- A source whose approval is revoked disappears even if it's semantically closest.
 - An empty ACL denies at ingestion rather than becoming public.
 
 Stretch: pin a claim to the retrieved source, then show how a corpus update invalidates
@@ -166,7 +166,7 @@ Acceptance criteria:
   system path inside the guest.
 - Root, unexpected environment variables, extra programs, and network are denied.
 - Tests never execute generated code on the host.
-- Documentation does not call the Python policy function a sandbox.
+- Documentation doesn't call the Python policy function a sandbox.
 
 ## 10. Share one budget across an agent tree
 
@@ -207,7 +207,7 @@ and whether a person reads it.
 ## 11. Make a regression fail the release
 
 Copy the capstone probe suite and intentionally weaken one control. Add one benign case
-that resembles the attack so a block-all patch is not accepted.
+that resembles the attack so a block-all patch isn't accepted.
 
 Acceptance criteria:
 
@@ -224,10 +224,10 @@ recover through a passing gate, and assign postmortem actions.
 
 Acceptance criteria:
 
-- The incident cannot skip lifecycle states.
+- The incident can't skip lifecycle states.
 - Evidence metadata contains a digest and size, not raw customer data.
 - Tampering with an earlier audit event invalidates the chain.
-- Deleting the final events does not, until the head hash is anchored outside
+- Deleting the final events doesn't, until the head hash is anchored outside
   the log and checked against it.
 - Recovery is impossible while the security release gate fails.
 - The postmortem names an owner and a systemic change, not "be more careful."
@@ -240,13 +240,13 @@ Run it through `assemble_context` and inspect both the prompt and the findings.
 
 Acceptance criteria:
 
-- No key the retriever did not issue survives in bracket form.
+- No key the retriever didn't issue survives in bracket form.
 - The fence's open and close tags each appear exactly once.
 - Every forged element is still readable in the prompt, defused rather than deleted.
 - A findings record names the passage and its citation, so the corpus can be audited.
 - A clean passage produces no findings and is passed through byte for byte.
 - A passage that politely *asks* for an invented policy produces no findings at all.
-  Explain why that is the correct outcome and which lesson answers it instead.
+  Explain why that's the correct outcome and which lesson answers it instead.
 
 Stretch: a model honours a close tag that is merely close enough. List five spellings of
 your fence tag that a reader would accept, and confirm the escape catches all five. Then
@@ -260,7 +260,7 @@ the operator owns the handle and was entitled to every turn in it.
 
 Acceptance criteria:
 
-- A colleague in the same tenant cannot resume the handle, and neither can the same
+- A colleague in the same tenant can't resume the handle, and neither can the same
   subject name in a different tenant.
 - A refused resume and a nonexistent handle return the same wording. Say what an
   attacker learns if they differ.
@@ -285,5 +285,5 @@ Add one system-specific risk that is absent from every top-ten list. Wire it thr
 5. the release evidence; and
 6. the incident runbook.
 
-If you cannot connect all six, you have found a security claim the system cannot yet
+If you can't connect all six, you've found a security claim the system can't yet
 prove.
