@@ -149,7 +149,7 @@ export function Page() {
           >
             {booted && (
               <Typewriter
-                text="Fullstack Engineer · AI systems · 8 years · 2M users shipped."
+                text="Software Engineer · agentic systems and applied AI · 8 years."
                 speed={22}
                 onDone={() => setIntroDone(true)}
               />
@@ -169,13 +169,13 @@ export function Page() {
           >
             For eight years I shipped production web and mobile software to a
             platform with two million users, owning flows end to end from React
-            through GraphQL on NestJS to Kafka. Now I build AI systems from
-            scratch. RAG, agents, evals, guardrails, written at the primitive
-            level rather than the framework level. Alongside the building I
-            kept doing the product work: customer surveys, scope arguments,
-            prioritization, and explaining system behavior to executives who
-            had never written code. That half of it is further down this
-            page.
+            through GraphQL on NestJS to Kafka. These days the systems I build
+            are agentic ones: tool-using agents allowed to do irreversible
+            things, and the durable execution, approval gates and eval suites
+            that keep that safe. Same engineering, harder failure modes. Alongside the building I kept doing the product work:
+            customer surveys, scope arguments, prioritization, and explaining
+            system behavior to executives who had never written code. That half
+            of it is further down this page.
           </p>
           <div
             style={{
@@ -1041,9 +1041,10 @@ export function Page() {
                 maxWidth: 480,
               }}
             >
-              I&apos;m looking for remote fullstack and AI engineering roles
-              on teams that treat product thinking as part of the job rather
-              than someone else&apos;s department. I&apos;m equally open to
+              I&apos;m looking for remote software engineering roles, ideally
+              ones with agentic or applied-AI work in them, on teams that treat
+              product thinking as part of the job rather than someone
+              else&apos;s department. I&apos;m equally open to
               product or technical PM roles, where eight years of shipping the
               thing is the background I&apos;d bring to deciding what to ship.
               UTC+8, flexible overlap with US and EU.
