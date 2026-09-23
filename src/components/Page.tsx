@@ -149,7 +149,7 @@ export function Page() {
           >
             {booted && (
               <Typewriter
-                text="Full-Stack Engineer → AI Engineer · 8 years · 2M users shipped."
+                text="Technical PM · Engineer · 8 years · 2M users shipped."
                 speed={22}
                 onDone={() => setIntroDone(true)}
               />
@@ -167,13 +167,15 @@ export function Page() {
               transition: 'opacity 0.6s',
             }}
           >
-            For eight years I shipped production web and mobile software to a
-            platform with two million users, owning flows end to end from React
-            through GraphQL on NestJS to Kafka. Now I build AI systems from scratch — RAG,
-            agents, evals, guardrails — to understand them at the primitive
-            level, not the framework level. The throughline is the same: I
-            translate between how a system actually works and what a team is
-            trying to build.
+            For eight years I shipped production software to a platform with
+            two million users, owning flows end to end from React through
+            GraphQL on NestJS to Kafka. I spent as much of that time on what we
+            were building and why. Running customer surveys, arguing scope,
+            sitting in prioritization, and explaining system behavior to
+            executives who had never written code. Now I build AI systems from
+            scratch, so the product judgement and the engineering understanding
+            stay attached to each other. I want the job where both are the
+            job.
           </p>
           <div
             style={{
@@ -185,12 +187,11 @@ export function Page() {
               transition: 'opacity 0.8s 0.2s',
             }}
           >
-            <a
-              href="#experience"
-              className="btn-link"
-              style={{ color: P.accent }}
-            >
-              View work <span>↓</span>
+            <a href="#product" className="btn-link" style={{ color: P.accent }}>
+              Case studies <span>↓</span>
+            </a>
+            <a href="#experience" className="btn-link" style={{ color: P.ink }}>
+              Experience <span>↓</span>
             </a>
             <a
               href={`https://github.com/${DATA.github}`}
@@ -221,8 +222,8 @@ export function Page() {
               [
                 ['8y', 'shipping prod'],
                 ['2M', 'users reached'],
-                ['$10M', 'payments processed'],
-                ['500%', 'csat lift @ influenxio'],
+                ['+9pt', 'csat from survey program'],
+                ['3-4wk', 'saved by one scope call'],
               ] as const
             ).map(([big, small], i) => (
               <div key={i} style={{ background: P.bg, padding: '14px 16px' }}>
@@ -354,6 +355,114 @@ export function Page() {
         </div>
       </section>
 
+      {/* ─── PRODUCT ─── */}
+      <section
+        id="product"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          padding: sp,
+          borderTop: `1px solid ${P.line}`,
+        }}
+      >
+        <SectionHead
+          num="02"
+          label="product"
+          title="Decisions, not just delivery."
+        />
+        <p
+          className="sans"
+          style={{
+            marginTop: 40,
+            marginBottom: 0,
+            fontSize: 16,
+            lineHeight: 1.7,
+            color: P.dim,
+            maxWidth: 620,
+          }}
+        >
+          Five write-ups of calls I made at VeVe, each with the situation, the
+          reasoning, and what actually happened — including the one that ended
+          badly. Nobody assigned me most of this work. It was the part of the
+          job I kept reaching for, which is why I am now going after it
+          directly.
+        </p>
+        <div style={{ marginTop: 40 }}>
+          {DATA.caseStudies.map((cs, i) => (
+            <CaseStudyRow key={i} cs={cs} first={i === 0} isMobile={isMobile} />
+          ))}
+        </div>
+        <div style={{ marginTop: 24 }}>
+          <a
+            href={DATA.caseStudiesUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-link"
+            style={{ color: P.dim }}
+          >
+            all case studies <span>↗</span>
+          </a>
+        </div>
+
+        {/* Recommendations */}
+        <div
+          style={{
+            marginTop: 56,
+            color: P.warn,
+            fontSize: 10,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            marginBottom: 16,
+          }}
+        >
+          // what they said about it
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: 24,
+          }}
+        >
+          {DATA.recommendations.map((r, i) => (
+            <blockquote
+              key={i}
+              className="sans"
+              style={{
+                margin: 0,
+                padding: 28,
+                background: P.bgAlt,
+                border: `1px solid ${P.line}`,
+                borderLeft: `2px solid ${P.accent}`,
+              }}
+            >
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 15,
+                  lineHeight: 1.65,
+                  color: P.ink,
+                }}
+              >
+                &quot;{r.quote}&quot;
+              </p>
+              <footer
+                style={{
+                  marginTop: 16,
+                  fontSize: 12,
+                  lineHeight: 1.6,
+                  color: P.mute,
+                }}
+              >
+                <span style={{ color: P.accent }}>{r.who}</span>
+                <br />
+                {r.detail}
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      </section>
+
       {/* ─── EXPERIENCE ─── */}
       <section
         id="experience"
@@ -365,7 +474,7 @@ export function Page() {
         }}
       >
         <SectionHead
-          num="02"
+          num="03"
           label="experience"
           title="Eight years. One long streak."
         />
@@ -509,7 +618,7 @@ export function Page() {
           borderTop: `1px solid ${P.line}`,
         }}
       >
-        <SectionHead num="03" label="capabilities" title="The stack." />
+        <SectionHead num="04" label="capabilities" title="The stack." />
         <div
           style={{
             marginTop: 40,
@@ -564,7 +673,7 @@ export function Page() {
         }}
       >
         <SectionHead
-          num="04"
+          num="05"
           label="github"
           title="Things I build outside the job."
         />
@@ -603,7 +712,7 @@ export function Page() {
           borderTop: `1px solid ${P.line}`,
         }}
       >
-        <SectionHead num="05" label="teaching" title="The series I wrote to learn it." />
+        <SectionHead num="06" label="teaching" title="The series I wrote to learn it." />
         <a
           href={DATA.series.href}
           style={{
@@ -700,7 +809,7 @@ export function Page() {
           borderTop: `1px solid ${P.line}`,
         }}
       >
-        <SectionHead num="06" label="writing" title="Building in the open." />
+        <SectionHead num="07" label="writing" title="Building in the open." />
         <div
           style={{
             marginTop: 40,
@@ -788,7 +897,7 @@ export function Page() {
       >
         <div>
           <SectionHead
-            num="07"
+            num="08"
             label="before code"
             title="Four years in a classroom."
           />
@@ -893,7 +1002,7 @@ export function Page() {
           background: `linear-gradient(180deg, ${P.bg} 0%, ${P.bgAlt} 100%)`,
         }}
       >
-        <SectionHead num="08" label="contact" title="Start a conversation." />
+        <SectionHead num="09" label="contact" title="Start a conversation." />
         <div
           style={{
             marginTop: 40,
@@ -986,6 +1095,113 @@ export function Page() {
         </div>
       </section>
     </div>
+  )
+}
+
+type CaseStudyData = (typeof DATA.caseStudies)[number]
+
+function CaseStudyRow({
+  cs,
+  first,
+  isMobile,
+}: {
+  cs: CaseStudyData
+  first: boolean
+  isMobile: boolean
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <a
+      href={cs.url}
+      target="_blank"
+      rel="noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: isMobile ? 'block' : 'grid',
+        gridTemplateColumns: isMobile ? undefined : '160px 1fr',
+        gap: isMobile ? undefined : 40,
+        padding: '32px 0',
+        borderTop: first ? `1px solid ${P.line}` : 'none',
+        borderBottom: `1px solid ${P.line}`,
+        textDecoration: 'none',
+        color: P.ink,
+      }}
+    >
+      <div style={{ marginBottom: isMobile ? 12 : 0 }}>
+        <div
+          style={{
+            fontSize: isMobile ? 10 : 10,
+            color: P.accent,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            lineHeight: 1.5,
+          }}
+        >
+          {cs.kind}
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            color: P.mute,
+            letterSpacing: '0.08em',
+            marginTop: 6,
+          }}
+        >
+          {cs.year}
+        </div>
+      </div>
+      <div>
+        <div
+          className="sans"
+          style={{
+            fontSize: isMobile ? 17 : 20,
+            fontWeight: 500,
+            letterSpacing: '-0.005em',
+            color: hovered ? P.accent : P.ink,
+            transition: 'color 0.15s',
+          }}
+        >
+          {cs.title}{' '}
+          <span style={{ fontSize: 13, color: P.accentDim }}>↗</span>
+        </div>
+        <p
+          className="sans"
+          style={{
+            margin: '14px 0 0',
+            fontSize: 14,
+            lineHeight: 1.7,
+            color: P.dim,
+          }}
+        >
+          {cs.standfirst}
+        </p>
+        <div
+          style={{
+            marginTop: 16,
+            padding: '10px 14px',
+            background: P.bgAlt,
+            borderLeft: `2px solid ${P.accent}`,
+            fontSize: 12,
+            lineHeight: 1.6,
+            color: P.dim,
+          }}
+        >
+          <span
+            style={{
+              color: P.mute,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              fontSize: 9,
+            }}
+          >
+            outcome
+          </span>
+          <br />
+          {cs.outcome}
+        </div>
+      </div>
+    </a>
   )
 }
 
