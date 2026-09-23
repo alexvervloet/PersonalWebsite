@@ -57,7 +57,7 @@ export const DATA = {
     {
       co: 'Independent',
       parent: undefined,
-      role: 'Technical Product Manager · Engineer',
+      role: 'AI Engineer',
       period: '2025 — Present',
       place: 'Remote',
       bullets: [
