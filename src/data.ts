@@ -9,6 +9,17 @@ export const DATA = {
   linkedin: 'alexander-vervloet',
   skills: [
     {
+      group: 'product',
+      items: [
+        'Customer research · surveys',
+        'Prioritization · scope tradeoffs',
+        'PRD contributions · requirements',
+        'A/B tests · feature flags',
+        'Scrum facilitation',
+        'Amplitude · Datadog · SQL',
+      ],
+    },
+    {
       group: 'ai',
       items: [
         'LLM apps · RAG · agents',
@@ -20,33 +31,24 @@ export const DATA = {
       ],
     },
     {
-      group: 'frontend',
+      group: 'engineering',
       items: [
-        'JavaScript / TypeScript',
-        'React · React Native',
-        'Next.js · Vite',
-        'Tailwind CSS',
-        'UI / UX feedback',
-      ],
-    },
-    {
-      group: 'backend',
-      items: [
+        'TypeScript · React · React Native',
+        'Next.js · Vite · Tailwind',
         'Node.js · NestJS',
-        'PostgreSQL · Elasticsearch',
-        'Kafka · RabbitMQ',
         'GraphQL · REST · SSE',
+        'PostgreSQL · Elasticsearch · Kafka',
         'Payments · Web3',
-        'Docker · AWS · CI',
-        'Unit / E2E testing',
+        'Docker · AWS · CI · testing',
       ],
     },
     {
       group: 'strengths',
       items: [
-        'Technical communication',
+        'Technical-to-business translation',
         'Cross-team collaboration',
-        'Product-minded thinking',
+        'Stakeholder communication',
+        'Developer training',
         'Explaining complexity simply',
       ],
     },
@@ -72,13 +74,17 @@ export const DATA = {
       period: '2019 — 2025',
       place: 'Remote',
       bullets: [
+        'Ran feature-specific customer surveys with the Lead Data Engineer, shipped the recommendations behind feature flags for A/B testing, then re-surveyed to check whether they had landed. Overall customer satisfaction rose nine percentage points.',
+        'Helped lead feature and bug-fix prioritization inside a domain team for three years, frequently as Scrum Master, rebalancing the queue each week against results, customer needs, and company objectives.',
+        'Won leadership support for folding Crafting into the existing store rather than building it as a separate section. Compared the two workflows, presented the delivery and maintenance tradeoffs, and saved an estimated three to four weeks of frontend work — which is what absorbed the late scope changes without moving the launch date.',
+        'Contributed feature context and technical specs to PRDs, and argued for QA checkpoints during development instead of at the end by putting the risk in delivery-date terms. That feature shipped early with fewer bugs than anything else we shipped that quarter.',
         'Owned the web payment flow for in-app currency end to end, from React frontend through the GraphQL API on NestJS to Kafka event publishing. Millions of dollars processed. Zero critical payment bugs shipped.',
         'Led the migration of platform search to Elasticsearch on Node.js and NestJS, raising measured search satisfaction from 41% to 90%, then built a carousel backend service on the same infrastructure.',
-        'Migrated the platform messaging layer from RabbitMQ to Kafka. Led the rebuild of the web platform from a base React app to Next.js, and ran the org-wide education session that cut team adoption from months to weeks.',
+        'Led the rebuild of the web platform from a base React app to Next.js, and ran the org-wide education session that cut team adoption from months to weeks. Also migrated the platform messaging layer from RabbitMQ to Kafka.',
         'Built the web storefront, auction bidding system, and direct-purchase flows from scratch, against the GraphQL API that every client on the platform read from. These became the primary revenue surface for hundreds of thousands of transactions.',
         'Built the 10-step mobile onboarding flow for the app launch, which drove tens of thousands of signups in the first weeks, and the web wallet frontend with ethers.js and web3.js.',
-        'Served as the technical translator between engineering and product. Brought into executive meetings specifically to explain complex system behavior in plain terms.',
-        'Most active contributor in every planning session across six years. Highest rate of feedback adopted. Regularly the only person asking: should we actually build this?',
+        'Built out Amplitude event tracking and Datadog observability across the apps, so questions about product behavior had data behind them instead of opinions.',
+        'Served as the technical translator between engineering and product — brought into executive meetings specifically to explain complex system behavior in plain terms. Most active contributor in every planning session across six years, and regularly the only person asking whether we should build the thing at all.',
       ],
       meta: 'Salary 45K → 90K over 6 years, without ever requesting a formal review. Survived two company-wide layoff rounds.',
     },
@@ -104,6 +110,75 @@ export const DATA = {
         'Built and maintained frontend features using React, React Native, and D3.js in a fully remote agile team, coordinating across time zones from day one.',
       ],
       meta: undefined,
+    },
+  ],
+  caseStudiesUrl:
+    'https://github.com/alexvervloet/how-i-work/tree/main/case-studies',
+  caseStudies: [
+    {
+      title: 'Reframing Crafting from a new section to an integration',
+      url: 'https://github.com/alexvervloet/how-i-work/blob/main/case-studies/crafting-scope.md',
+      kind: 'Scope decision',
+      year: '2023',
+      standfirst:
+        'The spec called for Crafting to be its own section of the app. Mapped against the store we had already shipped, the overlap was almost total, and the genuinely new surface came down to two things. I took the architectural argument to leadership as a business one.',
+      outcome:
+        'Shipped ahead of schedule. Three to four weeks of frontend work saved, and the slack is what absorbed late scope changes without moving the launch date.',
+    },
+    {
+      title: 'Closing the Next.js knowledge gap before it cost us months',
+      url: 'https://github.com/alexvervloet/how-i-work/blob/main/case-studies/nextjs-knowledge-gap.md',
+      kind: 'Platform adoption',
+      year: '2024',
+      standfirst:
+        'Leadership assumed the team was ready for the App Router. One-on-one, most engineers admitted they were not, and we were days from kickoff. Nobody asked me to fix it. I taught the whole team, PMs and leadership included, because the architecture had product consequences they would need for scoping.',
+      outcome:
+        'Building productively within days instead of weeks. PMs used the terminology correctly in tickets from the start. The deck became the onboarding reference.',
+    },
+    {
+      title: 'Building a communication standard across a 100-person org',
+      url: 'https://github.com/alexvervloet/how-i-work/blob/main/case-studies/communication-standard.md',
+      kind: 'Change management',
+      year: '2022 — 2023',
+      standfirst:
+        'You could predict how well a team delivered from its communication habits. Nobody owned the problem. I watched quietly for weeks first, then ran working groups picked for willingness to be critical, so the teams felt they had written it themselves.',
+      outcome:
+        'Became the de facto standard, part of new-hire onboarding, and cited in scope arguments. Still in active use two years after I left.',
+    },
+    {
+      title: 'Making token swapping safe for people who had never used a wallet',
+      url: 'https://github.com/alexvervloet/how-i-work/blob/main/case-studies/veve-wallet.md',
+      kind: 'Designing for irreversible actions',
+      year: '2021 — 2022',
+      standfirst:
+        'Most wallets are built by crypto people for crypto people. Our users arrived for the collectibles and ended up holding a token, so I could not assume they knew what a pending state, a rejection or a chain mismatch was — and the price of misreading a screen was their own money, permanently.',
+      outcome:
+        'Still in production four years later, with no engineer pulled back to it. Getting the failure states right up front is what bought the silence.',
+    },
+    {
+      title: 'Making the case for my own retention',
+      url: 'https://github.com/alexvervloet/how-i-work/blob/main/case-studies/retention-letter.md',
+      kind: 'Stakeholder communication',
+      year: '2025',
+      standfirst:
+        'I found out my role was on a layoff list that was already final. The letter had to do two jobs: argue on the merits that the proposed engineering cuts went further than the strategy required, and make an evidence-based case for six years of my own contributions. Either one alone fails.',
+      outcome:
+        'Leadership reversed the decision. A later round in November 2025 took the role anyway, which is the honest ending.',
+    },
+  ],
+  recommendations: [
+    {
+      quote:
+        'His instincts around product delivery and team health would make him a strong asset in any Product Manager role.',
+      who: 'Former Engineering Manager at VeVe',
+      detail:
+        'Managed me for 18 months. Now a Senior Engineering Manager at Atlassian.',
+    },
+    {
+      quote:
+        'He always took the time to explain technical things in business language, so everyone could understand and contribute better to discussions.',
+      who: 'Lead PM at VeVe',
+      detail: 'Recommendation published on LinkedIn.',
     },
   ],
   projects: [
