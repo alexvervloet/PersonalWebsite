@@ -149,7 +149,7 @@ export function Page() {
           >
             {booted && (
               <Typewriter
-                text="Technical PM · Engineer · 8 years · 2M users shipped."
+                text="Fullstack Engineer · AI systems · 8 years · 2M users shipped."
                 speed={22}
                 onDone={() => setIntroDone(true)}
               />
@@ -167,15 +167,15 @@ export function Page() {
               transition: 'opacity 0.6s',
             }}
           >
-            For eight years I shipped production software to a platform with
-            two million users, owning flows end to end from React through
-            GraphQL on NestJS to Kafka. I spent as much of that time on what we
-            were building and why. Running customer surveys, arguing scope,
-            sitting in prioritization, and explaining system behavior to
-            executives who had never written code. Now I build AI systems from
-            scratch, so the product judgement and the engineering understanding
-            stay attached to each other. I want the job where both are the
-            job.
+            For eight years I shipped production web and mobile software to a
+            platform with two million users, owning flows end to end from React
+            through GraphQL on NestJS to Kafka. Now I build AI systems from
+            scratch. RAG, agents, evals, guardrails, written at the primitive
+            level rather than the framework level. Alongside the building I
+            kept doing the product work: customer surveys, scope arguments,
+            prioritization, and explaining system behavior to executives who
+            had never written code. That half of it is further down this
+            page.
           </p>
           <div
             style={{
@@ -187,11 +187,15 @@ export function Page() {
               transition: 'opacity 0.8s 0.2s',
             }}
           >
-            <a href="#product" className="btn-link" style={{ color: P.accent }}>
-              Case studies <span>↓</span>
+            <a
+              href="#experience"
+              className="btn-link"
+              style={{ color: P.accent }}
+            >
+              View work <span>↓</span>
             </a>
-            <a href="#experience" className="btn-link" style={{ color: P.ink }}>
-              Experience <span>↓</span>
+            <a href="#product" className="btn-link" style={{ color: P.ink }}>
+              Case studies <span>↓</span>
             </a>
             <a
               href={`https://github.com/${DATA.github}`}
@@ -222,7 +226,7 @@ export function Page() {
               [
                 ['8y', 'shipping prod'],
                 ['2M', 'users reached'],
-                ['+9pt', 'csat from survey program'],
+                ['$10M', 'payments owned'],
                 ['3-4wk', 'saved by one scope call'],
               ] as const
             ).map(([big, small], i) => (
@@ -287,17 +291,19 @@ export function Page() {
             </p>
             <p style={{ margin: '0 0 20px', color: P.dim }}>
               Over six years that stopped being a personality trait and became
-              most of my job. Surveys to find out what users actually wanted.
+              a standing part of the job. Surveys to find out what users
+              actually wanted.
               Prioritization sessions where I argued the queue. Scope
               conversations with leadership, held in their terms rather than
               mine. PRDs I helped write because the spec needed a technical
               reality check before anyone committed to a date.
             </p>
             <p style={{ margin: 0, color: P.dim }}>
-              I&apos;m going after product roles now because that work is what I
-              want to do full time. The engineering doesn&apos;t go away. It is
-              the reason I can tell a two-week estimate from a two-month one
-              before anyone has opened an editor.
+              I still want to be the person writing the code. But I&apos;m at
+              my most useful when I also have a say in what gets written, and I
+              read a two-week estimate against a two-month one before anyone
+              has opened an editor. Teams that want both from one hire are the
+              ones I&apos;m looking for.
             </p>
           </div>
           <div
@@ -364,114 +370,6 @@ export function Page() {
         </div>
       </section>
 
-      {/* ─── PRODUCT ─── */}
-      <section
-        id="product"
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          padding: sp,
-          borderTop: `1px solid ${P.line}`,
-        }}
-      >
-        <SectionHead
-          num="02"
-          label="product"
-          title="Decisions, not just delivery."
-        />
-        <p
-          className="sans"
-          style={{
-            marginTop: 40,
-            marginBottom: 0,
-            fontSize: 16,
-            lineHeight: 1.7,
-            color: P.dim,
-            maxWidth: 620,
-          }}
-        >
-          Five write-ups of calls I made at VeVe, each with the situation, the
-          reasoning, and what actually happened, including the one that ended
-          badly. Nobody assigned me most of this work. It was the part of the
-          job I kept reaching for, which is why I&apos;m going after it
-          directly.
-        </p>
-        <div style={{ marginTop: 40 }}>
-          {DATA.caseStudies.map((cs, i) => (
-            <CaseStudyRow key={i} cs={cs} first={i === 0} isMobile={isMobile} />
-          ))}
-        </div>
-        <div style={{ marginTop: 24 }}>
-          <a
-            href={DATA.caseStudiesUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-link"
-            style={{ color: P.dim }}
-          >
-            all case studies <span>↗</span>
-          </a>
-        </div>
-
-        {/* Recommendations */}
-        <div
-          style={{
-            marginTop: 56,
-            color: P.warn,
-            fontSize: 10,
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            marginBottom: 16,
-          }}
-        >
-          // what they said about it
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-            gap: 24,
-          }}
-        >
-          {DATA.recommendations.map((r, i) => (
-            <blockquote
-              key={i}
-              className="sans"
-              style={{
-                margin: 0,
-                padding: 28,
-                background: P.bgAlt,
-                border: `1px solid ${P.line}`,
-                borderLeft: `2px solid ${P.accent}`,
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 15,
-                  lineHeight: 1.65,
-                  color: P.ink,
-                }}
-              >
-                &quot;{r.quote}&quot;
-              </p>
-              <footer
-                style={{
-                  marginTop: 16,
-                  fontSize: 12,
-                  lineHeight: 1.6,
-                  color: P.mute,
-                }}
-              >
-                <span style={{ color: P.accent }}>{r.who}</span>
-                <br />
-                {r.detail}
-              </footer>
-            </blockquote>
-          ))}
-        </div>
-      </section>
-
       {/* ─── EXPERIENCE ─── */}
       <section
         id="experience"
@@ -483,7 +381,7 @@ export function Page() {
         }}
       >
         <SectionHead
-          num="03"
+          num="02"
           label="experience"
           title="Eight years. One long streak."
         />
@@ -617,6 +515,114 @@ export function Page() {
         </div>
       </section>
 
+      {/* ─── PRODUCT ─── */}
+      <section
+        id="product"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          padding: sp,
+          borderTop: `1px solid ${P.line}`,
+        }}
+      >
+        <SectionHead
+          num="03"
+          label="product"
+          title="Decisions, not just delivery."
+        />
+        <p
+          className="sans"
+          style={{
+            marginTop: 40,
+            marginBottom: 0,
+            fontSize: 16,
+            lineHeight: 1.7,
+            color: P.dim,
+            maxWidth: 620,
+          }}
+        >
+          Shipping was never the whole job. These are five calls I made at
+          VeVe, each with the situation, the reasoning, and what actually
+          happened, including the one that ended badly. Nobody assigned me most
+          of this work. It was the part I kept reaching for, and it is the part
+          I want more of.
+        </p>
+        <div style={{ marginTop: 40 }}>
+          {DATA.caseStudies.map((cs, i) => (
+            <CaseStudyRow key={i} cs={cs} first={i === 0} isMobile={isMobile} />
+          ))}
+        </div>
+        <div style={{ marginTop: 24 }}>
+          <a
+            href={DATA.caseStudiesUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-link"
+            style={{ color: P.dim }}
+          >
+            all case studies <span>↗</span>
+          </a>
+        </div>
+
+        {/* Recommendations */}
+        <div
+          style={{
+            marginTop: 56,
+            color: P.warn,
+            fontSize: 10,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            marginBottom: 16,
+          }}
+        >
+          // what they said about it
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: 24,
+          }}
+        >
+          {DATA.recommendations.map((r, i) => (
+            <blockquote
+              key={i}
+              className="sans"
+              style={{
+                margin: 0,
+                padding: 28,
+                background: P.bgAlt,
+                border: `1px solid ${P.line}`,
+                borderLeft: `2px solid ${P.accent}`,
+              }}
+            >
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 15,
+                  lineHeight: 1.65,
+                  color: P.ink,
+                }}
+              >
+                &quot;{r.quote}&quot;
+              </p>
+              <footer
+                style={{
+                  marginTop: 16,
+                  fontSize: 12,
+                  lineHeight: 1.6,
+                  color: P.mute,
+                }}
+              >
+                <span style={{ color: P.accent }}>{r.who}</span>
+                <br />
+                {r.detail}
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      </section>
+
       {/* ─── SKILLS ─── */}
       <section
         id="skills"
@@ -630,7 +636,7 @@ export function Page() {
         <SectionHead
           num="04"
           label="capabilities"
-          title="Product work and the stack under it."
+          title="The stack, and the product work around it."
         />
         <div
           style={{
@@ -1035,12 +1041,12 @@ export function Page() {
                 maxWidth: 480,
               }}
             >
-              I&apos;m looking for remote product roles, product manager or
-              technical PM, where being able to read the codebase is an
-              advantage rather than a curiosity. I&apos;m equally happy in AI
-              or full-stack engineering roles on teams that treat product
-              thinking as part of the job. UTC+8, flexible overlap with US and
-              EU.
+              I&apos;m looking for remote fullstack and AI engineering roles
+              on teams that treat product thinking as part of the job rather
+              than someone else&apos;s department. I&apos;m equally open to
+              product or technical PM roles, where eight years of shipping the
+              thing is the background I&apos;d bring to deciding what to ship.
+              UTC+8, flexible overlap with US and EU.
             </p>
           </div>
           <div>
