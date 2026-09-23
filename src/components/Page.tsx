@@ -294,8 +294,8 @@ export function Page() {
               reality check before anyone committed to a date.
             </p>
             <p style={{ margin: 0, color: P.dim }}>
-              I am going after product roles now because that work is what I
-              want to do full time. The engineering does not go away. It is
+              I&apos;m going after product roles now because that work is what I
+              want to do full time. The engineering doesn&apos;t go away. It is
               the reason I can tell a two-week estimate from a two-month one
               before anyone has opened an editor.
             </p>
@@ -391,9 +391,9 @@ export function Page() {
           }}
         >
           Five write-ups of calls I made at VeVe, each with the situation, the
-          reasoning, and what actually happened — including the one that ended
+          reasoning, and what actually happened, including the one that ended
           badly. Nobody assigned me most of this work. It was the part of the
-          job I kept reaching for, which is why I am now going after it
+          job I kept reaching for, which is why I&apos;m going after it
           directly.
         </p>
         <div style={{ marginTop: 40 }}>
@@ -1035,8 +1035,8 @@ export function Page() {
                 maxWidth: 480,
               }}
             >
-              I&apos;m looking for remote product roles — product manager or
-              technical PM — where being able to read the codebase is an
+              I&apos;m looking for remote product roles, product manager or
+              technical PM, where being able to read the codebase is an
               advantage rather than a curiosity. I&apos;m equally happy in AI
               or full-stack engineering roles on teams that treat product
               thinking as part of the job. UTC+8, flexible overlap with US and

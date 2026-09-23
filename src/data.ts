@@ -1,6 +1,6 @@
 export const DATA = {
   name: 'Alexander Vervloet',
-  role: 'AI Engineer',
+  role: 'Technical Product Manager · Engineer',
   location: 'Taichung, Taiwan',
   tz: 'UTC+8',
   status: 'Open to remote roles',
@@ -57,7 +57,7 @@ export const DATA = {
     {
       co: 'Independent',
       parent: undefined,
-      role: 'AI Engineer',
+      role: 'Technical Product Manager · Engineer',
       period: '2025 — Present',
       place: 'Remote',
       bullets: [
@@ -76,7 +76,7 @@ export const DATA = {
       bullets: [
         'Ran feature-specific customer surveys with the Lead Data Engineer, shipped the recommendations behind feature flags for A/B testing, then re-surveyed to check whether they had landed. Overall customer satisfaction rose nine percentage points.',
         'Helped lead feature and bug-fix prioritization inside a domain team for three years, frequently as Scrum Master, rebalancing the queue each week against results, customer needs, and company objectives.',
-        'Won leadership support for folding Crafting into the existing store rather than building it as a separate section. Compared the two workflows, presented the delivery and maintenance tradeoffs, and saved an estimated three to four weeks of frontend work — which is what absorbed the late scope changes without moving the launch date.',
+        'Won leadership support for folding Crafting into the existing store rather than building it as a separate section. Compared the two workflows, presented the delivery and maintenance tradeoffs, and saved an estimated three to four weeks of frontend work. That slack is what absorbed the late scope changes without moving the launch date.',
         'Contributed feature context and technical specs to PRDs, and argued for QA checkpoints during development instead of at the end by putting the risk in delivery-date terms. That feature shipped early with fewer bugs than anything else we shipped that quarter.',
         'Owned the web payment flow for in-app currency end to end, from React frontend through the GraphQL API on NestJS to Kafka event publishing. Millions of dollars processed. Zero critical payment bugs shipped.',
         'Led the migration of platform search to Elasticsearch on Node.js and NestJS, raising measured search satisfaction from 41% to 90%, then built a carousel backend service on the same infrastructure.',
@@ -84,7 +84,7 @@ export const DATA = {
         'Built the web storefront, auction bidding system, and direct-purchase flows from scratch, against the GraphQL API that every client on the platform read from. These became the primary revenue surface for hundreds of thousands of transactions.',
         'Built the 10-step mobile onboarding flow for the app launch, which drove tens of thousands of signups in the first weeks, and the web wallet frontend with ethers.js and web3.js.',
         'Built out Amplitude event tracking and Datadog observability across the apps, so questions about product behavior had data behind them instead of opinions.',
-        'Served as the technical translator between engineering and product — brought into executive meetings specifically to explain complex system behavior in plain terms. Most active contributor in every planning session across six years, and regularly the only person asking whether we should build the thing at all.',
+        'Served as the technical translator between engineering and product, brought into executive meetings specifically to explain complex system behavior in plain terms. Most active contributor in every planning session across six years, and regularly the only person asking whether we should build the thing at all.',
       ],
       meta: 'Salary 45K → 90K over 6 years, without ever requesting a formal review. Survived two company-wide layoff rounds.',
     },
@@ -121,7 +121,7 @@ export const DATA = {
       kind: 'Scope decision',
       year: '2023',
       standfirst:
-        'The spec called for Crafting to be its own section of the app. Mapped against the store we had already shipped, the overlap was almost total, and the genuinely new surface came down to two things. I took the architectural argument to leadership as a business one.',
+        'The spec called for Crafting to be its own section of the app. Mapped against the store we\'d already shipped, the overlap was almost total, and the genuinely new surface came down to two things. I took the architectural argument to leadership as a business one.',
       outcome:
         'Shipped ahead of schedule. Three to four weeks of frontend work saved, and the slack is what absorbed late scope changes without moving the launch date.',
     },
@@ -131,7 +131,7 @@ export const DATA = {
       kind: 'Platform adoption',
       year: '2024',
       standfirst:
-        'Leadership assumed the team was ready for the App Router. One-on-one, most engineers admitted they were not, and we were days from kickoff. Nobody asked me to fix it. I taught the whole team, PMs and leadership included, because the architecture had product consequences they would need for scoping.',
+        'Leadership assumed the team was ready for the App Router. One-on-one, most engineers admitted they weren\'t, and we were days from kickoff. Nobody asked me to fix it. I taught the whole team, PMs and leadership included, because the architecture had product consequences they\'d need for scoping.',
       outcome:
         'Building productively within days instead of weeks. PMs used the terminology correctly in tickets from the start. The deck became the onboarding reference.',
     },
@@ -141,7 +141,7 @@ export const DATA = {
       kind: 'Change management',
       year: '2022 — 2023',
       standfirst:
-        'You could predict how well a team delivered from its communication habits. Nobody owned the problem. I watched quietly for weeks first, then ran working groups picked for willingness to be critical, so the teams felt they had written it themselves.',
+        'You could predict how well a team delivered from its communication habits. Nobody owned the problem. I watched quietly for weeks first, then ran working groups picked for willingness to be critical, so the teams felt they\'d written it themselves.',
       outcome:
         'Became the de facto standard, part of new-hire onboarding, and cited in scope arguments. Still in active use two years after I left.',
     },
@@ -151,7 +151,7 @@ export const DATA = {
       kind: 'Designing for irreversible actions',
       year: '2021 — 2022',
       standfirst:
-        'Most wallets are built by crypto people for crypto people. Our users arrived for the collectibles and ended up holding a token, so I could not assume they knew what a pending state, a rejection or a chain mismatch was — and the price of misreading a screen was their own money, permanently.',
+        'Most wallets are built by crypto people for crypto people. Our users arrived for the collectibles and ended up holding a token, so I couldn\'t assume they knew what a pending state, a rejection or a chain mismatch was. The price of misreading a screen was their own money, permanently.',
       outcome:
         'Still in production four years later, with no engineer pulled back to it. Getting the failure states right up front is what bought the silence.',
     },
