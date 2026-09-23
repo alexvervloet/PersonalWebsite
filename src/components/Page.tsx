@@ -263,7 +263,7 @@ export function Page() {
         <SectionHead
           num="01"
           label="about"
-          title="What I bring beyond the code."
+          title="The engineer who kept asking product questions."
         />
         <div
           style={{
@@ -278,18 +278,26 @@ export function Page() {
             style={{ fontSize: 16, lineHeight: 1.7, color: P.ink }}
           >
             <p style={{ margin: '0 0 20px' }}>
-              At VeVe I was never just the person who built things. I was the
+              At VeVe I was never only the person who built things. I was the
               person who asked <span style={{ color: P.accent }}>why</span> we
               were building them, whether we were building the{' '}
               <span style={{ color: P.accent }}>right</span> thing, and how to
               explain the answer to someone who had never written a line of
               code.
             </p>
+            <p style={{ margin: '0 0 20px', color: P.dim }}>
+              Over six years that stopped being a personality trait and became
+              most of my job. Surveys to find out what users actually wanted.
+              Prioritization sessions where I argued the queue. Scope
+              conversations with leadership, held in their terms rather than
+              mine. PRDs I helped write because the spec needed a technical
+              reality check before anyone committed to a date.
+            </p>
             <p style={{ margin: 0, color: P.dim }}>
-              That combination of technical fluency and communication instinct
-              is the part of the job I enjoyed most — and it shows up in
-              everything from the quality of my pull requests to the questions I
-              ask in a planning meeting.
+              I am going after product roles now because that work is what I
+              want to do full time. The engineering does not go away. It is
+              the reason I can tell a two-week estimate from a two-month one
+              before anyone has opened an editor.
             </p>
           </div>
           <div
@@ -322,8 +330,9 @@ export function Page() {
             >
               {[
                 'Asking why, not just how.',
-                'Explaining complex systems in plain language.',
+                'Turning an architecture argument into a business one.',
                 'Feedback in planning that changes the plan.',
+                'Reading a spec and seeing the four weeks nobody costed.',
                 'Knowing when not to ship.',
                 'Teaching — four years, in two languages.',
               ].map((t, i) => (
@@ -618,7 +627,11 @@ export function Page() {
           borderTop: `1px solid ${P.line}`,
         }}
       >
-        <SectionHead num="04" label="capabilities" title="The stack." />
+        <SectionHead
+          num="04"
+          label="capabilities"
+          title="Product work and the stack under it."
+        />
         <div
           style={{
             marginTop: 40,
@@ -1022,11 +1035,12 @@ export function Page() {
                 maxWidth: 480,
               }}
             >
-              I&apos;m open to remote roles in AI/ML and full-stack engineering
-              with teams who value communication as much as code. I&apos;m also
-              open to PM or TPM positions, as I have a wealth of experience
-              focusing on product and working with them directly. UTC+8,
-              flexible overlap with US and EU.
+              I&apos;m looking for remote product roles — product manager or
+              technical PM — where being able to read the codebase is an
+              advantage rather than a curiosity. I&apos;m equally happy in AI
+              or full-stack engineering roles on teams that treat product
+              thinking as part of the job. UTC+8, flexible overlap with US and
+              EU.
             </p>
           </div>
           <div>
