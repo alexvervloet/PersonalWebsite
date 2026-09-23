@@ -1,5 +1,21 @@
 # Lessons
 
+## 2026-09-23 — sed without anchors rewrote a nested field I never looked at
+
+Expected: `sed -i '' "s/  role: 'AI Engineer',/.../"` would hit the one
+top-level `role` field in `data.ts`.
+
+What happened: it also hit `      role: 'AI Engineer',` inside the Independent
+experience entry, because the two-space pattern is a substring of the six-space
+line. `s///` matches anywhere in a line, not from column zero. The wrong value
+sat on the live site through a push, and I only noticed a pass later when a
+`grep -n "  role:"` printed two hits instead of one.
+
+Next time: anchor the pattern (`^  role:`) or use a replacement that asserts a
+match count. The python edits in the same session used `assert old in s`, which
+would have caught nothing here either, since the substring genuinely was
+present. The count is the thing to assert, not the presence.
+
 ## 2026-09-10 — sitemap lastmod dates commit one build behind
 
 Expected: a build that only touched the homepage would leave the other 40
