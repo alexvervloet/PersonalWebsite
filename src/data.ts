@@ -1,6 +1,6 @@
 export const DATA = {
   name: 'Alexander Vervloet',
-  role: 'Fullstack Engineer',
+  role: 'Software Engineer',
   location: 'Taichung, Taiwan',
   tz: 'UTC+8',
   status: 'Open to remote roles',
@@ -21,14 +21,15 @@ export const DATA = {
       ],
     },
     {
-      group: 'ai',
+      group: 'applied ai',
       items: [
-        'LLM apps · RAG · agents',
+        'Agents · tool use · MCP',
+        'Durable execution · approval gates',
+        'RAG · vector search',
         'Evals · LLM-as-judge',
         'Prompt engineering · guardrails',
-        'Python · FastAPI',
         'OpenAI · Anthropic · local models',
-        'Vector search · MCP',
+        'Python · FastAPI',
       ],
     },
     {
@@ -57,11 +58,11 @@ export const DATA = {
     {
       co: 'Independent',
       parent: undefined,
-      role: 'AI Engineer',
+      role: 'Agentic Systems & Applied AI',
       period: '2025 — Present',
       place: 'Remote',
       bullets: [
-        'Building AI-engineering systems from scratch (no frameworks) to understand the primitives, not just the libraries — RAG pipelines, tool-using agents, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.',
+        'Building agentic systems from scratch, without frameworks, so the primitives are the thing I understand rather than the libraries wrapping them. Tool-using agents, durable execution, approval gates, retrieval pipelines, eval harnesses, and prompt-injection defenses, each a runnable project with measured results.',
         'Shipped four distinct flagship projects that span building, running, and orchestrating LLM systems: askrepo, a codebase-Q&A app answering with (path:line) citations across eight eval-gated stages; a self-hosted local-LLM news pipeline with its own eval suite and guardrails; a harness that stress-tests the spec-driven-development workflow with gated phases and deterministic traceability checks; and Knowledge Desk, a deployed multi-tenant assistant whose permission boundary is enforced three independent times.',
         'Publishing the work as an open, teachable series spanning RAG, agents, evals, guardrails, MCP, multimodal, fine-tuning, and local models.',
       ],
