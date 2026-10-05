@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/openai-api/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -38,7 +38,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/openai-api/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -56,13 +56,13 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/claude-api/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/prompt-engineering/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -74,13 +74,13 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/prompt-engineering/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/rag/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -104,7 +104,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/evals/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -128,7 +128,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/agents/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -152,7 +152,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/prompt-injection/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -176,7 +176,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/ai-in-production/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -188,13 +188,13 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/ai-in-production/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/agent-harness/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -212,7 +212,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/context-engineering/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -230,19 +230,19 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/multimodal/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/multimodal/textbook/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/multimodal/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -272,7 +272,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/fine-tuning/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -284,7 +284,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/fine-tuning/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -308,7 +308,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/local-models/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -320,25 +320,25 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/local-models/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/observability/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/observability/textbook/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/observability/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -374,7 +374,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/professional-tools/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -398,7 +398,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/professional-tools/lessons/</loc>
-    <lastmod>2026-08-27</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -476,7 +476,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/testing-and-delivery/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -548,31 +548,31 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/typescript/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/typescript/textbook/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/typescript/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/typescript/lessons/</loc>
-    <lastmod>2026-08-27</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/capstone/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -596,19 +596,19 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/reference/choosing/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/reference/models/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/reference/glossary/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -650,7 +650,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/reference/incidents/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
