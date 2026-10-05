@@ -77,10 +77,17 @@ Provider-agnostic like the rest of the series. Pick your stack with `PROVIDER`.
 
 | `PROVIDER` | Chat model | Key needed |
 |------------|-----------|------------|
-| `openai` (default) | OpenAI `gpt-5.4-nano` | `OPENAI_API_KEY` |
+| `openai` (default) | OpenAI `gpt-4o-mini` | `OPENAI_API_KEY` |
 | `claude` | Claude `claude-haiku-4-5` | `ANTHROPIC_API_KEY` |
 
 The only provider-specific file is [guardrails/providers.py](guardrails/providers.py).
+
+> **Why an older model here.** The rest of the series runs on `gpt-6-luna`. This dive
+> doesn't, because the attacks have to land before a defense means anything. Ten runs of
+> each indirect attack in the catalog, measured 2026-10-03: they landed 30 of 40 times on
+> `gpt-4o-mini` and on `gpt-5.4-nano`, 8 of 40 on `gpt-5.4-mini`, and 0 of 40 on
+> `gpt-6-luna`. Don't read the zero as safety. It means luna resists these four strings.
+> The catalog is public, and a real attacker writes new ones against the model you ship.
 
 > **Start before spending anything.** Example 01, the attack catalog and the offline
 > detectors and checks, runs with no key and no cost. The rest make small calls.

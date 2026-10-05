@@ -189,6 +189,27 @@ and nothing in the release checked that the two agreed. It was found by
 library, which is the cheapest compatibility test there is: make something else drive
 your release tuple from outside.
 
+A second instance, from the SDK corner of the tuple, because it breaks differently.
+Both provider SDKs went major in August 2026 and both did the same thing underneath:
+they swapped `httpx` for `httpx2`. Application code that just calls the client sees
+nothing. What breaks is everything that reached *around* the client to the HTTP layer
+by module name, which in a mature codebase is your tracing, your APM integration, and
+your test doubles. A suite that patches `httpx.Client` still patches successfully,
+still reports green, and no longer intercepts a single request, because the SDK is not
+calling that module any more. A passing test that stopped testing anything is the worst
+version of this failure, and a version bound won't catch it: the bound was satisfied.
+
+The same release also removed `temperature`, `top_p`, and `top_k` from the Anthropic
+Messages signature. That one is loud where it's a `TypeError`, and quiet in the other
+direction: the parameter still works if you route it through `extra_body`, and the
+*server* accepts it on some models and returns a 400 on others. So the same line of
+code is correct, deprecated, or fatal depending on a model id held in configuration,
+which is the §8 failure from the previous paragraph wearing a different hat.
+
+The check that catches both is the same one: exercise the release tuple from outside,
+across the versions you claim to support, and assert on a request that actually
+crossed the boundary rather than on a mock that says it was called.
+
 ## 9. Dependency locking and artifact integrity
 
 Version ranges describe acceptable resolution inputs. A lock records the exact installation
@@ -200,7 +221,16 @@ python examples/08_dependency_locking.py
 ```
 
 The audit checks lock version, environment coverage, normalized names, exact versions where
-present, strong artifact hashes, and immutable VCS commit IDs. It allows multiple entries
+present, strong artifact hashes, and immutable VCS commit IDs.
+
+One thing a lock records but doesn't explain: an upper bound in somebody else's
+metadata is a schedule you now keep. A framework that requires `openai<3.0.0` means
+you cannot install the current SDK for as long as you depend on it, and the constraint
+is invisible on the day you adopt, because every version is current then. When you
+read a lock, read the bounds behind it: an upper bound on a package you also import
+directly is a veto, not a preference. The
+[Professional Tools dive](https://github.com/alexvervloet/professional-tools-deep-dive)
+hits this one in practice and has the worked example. It allows multiple entries
 for one package, because the standard permits marker or source variants. This teaching
 audit resolves no dependency graphs and evaluates no marker expressions.
 

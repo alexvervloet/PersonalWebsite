@@ -72,7 +72,7 @@ that answers from a built-in support knowledge base. Pick your stack with `PROVI
 | `PROVIDER` | What runs the model | Keys needed | Cost |
 |------------|---------------------|-------------|------|
 | `mock` (default) | a deterministic offline "model" | **none** | **$0** |
-| `openai` | OpenAI `gpt-5.4-nano` | `OPENAI_API_KEY` | tiny |
+| `openai` | OpenAI `gpt-6-luna` | `OPENAI_API_KEY` | tiny |
 | `claude` | Claude `claude-haiku-4-5` | `ANTHROPIC_API_KEY` | tiny |
 
 The production stack is identical on all three, and the only file that knows which one
@@ -291,9 +291,9 @@ changes is the key. A real provider needs one, it lives in your keychain rather 
 
 ---
 
-## Going further: four more production concerns
+## Going further: five more production concerns
 
-The capstone covers the core seven layers. These four are the next ones you hit at
+The capstone covers the core seven layers. These five are the next ones you hit at
 scale, and like everything here they run offline on the mock.
 
 ### Semantic caching
@@ -313,6 +313,11 @@ fraction of the bill.
 ```bash
 python examples/10_model_fallback.py
 ```
+Try the effort dial before you build the cascade. Current models take a per-request
+effort setting, and the same model at lower effort often matches a cheaper model at
+full effort, without splitting your prompt cache in two. Caches are model-scoped, so
+a cascade gives up reuse between its tiers, and that cost is missing from every
+routing comparison that only counts per-token rates.
 
 ### Rate limiting and the feedback loop
 A per-tenant token bucket stops one client from starving a shared, costly backend, which
@@ -332,6 +337,21 @@ workflow with a person in the loop, a model ten times cheaper moves the total by
 while halving review time moves it by 48%.
 ```bash
 python examples/12_cost_per_successful_task.py
+```
+
+### The refusal, or the failure that returns 200
+Every failure in §5 announces itself by raising. A refusal doesn't. A safety
+classifier declines the request, the API returns 200, `stop_reason` says `refusal`,
+and the text is empty. Your `except` block never fires, your retry never triggers,
+your error rate never moves, and a user gets a blank reply. It's worse than an
+outage because an outage pages somebody.
+
+Treat it as a third outcome. Not an error, not an answer. The example shows the
+naive read, the cache quietly storing the empty string and serving it to everyone
+afterward, and the guard that fixes both: branch on the stop reason before anything
+touches the text.
+```bash
+python examples/13_refusal.py
 ```
 
 ---
@@ -406,6 +426,7 @@ examples/
   10_model_fallback.py      ← failover to a backup model + cost routing by difficulty
   11_rate_limiting_and_feedback.py ← per-tenant token bucket + the thumbs up/down feedback loop
   12_cost_per_successful_task.py   ← the unit economics: is the workflow worth running?
+  13_refusal.py                    ← the failure that returns 200 OK and an empty string
 ```
 
 ---

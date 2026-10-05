@@ -62,7 +62,7 @@ the sibling repos with `PROVIDER` in `.env`.
 
 | `PROVIDER` | Chat model | Key needed |
 |------------|-----------|------------|
-| `openai` (default) | OpenAI `gpt-5.4-nano` | `OPENAI_API_KEY` |
+| `openai` (default) | OpenAI `gpt-6-luna` | `OPENAI_API_KEY` |
 | `claude` | Claude `claude-haiku-4-5` | `ANTHROPIC_API_KEY` |
 
 Tool-calling really does have a different shape per provider: OpenAI's `function` and
@@ -482,7 +482,10 @@ more capability and more rigor.
 - **MCP at scale.** You built the protocol by hand above. The official `mcp` SDK, remote
   HTTP and SSE transports, auth, and provider-side connectors are the production version.
 - **Managed and hosted agents.** Let the provider run the loop and host a sandbox for tool
-  execution, as Anthropic's Managed Agents and OpenAI's Agents and Assistants do.
+  execution, as Anthropic's Managed Agents and OpenAI's Responses and Conversations APIs
+  do. (OpenAI's Assistants API was the earlier version of this and shut down on
+  2026-08-26. Hosted-agent surfaces move faster than the loop underneath them, which is
+  an argument for knowing the loop.)
 - **Server-side and computer-use tools.** Web search, code execution, and driving a real
   GUI, where the provider runs the tool for you.
 - **Planning and reflection.** Having the agent draft a plan, critique its own work, or

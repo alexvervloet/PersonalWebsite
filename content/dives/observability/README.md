@@ -79,7 +79,7 @@ Pick your stack with `PROVIDER` in `.env`.
 | `PROVIDER` | What it changes | Keys needed | Cost |
 |------------|-----------------|-------------|------|
 | `mock` (default) | hashed embeddings + rule-based judge | **none** | **$0** |
-| `openai` | real embeddings + `gpt-5.4-nano` judge | `OPENAI_API_KEY` | tiny |
+| `openai` | real embeddings + `gpt-6-luna` judge | `OPENAI_API_KEY` | tiny |
 | `claude` | `claude-haiku-4-5` judge (+ OpenAI embeddings) | `ANTHROPIC_API_KEY` (+ `OPENAI_API_KEY`) | tiny |
 
 The provider only matters for two optional, model-backed sections: the sampled quality
@@ -138,8 +138,8 @@ python examples/01_metrics_from_logs.py
 
 ## 4. Baselines and trends, because a number means nothing alone
 
-"Cost per request is $0.000107" tells you nothing. "$0.000107, up from a $0.000055
-baseline, that's +115σ" is an incident. [obs/alerts.py](obs/alerts.py) learns what
+"Cost per request is $0.000050" tells you nothing. "$0.000050, up from a $0.000023
+baseline, that's +150σ" is an incident. [obs/alerts.py](obs/alerts.py) learns what
 normal looked like from a clean baseline window, then scores every new day as a
 z-score: how many baseline standard deviations from normal. It's unitless, so the
 same "3σ is weird" rule works for latency, cost, and refusals alike, with no
@@ -309,6 +309,16 @@ Three things the example makes concrete:
   lives there on purpose: it's priced per vendor, per model, per contract, so
   OTel declines to standardize it. Conventions for conventional things, your own
   prefix for the rest.
+
+  Two things about their status, because "semantic convention" sounds more settled
+  than this is. Not one `gen_ai.*` attribute, span, metric, or event is marked
+  Stable; every one of them is still Development. And they moved out of the main
+  semantic-conventions repository in mid-2026 into their own,
+  [open-telemetry/semantic-conventions-genai](https://github.com/open-telemetry/semantic-conventions-genai),
+  so a link or a version bound pointing at the old home now finds nothing. The
+  chat and embedding attributes have been stable enough in practice to build
+  dashboards on; the agent and tool-orchestration ones are still moving, so treat
+  those as provisional and expect a rename.
 - **Spans are events; metrics are aggregates.** 300 requests produce 300 spans and
   8 metric points, and at 300 million requests it's still 8 metric points, because
   a metric point is one per *attribute combination*, not one per request. (It moves

@@ -62,7 +62,7 @@ repo uses instead of a dependency.
 | `PROVIDER` | What it is | Key needed |
 |------------|------------|------------|
 | `mock` (default) | A deterministic, offline, in-process model. No network, no cost. | none |
-| `openai` | OpenAI chat completions (`gpt-5.4-nano`) | `OPENAI_API_KEY` |
+| `openai` | OpenAI chat completions (`gpt-6-luna`) | `OPENAI_API_KEY` |
 | `claude` | Anthropic messages (`claude-haiku-4-5`) | `ANTHROPIC_API_KEY` |
 
 **Twelve of the thirteen examples need no key.** Promises, cancellation,
@@ -205,6 +205,7 @@ hand it a receipt that doesn't have one:
 | model | value returned |
 |---|---|
 | `gpt-5.4-nano` | `""` |
+| `gpt-6-luna` (the new default, 3 runs, 2026-10-05) | `""` |
 | `claude-haiku-4-5` | `"<UNKNOWN>"` |
 
 Neither hallucinated a fake VAT number, which is better than this example
@@ -567,9 +568,11 @@ Everything else is smaller than its reputation.
 - **The browser half.** Streaming to `EventSource`, cancelling on unmount,
   rendering partial markdown safely. Section 13 is the server side of a story
   whose other half is where TypeScript is unmatched.
-- **TypeScript 7.** The compiler is being ported to Go, with large speedups. This
-  repo pins TypeScript 5 because that's what's stable; nothing here would need
-  to change.
+
+TypeScript 7 used to sit on this list as a prediction: the compiler was being
+ported to Go, and the guess was that nothing here would need to change. It
+shipped, this repo runs on it, and the guess held. `npm run typecheck` and the
+test suite pass on 7.0.2 with no source edits at all.
 
 ---
 
