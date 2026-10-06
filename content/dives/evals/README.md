@@ -354,8 +354,9 @@ quality-tanking prompt change fail the build.
 You've built a complete small eval framework. The road to production is more of the same
 idea, at more scale and more rigor.
 
-- **Eval frameworks.** promptfoo, OpenAI Evals, Inspect, and for RAG, Ragas or DeepEval,
-  instead of hand-rolling the runner.
+- **Eval frameworks.** promptfoo, Inspect, and for RAG, Ragas or DeepEval, instead of
+  hand-rolling the runner. OpenAI's hosted Evals platform goes read-only on 2026-10-31
+  and shuts down on 2026-11-30, and OpenAI's own migration guide points to promptfoo.
 - **Bigger, better datasets.** More examples, harder cases, stratified by category, plus
   generating or mining them from production traffic.
 - **Human evaluation.** Annotation workflows and inter-annotator agreement, the ground
@@ -460,7 +461,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | `AuthenticationError` / 401 | The key is present but wrong; check it matches the `PROVIDER` you set. |
 | Scores change every run | Expected above temperature 0; that's the whole lesson of Section 10. Use `--runs` and confidence intervals; the library's tasks default to temperature 0 for stability. |
 | The judge's verdicts seem off | Judges are biased models (Section 9). Calibrate against a few human labels and judge both orders; don't treat a judge as ground truth. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it directly.

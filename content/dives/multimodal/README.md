@@ -60,7 +60,7 @@ rather than only in request shape, so the `PROVIDER` choice matters.
 
 | `PROVIDER` | Vision (image in) | Audio (STT / TTS) | Image generation | Key needed |
 |------------|:-----------------:|:-----------------:|:----------------:|------------|
-| `openai` (default) | yes, `gpt-6-luna` | yes, Whisper and TTS | yes, `gpt-image-1` | `OPENAI_API_KEY` |
+| `openai` (default) | yes, `gpt-6-luna` | yes, transcription and TTS | yes, `gpt-image-2.5-flare` | `OPENAI_API_KEY` |
 | `claude` | yes, `claude-haiku-4-5` | no native audio API | no, vision in only | `ANTHROPIC_API_KEY` |
 
 Vision works on both. Audio and image generation are OpenAI-only, because Claude has no
@@ -187,6 +187,13 @@ secrun python examples/06_text_to_speech.py "Hello from the multimodal deep dive
 > **OpenAI-only**, like transcription. Claude has no TTS API; the example skips
 > cleanly on `claude`.
 
+> **This model has a shutdown date.** `gpt-4o-mini-tts` was deprecated on 2026-10-01
+> and stops working on 2027-01-06, along with `tts-1` and `tts-1-hd`. The replacement
+> OpenAI names, `gpt-realtime-2.1-mini`, only works over the Realtime API, a streaming
+> WebSocket session rather than this one request-and-response call. As of 2026-10-06
+> there's no successor on the simple speech endpoint, so this example stays as it is
+> until there is one or the date gets close.
+
 The result gets written to `out/spoken.mp3`, which is git-ignored. Open it in any audio
 player. Combine Sections 6 and 7 and you have a full voice loop: speak a question,
 transcribe it, answer it, speak the answer back.
@@ -196,7 +203,9 @@ transcribe it, answer it, speak the answer back.
 ## 8. Image generation and editing
 
 So far every example put an image into the model. This one gets an image out. A text prompt
-becomes a brand-new picture, via `gpt-image-1`.
+becomes a brand-new picture, via `gpt-image-2.5-flare`. The code asks for `quality="low"`
+on purpose: the API's default lets the model choose, the levels run up to `"max"`, and a
+1024x1024 image cost about $0.006 at low and $0.013 at medium when measured.
 
 ```bash
 secrun python examples/07_image_generation.py
@@ -450,7 +459,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | Extraction returns prose, not JSON / a parse error | The model didn't follow the JSON instruction. Tighten the schema in the prompt, or try a stronger model. The examples strip ` ```json ` fences for you. |
 | The transcript is empty | The bundled `note.wav` is a tone, not speech, so there's nothing to transcribe. Point it at a real voice recording. |
 | An image "costs" thousands of tokens | That's real: images are tokenized by pixels (Section 10). Downscale before sending. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it directly. [multimodal/providers.py](multimodal/providers.py)

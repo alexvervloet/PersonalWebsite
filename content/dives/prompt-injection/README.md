@@ -504,7 +504,7 @@ Run `secrun python check_setup.py` first. Then, by symptom:
 | `ModuleNotFoundError` (openai / anthropic / rich) | Dependencies aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
 | An attack "fails" (doesn't leak) on the naive bot | Models vary and are nondeterministic; a given attack won't beat every model every time. Run `examples/09_redteam_eval.py` for the rate across the whole catalog rather than judging one attempt. |
 | The hardened bot blocks a *legitimate* question | That's a false positive from the input filter (it over-fires on words like "ignore"), the real cost of detection. It's why the repo leans on capability limits and output checks, not detection alone. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it directly.
