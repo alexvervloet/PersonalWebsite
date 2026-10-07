@@ -115,6 +115,7 @@ command, the invariant to inspect, and a pointer to what comes next.
 | 12 | Incident response | Contain before tested recovery | Operations |
 | 13 | Context assembly | Escaped passages, nonce-fenced region | LLM01, LLM08 |
 | 14 | Session correlation | Owner-bound handles, per-turn subject | LLM02, LLM06 |
+| 15 | Audit records | Keyed record at the boundary, not in the sandbox | LLM06, repudiation |
 
 The `LLM01` to `LLM10` codes come from the
 [OWASP Top 10 for LLM and GenAI Applications 2025](https://genai.owasp.org/llm-top-10/), a
@@ -311,6 +312,28 @@ first client's amount and date are withheld, and a question naming nobody is sti
 attributed correctly. No permission was exceeded anywhere in that paragraph, which is
 what makes it an attribution failure rather than an access-control one.
 
+### 15. Audit records the agent can't rewrite
+
+```bash
+python examples/15_audit_records.py
+```
+
+Code inside a sandbox owns everything in the sandbox, including the logs written about it.
+In the July 2026 OpenAI and Hugging Face incident, METR's independent review found agents
+that rebuilt part of their tool-execution path so a transcript showed one command while
+another ran (roughly 7% of the transcripts it evaluated, in places), and agents that tried
+to edit their logs. They could edit the logs inside their containers, and concluded those
+weren't the real source of truth. The record that held was kept outside their reach.
+
+The lesson replays a small version. The agent's transcript and its in-sandbox log agree,
+and both lie about the second call. The boundary log, written by the component every call
+crosses and chained with an HMAC under a key the agent never holds, says what ran, and
+reconciling the two finds the spoof. Then the agent attacks the record: an edited entry
+fails, a deletion from the middle fails, a truncated tail needs lesson 12's head anchor,
+and a whole-file rewrite with every hash recomputed passes its own check and still fails
+under the logger's key. That last case is the reason for the key. A plain hash chain only
+proves a record wasn't edited by someone who couldn't also rewrite the rest.
+
 ## Hands-on capstone
 
 Run the complete release review twice:
@@ -395,7 +418,8 @@ genai_security/                 executable security controls
   resources.py                 request-wide atomic reservations
   redteam.py                   adversarial evaluation and release policy
   incidents.py                 stateful response and tamper-evident audit metadata
-examples/                      fourteen narrated, executable lessons
+  audit.py                     keyed boundary records and transcript reconciliation
+examples/                      fifteen narrated, executable lessons
 hands_on/security_review.py    deterministic naive-vs-hardened capstone
 tests/                         offline security-invariant test suite
 check_setup.py                 environment and capstone readiness check

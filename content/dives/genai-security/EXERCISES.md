@@ -274,6 +274,27 @@ Stretch: name the point at which this stops being an access-control problem. The
 decide what should happen when an operator legitimately needs both subjects at once,
 and what the answer must say about it.
 
+## 15. Rewrite the record and try to get away with it
+
+Play the agent. You can run anything in the sandbox, edit any file in it, and read a
+copy of the boundary log. Try to make the record say your second call was harmless.
+
+Acceptance criteria:
+
+- Reconciling your transcript against the boundary log flags the spoofed call and any
+  call your transcript leaves out.
+- Editing one entry, deleting one from the middle, and reordering two all fail
+  `verify()`. Name the index each one fails at and why.
+- Cutting the tail passes `verify()` on its own. Show which input makes it fail, and
+  say where that input has to live for the check to mean anything.
+- A full rewrite with every MAC recomputed under a key you chose passes its own check
+  and fails under the logger's. Explain in one sentence what a keyless SHA-256 chain,
+  like lesson 12's, would have said about the same rewrite.
+
+Stretch: the boundary log records what crossed the boundary. Name one thing an agent
+could do inside the sandbox that never crosses it, and decide whether that's a gap in
+the log or a limit on what any log can promise.
+
 ## Capstone extension
 
 Add one system-specific risk that is absent from every top-ten list. Wire it through:

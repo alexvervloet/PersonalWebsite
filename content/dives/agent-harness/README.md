@@ -146,6 +146,28 @@ pauses for a human, deny never runs. The example allows the calculator, asks bef
 a denial comes back as another tool result. This is the shape of Claude Agent SDK
 permission modes and Managed Agents' per-tool `always_allow` and `always_ask` config.
 
+### A fourth answer to `ask`: let a reviewer decide
+
+```bash
+python examples/16_model_approval.py                        # rule reviewer, offline
+PROVIDER=openai secrun python examples/16_model_approval.py # a model reviews
+```
+
+`ask` assumes a person reads each prompt. Mostly they don't. Anthropic's study of Claude
+Code's auto mode found testers caught a deliberately inserted dangerous command 13.6% of
+the time, while its classifier blocked 89%, and users approved 97% of the prompts they
+saw. [harness/review.py](harness/review.py) puts a reviewer where the person was. It's
+just an `approve` callback, so the loop doesn't change. A block goes back to the agent
+with its reason, and after 3 blocks in a row or 20 in a session the next decision goes
+to a person, whose approval hands control back. Those are Claude Code's own thresholds.
+
+The example shows two things worth more than the mechanism. Reviewers disagree: asked
+whether to save a file whose text contains `curl ... | sh`, the rule reviewer and
+`claude-haiku-4-5` blocked it and `gpt-6-luna` allowed it, since saving isn't running.
+And a reviewer only covers what you route to it. Blocked on `run_command`, the agent
+tried `read_file` on the same `~/.ssh` path, a tool the policy allows, and only §6's
+sandbox stopped it.
+
 ---
 
 ## 6. The sandbox, the boundary tools execute inside
@@ -247,6 +269,17 @@ the load-bearing one: give every tool with an external effect an idempotency key
 the retry safe at the thing being retried. No amount of durability upstream can fix an
 effect that isn't repeatable.
 
+On the newest Claude models a checkpoint has one more job: replay exactly what was sent.
+Claude Fable 5.1, Opus 5.5, and Sonnet 5.5 sign each thinking block with everything before
+it, so a resume that rebuilds the request from templates, re-renders the system prompt, or
+reorders the tools invalidates every block, and accounts created since 2026-08-31 get a
+400 for it. The Context Engineering dive's example 11 shows the check live. This harness
+sidesteps it the blunt way: its transcript keeps text and tool calls but not thinking
+blocks, so there's nothing to fail the check, and also nothing of the model's earlier
+reasoning survives a resume. Fine on Haiku 4.5, which is what it runs. A harness for those
+newer models would store the provider's content blocks as returned, keep `system` and
+`tools` frozen for the run, and append, never edit.
+
 ---
 
 ## 11. Durable task state, a queryable run log
@@ -303,6 +336,12 @@ cleanly. An interrupted run gets checkpointed as `interrupted`, which is resumab
 than lost. A real app drives the live `QueueController`, calling `steer()` and `interrupt()`
 from a UI or chat bridge. This is the from-scratch shape of Managed Agents' message queue
 plus `user.interrupt`.
+
+Notice that steering *appends* a message. That's the only safe way on the newest Claude
+models: editing the system prompt to redirect a run would invalidate the thinking already
+in it (§10). Anthropic's API has a purpose-built version, a `role: "system"` message
+appended mid-conversation, which carries system-prompt authority without touching
+anything before it.
 
 ---
 
@@ -366,6 +405,35 @@ What you give up is real. You can't reach into the loop the way §4's hooks let 
 run in a container you don't own, and it's one vendor. Good trade when the alternative is
 maintaining §3 through §14 yourself. Bad trade when that layer is where your value lives,
 which is precisely the judgement this dive exists to give you.
+
+### The same idea from OpenAI: the Agents API
+
+OpenAI shipped its own hosted harness on 2026-09-10, the Agents API, in public beta. It
+runs OpenAI's Codex harness for you and handles sessions, orchestration, context
+compaction, and recovery. The shape is close enough that the table above mostly carries
+over: an agent (model, instructions, tools, MCP servers), an optional environment (an
+OpenAI-hosted sandbox, or one you run), a durable session, and a stream of events, with
+webhooks as the other way to hear when a turn finishes. Subagents are a `multi_agent`
+setting with a concurrency cap, and you can steer a session mid-turn or hand it the next
+task.
+
+The difference worth noticing is the structural rule above. OpenAI's quickstart passes the
+agent's model and instructions inline when it creates each session:
+
+```python
+client.beta.agents.sessions.create(
+    agent={"model": "gpt-6-astra", "instructions": "..."},
+    environment={"type": "openai_hosted"},
+    input="...",
+)
+```
+
+That's fine for a first run. The SDK also has `client.beta.agents.create(...)`, a persisted
+agent you create once and point sessions at, and for anything you deploy the same advice
+holds as for Managed Agents: create it once, keep the id, and get versioning for free. Two
+vendors, one lesson. The convenient call isn't the one you want in production. (Checked
+against openai 3.24.0 and OpenAI's docs on 2026-10-07; it's a beta, so expect the surface
+to move.)
 
 ---
 
@@ -550,6 +618,7 @@ harness/                    ← the from-scratch harness library (read it!)
   tools.py                  ← what a tool is + a sandboxed toolbox
   sandbox.py                ← the boundary tools run inside (path jail + command allowlist)
   policy.py                 ← declarative allow / ask / deny permission policy
+  review.py                 ← a reviewer that answers ask prompts, then hands back to a person
   events.py                 ← the typed event stream the harness emits
   checkpoint.py             ← durable run state: persist the transcript, resume after a crash
   steer.py                  ← steering controllers: inject / queue / interrupt a running run
@@ -574,6 +643,7 @@ examples/
   13_orchestration_graph.py ← routing, branching, and cycles as a graph (offline)
   14_managed_agents.py     ← the hosted end of the axis: Anthropic runs the harness
   15_skills.py             ← progressive-disclosure instructions (SKILL.md)
+  16_model_approval.py     ← a reviewer instead of a person on ask, with a hand-off
 ```
 
 (`workspace/` and `runs/` are created by the examples and are git-ignored.)
