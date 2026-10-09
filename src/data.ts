@@ -92,7 +92,7 @@ export const DATA = {
         'Built out Amplitude event tracking and Datadog observability across the apps, so questions about product behavior had data behind them instead of opinions.',
         'Served as the technical translator between engineering and product, brought into executive meetings specifically to explain complex system behavior in plain terms. Most active contributor in every planning session across six years, and regularly the only person asking whether we should build the thing at all.',
       ],
-      meta: 'Salary 45K → 90K over 6 years, without ever requesting a formal review. Survived two company-wide layoff rounds.',
+      meta: 'Promoted from Junior Mobile Engineer to Senior Full-Stack Engineer, with salary doubling along the way and no formal review ever requested. Survived two company-wide layoff rounds.',
     },
     {
       co: 'Influenxio',
