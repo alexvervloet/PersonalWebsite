@@ -104,7 +104,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/evals/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -116,7 +116,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/evals/exercises/</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -176,7 +176,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/ai-in-production/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -188,13 +188,13 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/ai-in-production/exercises/</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/agent-harness/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -212,7 +212,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/context-engineering/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -224,7 +224,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/context-engineering/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -428,7 +428,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/genai-security/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -440,7 +440,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/genai-security/exercises/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -650,7 +650,7 @@
   </url>
   <url>
     <loc>https://www.alexvervloet.com/dives/reference/incidents/</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
