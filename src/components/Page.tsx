@@ -167,9 +167,9 @@ export function Page() {
               transition: 'opacity 0.6s',
             }}
           >
-            For eight years I shipped production web and mobile software to a
-            platform with two million users, owning flows end to end from React
-            through GraphQL on NestJS to Kafka. These days the systems I build
+            For eight years I shipped production web and mobile software, six
+            of them on a platform with two million users, owning flows end to
+            end from React through GraphQL on NestJS to Kafka. These days the systems I build
             are agentic ones: tool-using agents allowed to do irreversible
             things, and the durable execution, approval gates and eval suites
             that keep that safe. Same engineering, harder failure modes. Alongside the building I kept doing the product work:
@@ -226,7 +226,7 @@ export function Page() {
               [
                 ['8y', 'shipping prod'],
                 ['2M', 'users reached'],
-                ['$10M', 'payments owned'],
+                ['41→90%', 'search satisfaction'],
                 ['3-4wk', 'saved by one scope call'],
               ] as const
             ).map(([big, small], i) => (
@@ -471,6 +471,14 @@ export function Page() {
                     </span>
                   )}
                 </div>
+                {job.progression && (
+                  <div
+                    className="sans"
+                    style={{ marginTop: 6, fontSize: 13, color: P.mute }}
+                  >
+                    {job.progression}
+                  </div>
+                )}
                 <ul
                   className="sans"
                   style={{
