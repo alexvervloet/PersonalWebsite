@@ -98,3 +98,15 @@ Spreading the lowercase attribute (`{...{ fetchpriority: 'high' }}`) renders a
 clean `fetchpriority="high"` and still typechecks. Worth remembering that the
 types and the renderer ship on separate schedules, and a green `tsc` says
 nothing about whether react-dom knows an attribute.
+
+## A new field on one experience entry has to go on all of them
+
+`DATA` in `src/data.ts` ends in `as const`, so TypeScript keeps each job as
+its own readonly literal type instead of merging them into one shape with
+optional fields. Adding `progression` to the VeVe entry alone made
+`job.progression` a type error inside `experience.map`, because the other
+three jobs don't have the property at all.
+
+The fix is the idiom the file already uses for `parent`: give every other
+entry `progression: undefined`. Next time a field is added to one item in a
+`DATA` array, add it to its siblings in the same edit.
