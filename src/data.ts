@@ -59,6 +59,7 @@ export const DATA = {
       co: 'Independent',
       parent: undefined,
       role: 'Agentic Systems & Applied AI',
+      progression: undefined,
       period: '2025 — Present',
       place: 'Remote',
       bullets: [
@@ -71,15 +72,19 @@ export const DATA = {
     {
       co: 'VeVe',
       parent: 'Orbis Blockchain Technologies',
-      role: 'Lead Engineer',
+      role: 'Senior Full-Stack Engineer',
+      progression:
+        'Joined as Junior Mobile Engineer and progressed to Lead Web Engineer and Senior Full-Stack Engineer.',
       period: '2019 — 2025',
       place: 'Remote',
       bullets: [
-        'Owned the web payment flow for in-app currency end to end, from React frontend through the GraphQL API on NestJS to Kafka event publishing. Millions of dollars processed. Zero critical payment bugs shipped.',
-        'Led the migration of platform search to Elasticsearch on Node.js and NestJS, raising measured search satisfaction from 41% to 90%, then built a carousel backend service on the same infrastructure.',
-        'Led the rebuild of the web platform from a base React app to Next.js, and ran the org-wide education session that cut team adoption from months to weeks. Also migrated the platform messaging layer from RabbitMQ to Kafka.',
+        'Owned the web payment flow for in-app currency end to end, from React frontend through the GraphQL API on NestJS to Kafka event publishing. Took web from no purchase path to 20% of purchases. Millions of dollars processed. Zero critical payment bugs shipped.',
+        'Built the mobile purchase UI up to the App Store and Google Play handoff, as the engineer mainly responsible for it. That flow carried an estimated $112.5M in consumer spending by late 2021, per Sensor Tower.',
+        'Led the migration of platform search from Redis to Elasticsearch on Node.js and NestJS, raising measured search satisfaction from 41% to 90%, then built a carousel backend service on the same infrastructure.',
+        'Led the rebuild of the web platform from a client-side React app to Next.js across 15 frontend and backend engineers. Server-side rendering and caching cut average page load from 5 seconds to under 1 second. Ran the education session for engineers, PMs and leadership before kickoff, and the deck became the onboarding reference.',
+        'Led the Collectibles team to move part of the RabbitMQ flow to Kafka and build drop subscriptions end to end. Buyers are drawn from a subscriber pool and unclaimed purchase rights are reassigned after a timeout. Used on thousands of drops since, with about 50,000 subscribers on the most popular.',
         'Built the web storefront, auction bidding system, and direct-purchase flows from scratch, against the GraphQL API that every client on the platform read from. These became the primary revenue surface for hundreds of thousands of transactions.',
-        'Built the 10-step mobile onboarding flow for the app launch, which drove tens of thousands of signups in the first weeks, and the web wallet frontend with ethers.js and web3.js.',
+        'Built the 10-step mobile onboarding flow for the app launch, which supported tens of thousands of signups in the first weeks. Built the guided tour that closes it and tuned it against feedback and usage data, raising repeat logins after signup from 8% to 24%. Also built the web wallet frontend with ethers.js and web3.js.',
         'Ran feature-specific customer surveys with the Lead Data Engineer, shipped the recommendations behind feature flags for A/B testing, then re-surveyed to check whether they had landed. Overall customer satisfaction rose nine percentage points.',
         'Helped lead feature and bug-fix prioritization inside a domain team for three years, frequently as Scrum Master, rebalancing the queue each week against results, customer needs, and company objectives.',
         'Won leadership support for folding Crafting into the existing store rather than building it as a separate section. Compared the two workflows, presented the delivery and maintenance tradeoffs, and saved an estimated three to four weeks of frontend work. That slack is what absorbed the late scope changes without moving the launch date.',
@@ -93,11 +98,12 @@ export const DATA = {
       co: 'Influenxio',
       parent: undefined,
       role: 'Lead Frontend Engineer',
+      progression: undefined,
       period: '2018 — 2019',
       place: 'Taipei, TW',
       bullets: [
         'Led frontend in a small agile team building a React platform matching brands with influencers — shipping weekly through constantly changing specs.',
-        'Drove a 500% improvement in measured customer satisfaction through targeted testing, tooling improvements, and systematic refactoring.',
+        'Grew customers reporting satisfied or very satisfied from 200 to 1,000 through targeted testing, tooling improvements, and systematic refactoring.',
       ],
       meta: undefined,
     },
@@ -105,6 +111,7 @@ export const DATA = {
       co: 'Inspection Advisor',
       parent: undefined,
       role: 'Frontend Specialist',
+      progression: undefined,
       period: '2017 — 2018',
       place: 'Remote',
       bullets: [
@@ -230,8 +237,8 @@ export const DATA = {
     href: '/dives/',
     title: 'AI Engineering: Deep Dives',
     standfirst:
-      'A hands-on series on building with LLMs, written from scratch and readable here in full. Eight core dives that build on each other, nine bonus dives, a capstone, and the reference docs that tie them together. Every concept is a small runnable script; every claim is backed by something you can run.',
-    meta: 'Series - 18 deep dives - 2025 to 2026',
+      'A hands-on series on building with LLMs, written from scratch and readable here in full. Eight core dives that build on each other, sixteen bonus dives, a capstone, and the reference docs that tie them together. Every concept is a small runnable script; every claim is backed by something you can run.',
+    meta: 'Series - 25 deep dives - 2025 to 2026',
     core: [
       'OpenAI API',
       'Claude API',
