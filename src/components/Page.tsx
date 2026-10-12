@@ -168,7 +168,7 @@ export function Page() {
             }}
           >
             For eight years I shipped production web and mobile software, six
-            of them on a platform with two million users, owning flows end to
+            of them on a platform with over three million users, owning flows end to
             end from React through GraphQL on NestJS to Kafka. These days the systems I build
             are agentic ones: tool-using agents allowed to do irreversible
             things, and the durable execution, approval gates and eval suites
@@ -225,7 +225,7 @@ export function Page() {
             {(
               [
                 ['8y', 'shipping prod'],
-                ['2M', 'users reached'],
+                ['3M+', 'users reached'],
                 ['41→90%', 'search satisfaction'],
                 ['3-4wk', 'saved by one scope call'],
               ] as const
