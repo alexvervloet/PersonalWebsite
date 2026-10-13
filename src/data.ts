@@ -2,7 +2,7 @@ export const DATA = {
   name: 'Alexander Vervloet',
   role: 'Software Engineer',
   location: 'Portland, OR',
-  tz: 'UTC-8',
+  tz: 'Pacific Time',
   status: 'Open to remote roles',
   github: 'alexvervloet',
   emailEncoded: 'alex.vervloet [at] gmail [dot] com',
