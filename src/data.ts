@@ -1,8 +1,8 @@
 export const DATA = {
   name: 'Alexander Vervloet',
   role: 'Software Engineer',
-  location: 'Taichung, Taiwan',
-  tz: 'UTC+8',
+  location: 'Portland, OR',
+  tz: 'UTC-8',
   status: 'Open to remote roles',
   github: 'alexvervloet',
   emailEncoded: 'alex.vervloet [at] gmail [dot] com',
@@ -230,7 +230,7 @@ export const DATA = {
     {
       name: 'hanzi.repeat',
       url: 'https://github.com/alexvervloet/hanzi.repeat',
-      desc: 'Spaced-repetition Mandarin trainer. Built from the learning side of my brain, not the commercial side — tuned to how I actually pick up characters living in Taiwan.',
+      desc: 'Spaced-repetition Mandarin trainer. Built from the learning side of my brain, not the commercial side — tuned to how I actually picked up characters while living in Taiwan.',
       tags: ['React', 'SRS', 'Personal'],
     },
     {
