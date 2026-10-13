@@ -191,6 +191,12 @@ export const DATA = {
   ],
   projects: [
     {
+      name: 'solveaicrimes.com',
+      url: 'https://solveaicrimes.com',
+      desc: 'A spot-the-bug game where every bug is one an AI coding agent would write. You get a short snippet, say what\'s wrong, and a judge rules against an answer key the server holds back until you submit. 56 of the 176 built-in cases are mistakes agents really made while building my other projects, cut from git history before the fix: an empty ACL list that an `or` turned into public-to-org, a login that skipped bcrypt for unknown users and leaked which accounts exist through its timing. Nothing marks which cases are real. Free play uses a keyword judge that never calls a model, so a free player costs nothing. Paid Case Folders get freshly generated cases, stocked ahead of time through the Batches API at half price, and Claude as the judge, with OpenAI taking over when Claude errors or refuses. My first keyword judge passed 122 of the 176 cases for an answer that just cited every line, so both judges now face 42 answers written to game them, prompt injection included. Claude stopped contradicting its own feedback once the structured output made it write the reasoning before the verdict.',
+      tags: ['LLM-as-judge', 'Stripe', 'Next.js · FastAPI', 'Live product'],
+    },
+    {
       name: 'deskhand',
       url: 'https://github.com/alexvervloet/deskhand',
       desc: 'A durable agent runtime for support operations, where the agent is allowed to do irreversible things: refund money, email a customer, cancel an order. It exists for one sentence, which is "step 7 of 12 fails after step 6 already sent the email." Five invariants, each attacked by a test that tries to break it: a worker is killed after it has already refunded a customer and a second one resumes without paying twice; a $19.00 approval is rewritten to $48.00 mid-flight and the runtime refuses rather than executing something nobody saw. 25 trajectory evals gate every merge, and they assert on the path rather than the answer. Deleting the approval check fails 14 of them; deleting the fence around untrusted content fails only 3, which is the uncomfortable half of defence in depth and is written up rather than hidden. Live at deskhand.fly.dev, where a seeded ticket carries a forged "SYSTEM:" block ordering an unapproved refund and the gate holds anyway. I then ported the runtime onto Trigger.dev to find out how much of it was essential: 204 lines deleted, and the idempotency ledger and consent binding both stayed.',
