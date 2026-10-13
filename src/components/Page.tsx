@@ -1055,7 +1055,7 @@ export function Page() {
               else&apos;s department. I&apos;m equally open to
               product or technical PM roles, where eight years of shipping the
               thing is the background I&apos;d bring to deciding what to ship.
-              UTC+8, flexible overlap with US and EU.
+              Pacific Time, flexible overlap with US and EU.
             </p>
           </div>
           <div>
