@@ -6,7 +6,7 @@ const BOOT_LINES = [
   { t: 'Initializing runtime ................ [ ok ]', delay: 40 },
   { t: 'Loading profile: alexander.vervloet ... [ ok ]', delay: 40 },
   { t: 'Mounting /experience /skills /projects  [ ok ]', delay: 40 },
-  { t: 'Resolving location: Portland, OR · UTC-8', delay: 40 },
+  { t: 'Resolving location: Portland, OR · Pacific Time', delay: 40 },
   { t: 'Availability status: open to remote roles', delay: 40 },
   { t: 'ready.', delay: 200 },
 ];
